@@ -794,6 +794,28 @@ h3 {
     flex-wrap: wrap;
   }
 
+  /* Al envolverse a su propia línea, que se quede pegada a la derecha en
+     vez de recargarse a la izquierda — si no, los menús que cuelgan de
+     estos botones (perfil, notificaciones) quedan mal anclados y se
+     salen de la pantalla por la izquierda. */
+  .content-header-actions {
+    margin-left: auto;
+    position: relative;
+  }
+
+  /* El menú de notificaciones es más ancho (340px) que el espacio a la
+     derecha del botón de campana (que no es el último botón de la fila).
+     En vez de anclarse a su propio botón, en móvil se ancla a toda la fila
+     de acciones (que ya queda pegada a la derecha de la pantalla), para
+     que siempre le alcance el espacio. */
+  .notif-menu-wrapper {
+    position: static;
+  }
+
+  .notif-menu-caret {
+    display: none;
+  }
+
   .content-body {
     padding: 20px 20px 40px;
   }
