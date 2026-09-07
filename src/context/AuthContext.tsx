@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // con contraseña — la sesión se crea directo al volver del redirect.
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: window.location.origin + import.meta.env.BASE_URL },
     });
     return { error: error?.message ?? null };
   };
