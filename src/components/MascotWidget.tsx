@@ -20,6 +20,17 @@ const FRASES = [
 // acento que le toque).
 const VOCES_PREFERIDAS = ['Paulina', 'Mónica', 'Google español', 'Helena', 'Lucia', 'Lupe'];
 
+// macOS trae, además de las voces "normales", un montón de voces de broma
+// (Eddy, Grandma, Shelley, Zarvox...) que suenan robóticas o raras a
+// propósito — si Greon no encuentra ninguna de las preferidas, mejor que
+// no caiga en una de estas por accidente.
+const VOCES_A_EVITAR = [
+  'Eddy', 'Flo', 'Grandma', 'Grandpa', 'Reed', 'Rocko', 'Sandy', 'Shelley',
+  'Albert', 'Bad News', 'Bahh', 'Bells', 'Boing', 'Bubbles', 'Cellos',
+  'Wobble', 'Organ', 'Superstar', 'Trinoids', 'Whisper', 'Zarvox', 'Jester',
+  'Kathy', 'Ralph', 'Fred', 'Good News', 'Hysterical', 'Bruce', 'Junior',
+];
+
 function elegirVoz(): SpeechSynthesisVoice | null {
   const voces = window.speechSynthesis.getVoices();
   if (voces.length === 0) return null;
@@ -27,7 +38,11 @@ function elegirVoz(): SpeechSynthesisVoice | null {
     const encontrada = voces.find((v) => v.name.includes(nombre));
     if (encontrada) return encontrada;
   }
-  return voces.find((v) => v.lang.startsWith('es')) ?? null;
+  return (
+    voces.find(
+      (v) => v.lang.startsWith('es') && !VOCES_A_EVITAR.some((mala) => v.name.includes(mala))
+    ) ?? null
+  );
 }
 
 export function MascotWidget() {
@@ -47,8 +62,8 @@ export function MascotWidget() {
     const decirYa = () => {
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = 'es-MX';
-      utterance.pitch = 1.2;
-      utterance.rate = 0.95;
+      utterance.pitch = 1.5;
+      utterance.rate = 1.02;
       const voz = elegirVoz();
       if (voz) utterance.voice = voz;
       utteranceRef.current = utterance;
