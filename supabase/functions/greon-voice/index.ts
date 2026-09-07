@@ -10,13 +10,26 @@
 // invocarla y gastar la cuota.
 
 const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
-// Voz elegida por el usuario (Jessica, premade — las voces "premade" de
-// la cuenta se pueden usar por API en el plan gratis; las de la Voice
-// Library que solo se "agregan" a Mis Voces no). Cámbiala guardando un
-// secreto ELEVENLABS_VOICE_ID con otro Voice ID, sin tocar este código.
-const VOICE_ID = Deno.env.get('ELEVENLABS_VOICE_ID') || 'cgSgspJ2msm6clMCkdW9';
+// Voz por defecto (Jessica, premade — las voces "premade" de la cuenta se
+// pueden usar por API en el plan gratis; las de la Voice Library que solo
+// se "agregan" a Mis Voces no). Cámbiala guardando un secreto
+// ELEVENLABS_VOICE_ID con otro Voice ID, sin tocar este código.
+const VOICE_ID_DEFECTO = Deno.env.get('ELEVENLABS_VOICE_ID') || 'cgSgspJ2msm6clMCkdW9';
+// El front deja elegir entre estas 3 (mismas que en src/lib/voces.ts) tanto
+// para el monito como para "Leer esta página" en accesibilidad — se valida
+// aquí contra la misma lista para que nadie con una sesión válida pueda
+// pedir un voice_id arbitrario (voces de paga, de la Voice Library, etc.)
+// a costa de la cuota de la cuenta.
+const VOICE_IDS_PERMITIDOS = new Set([
+  'cgSgspJ2msm6clMCkdW9', // Jessica
+  'FGY2WhTYpPnrIDTdsKH5', // Laura
+  'Xb7hH8MSUJpSbSDYk0k2', // Alice
+]);
 const MODEL_ID = 'eleven_multilingual_v2';
-const MAX_CARACTERES = 300;
+// 300 alcanzaba para un tip corto del monito; "Leer esta página" en
+// accesibilidad manda el texto de la página completa, así que necesita
+// mucho más margen.
+const MAX_CARACTERES = 4000;
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -25,6 +38,7 @@ const CORS_HEADERS = {
 
 interface Body {
   texto?: string;
+  voiceId?: string;
 }
 
 Deno.serve(async (req) => {
@@ -42,6 +56,7 @@ Deno.serve(async (req) => {
   try {
     const body: Body = await req.json();
     const texto = (body.texto ?? '').trim().slice(0, MAX_CARACTERES);
+    const voiceId = VOICE_IDS_PERMITIDOS.has(body.voiceId ?? '') ? (body.voiceId as string) : VOICE_ID_DEFECTO;
 
     if (!texto) {
       return new Response(JSON.stringify({ error: 'Falta el texto a convertir.' }), {
@@ -50,7 +65,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const respuestaElevenLabs = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+    const respuestaElevenLabs = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
       headers: {
         'xi-api-key': ELEVENLABS_API_KEY,
