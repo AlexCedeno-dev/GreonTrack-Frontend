@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import mascota from '../assets/mascota-greon-sm.png';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+// La nube invitando a picarle se puede cerrar con la "x" — queda oculta
+// para siempre en este navegador, no solo por hoy.
+const HINT_OCULTO_KEY = 'greontrack-mascot-hint-oculto';
 
 const FRASES = [
   '¡Hola! Soy Greon 🌍 — cada dato que registras ayuda a cuidar el planeta.',
@@ -52,6 +56,15 @@ export function MascotWidget() {
   const [abierto, setAbierto] = useState(false);
   const [frase, setFrase] = useState(FRASES[0]);
   const [saltando, setSaltando] = useState(false);
+  const [hintOculto, setHintOculto] = useState(
+    () => localStorage.getItem(HINT_OCULTO_KEY) === '1'
+  );
+
+  const ocultarHint = (e: MouseEvent) => {
+    e.stopPropagation();
+    setHintOculto(true);
+    localStorage.setItem(HINT_OCULTO_KEY, '1');
+  };
 
   // Referencia viva del utterance actual: si no la guardamos en algún lado,
   // Chrome a veces la recolecta con el garbage collector a la mitad y se
@@ -168,12 +181,22 @@ export function MascotWidget() {
           </Link>
         </div>
       )}
+      {!abierto && !hintOculto && (
+        <div className="mascot-widget-hint">
+          <span className="mascot-widget-hint-tail" />
+          <button
+            type="button"
+            className="mascot-widget-hint-close"
+            onClick={ocultarHint}
+            aria-label="Ocultar este mensaje"
+            title="Ocultar"
+          >
+            ✕
+          </button>
+          Púlsame para una recomendación
+        </div>
+      )}
       <div className="mascot-widget-row">
-        {!abierto && (
-          <span className="mascot-widget-hint" aria-hidden="true">
-            Púlsame para una recomendación
-          </span>
-        )}
         <button
           type="button"
           className={`mascot-widget-btn${saltando ? ' bounce' : ''}`}
