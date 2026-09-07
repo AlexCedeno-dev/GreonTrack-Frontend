@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import mascota from '../assets/mascota-greon-sm.png';
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
 const FRASES = [
   '¡Hola! Soy Greon 🌍 — cada dato que registras ayuda a cuidar el planeta.',
   '¿Sabías que reducir 1 hora de uso al día en tu dispositivo de mayor consumo sí se nota al mes?',
@@ -52,10 +55,19 @@ export function MascotWidget() {
 
   // Referencia viva del utterance actual: si no la guardamos en algún lado,
   // Chrome a veces la recolecta con el garbage collector a la mitad y se
-  // calla sin avisar.
+  // calla sin avisar. audioRef guarda el clip de ElevenLabs cuando ese sí
+  // funciona, para poder pausarlo si se cierra la burbuja o se pide otro.
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const hablar = (texto: string) => {
+  const callarTodo = () => {
+    window.speechSynthesis?.cancel();
+    audioRef.current?.pause();
+  };
+
+  // Voz del navegador (gratis, siempre disponible) — se usa como respaldo
+  // si la voz de ElevenLabs falla o tarda demasiado.
+  const hablarConNavegador = (texto: string) => {
     const synth = window.speechSynthesis;
     if (!synth) return;
 
@@ -71,15 +83,49 @@ export function MascotWidget() {
       synth.speak(utterance);
     };
 
-    // Pedir cancel() cuando no hay nada sonando (por ejemplo, en el primer
-    // clic) confunde a Chrome y el siguiente speak() se queda mudo sin
-    // error — solo cancelamos si de verdad hay algo en curso, y le damos
-    // un respiro antes de hablar de nuevo.
+    // Pedir cancel() cuando no hay nada sonando confunde a Chrome y el
+    // siguiente speak() se queda mudo sin error — solo cancelamos si de
+    // verdad hay algo en curso, y le damos un respiro antes de hablar.
     if (synth.speaking || synth.pending) {
       synth.cancel();
       setTimeout(decirYa, 50);
     } else {
       decirYa();
+    }
+  };
+
+  // Voz "de a de veras" de ElevenLabs, generada en el servidor (la API key
+  // nunca sale de la función de Supabase). Si por lo que sea falla —sin
+  // internet, cuota agotada, etc.— cae a la voz del navegador.
+  const hablar = async (texto: string) => {
+    callarTodo();
+    try {
+      // Fetch directo (no supabase.functions.invoke): esa función asume
+      // JSON/blob según el Content-Type que reconozca, y "audio/mpeg" no
+      // es uno de los que sabe mapear a Blob — así que se pide el audio
+      // a mano, tal cual se probó por curl al armar la función.
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/greon-voice`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ texto }),
+      });
+      if (!resp.ok) throw new Error('greon-voice respondió con error');
+
+      const bytes = await resp.blob();
+      if (bytes.size === 0) throw new Error('Sin audio');
+
+      const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
+      const url = URL.createObjectURL(audioBlob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.addEventListener('ended', () => URL.revokeObjectURL(url), { once: true });
+      await audio.play();
+    } catch {
+      hablarConNavegador(texto);
     }
   };
 
@@ -91,7 +137,7 @@ export function MascotWidget() {
       setFrase(nueva);
       hablar(nueva);
     } else {
-      window.speechSynthesis?.cancel();
+      callarTodo();
     }
     setAbierto(abriendo);
     setSaltando(true);
@@ -99,14 +145,14 @@ export function MascotWidget() {
   };
 
   useEffect(() => {
-    return () => window.speechSynthesis?.cancel();
+    return () => callarTodo();
   }, []);
 
   useEffect(() => {
     if (!abierto) return;
     const t = setTimeout(() => {
       setAbierto(false);
-      window.speechSynthesis?.cancel();
+      callarTodo();
     }, 9000);
     return () => clearTimeout(t);
   }, [abierto, frase]);
