@@ -3666,6 +3666,44 @@ h3 {
   align-items: flex-end;
 }
 
+.mascot-widget-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mascot-widget-hint {
+  background: var(--superficie);
+  color: var(--texto-titulo);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 61, 46, 0.08);
+  box-shadow: 0 6px 18px rgba(15, 61, 46, 0.16);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: mascot-hint-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes mascot-hint-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 480px) {
+  .mascot-widget-hint {
+    display: none;
+  }
+}
+
 .mascot-widget-btn {
   width: 60px;
   height: 60px;
@@ -3749,7 +3787,8 @@ h3 {
 }
 
 :root[data-theme-dark] .mascot-widget-bubble,
-:root[data-theme-dark] .mascot-widget-bubble-tail {
+:root[data-theme-dark] .mascot-widget-bubble-tail,
+:root[data-theme-dark] .mascot-widget-hint {
   border-color: rgba(167, 215, 160, 0.18);
 }
 

@@ -168,15 +168,22 @@ export function MascotWidget() {
           </Link>
         </div>
       )}
-      <button
-        type="button"
-        className={`mascot-widget-btn${saltando ? ' bounce' : ''}`}
-        onClick={handleClick}
-        aria-label="Greon, la mascota de GreonTrack — dale clic para un consejo"
-        title="¡Salúdame!"
-      >
-        <img src={mascota} alt="" className="mascot-widget-img" />
-      </button>
+      <div className="mascot-widget-row">
+        {!abierto && (
+          <span className="mascot-widget-hint" aria-hidden="true">
+            Púlsame para una recomendación
+          </span>
+        )}
+        <button
+          type="button"
+          className={`mascot-widget-btn${saltando ? ' bounce' : ''}`}
+          onClick={handleClick}
+          aria-label="Greon, la mascota de GreonTrack — dale clic para un consejo"
+          title="¡Salúdame!"
+        >
+          <img src={mascota} alt="" className="mascot-widget-img" />
+        </button>
+      </div>
     </div>
   );
 }
