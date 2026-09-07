@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import mascota from '../assets/mascota-greon-sm.png';
 
@@ -35,16 +35,37 @@ export function MascotWidget() {
   const [frase, setFrase] = useState(FRASES[0]);
   const [saltando, setSaltando] = useState(false);
 
+  // Referencia viva del utterance actual: si no la guardamos en algún lado,
+  // Chrome a veces la recolecta con el garbage collector a la mitad y se
+  // calla sin avisar.
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
   const hablar = (texto: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(texto);
-    utterance.lang = 'es-MX';
-    utterance.pitch = 1.2;
-    utterance.rate = 0.95;
-    const voz = elegirVoz();
-    if (voz) utterance.voice = voz;
-    window.speechSynthesis.speak(utterance);
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+
+    const decirYa = () => {
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = 'es-MX';
+      utterance.pitch = 1.2;
+      utterance.rate = 0.95;
+      const voz = elegirVoz();
+      if (voz) utterance.voice = voz;
+      utteranceRef.current = utterance;
+      synth.resume();
+      synth.speak(utterance);
+    };
+
+    // Pedir cancel() cuando no hay nada sonando (por ejemplo, en el primer
+    // clic) confunde a Chrome y el siguiente speak() se queda mudo sin
+    // error — solo cancelamos si de verdad hay algo en curso, y le damos
+    // un respiro antes de hablar de nuevo.
+    if (synth.speaking || synth.pending) {
+      synth.cancel();
+      setTimeout(decirYa, 50);
+    } else {
+      decirYa();
+    }
   };
 
   const handleClick = () => {
