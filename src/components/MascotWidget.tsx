@@ -12,24 +12,66 @@ const FRASES = [
   '¿Ya viste tus Recomendaciones? Hay ahorro estimado esperando por ti.',
 ];
 
+// De las voces que ofrezca el navegador/SO, prefiere una en español latino
+// que suene amigable para Greon (Paulina/Mónica son voces femeninas
+// cálidas, disponibles de fábrica en macOS/iOS/Safari); si no encuentra
+// ninguna de esa lista, usa cualquier voz en español, y si tampoco hay,
+// la que el navegador ponga por defecto (sigue hablando, solo que con el
+// acento que le toque).
+const VOCES_PREFERIDAS = ['Paulina', 'Mónica', 'Google español', 'Helena', 'Lucia', 'Lupe'];
+
+function elegirVoz(): SpeechSynthesisVoice | null {
+  const voces = window.speechSynthesis.getVoices();
+  if (voces.length === 0) return null;
+  for (const nombre of VOCES_PREFERIDAS) {
+    const encontrada = voces.find((v) => v.name.includes(nombre));
+    if (encontrada) return encontrada;
+  }
+  return voces.find((v) => v.lang.startsWith('es')) ?? null;
+}
+
 export function MascotWidget() {
   const [abierto, setAbierto] = useState(false);
   const [frase, setFrase] = useState(FRASES[0]);
   const [saltando, setSaltando] = useState(false);
 
+  const hablar = (texto: string) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(texto);
+    utterance.lang = 'es-MX';
+    utterance.pitch = 1.2;
+    utterance.rate = 0.95;
+    const voz = elegirVoz();
+    if (voz) utterance.voice = voz;
+    window.speechSynthesis.speak(utterance);
+  };
+
   const handleClick = () => {
-    setFrase((actual) => {
-      const opciones = FRASES.filter((f) => f !== actual);
-      return opciones[Math.floor(Math.random() * opciones.length)];
-    });
-    setAbierto((v) => !v);
+    const abriendo = !abierto;
+    if (abriendo) {
+      const opciones = FRASES.filter((f) => f !== frase);
+      const nueva = opciones[Math.floor(Math.random() * opciones.length)];
+      setFrase(nueva);
+      hablar(nueva);
+    } else {
+      window.speechSynthesis?.cancel();
+    }
+    setAbierto(abriendo);
     setSaltando(true);
     setTimeout(() => setSaltando(false), 400);
   };
 
   useEffect(() => {
+    return () => window.speechSynthesis?.cancel();
+  }, []);
+
+  useEffect(() => {
     if (!abierto) return;
-    const t = setTimeout(() => setAbierto(false), 7000);
+    const t = setTimeout(() => {
+      setAbierto(false);
+      window.speechSynthesis?.cancel();
+    }, 9000);
     return () => clearTimeout(t);
   }, [abierto, frase]);
 
