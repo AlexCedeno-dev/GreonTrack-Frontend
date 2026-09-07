@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import mascota from '../assets/mascota-greon-sm.png';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+import { useAccessibility } from '../context/AccessibilityContext';
+import { generarAudioElevenLabs } from '../lib/voces';
 
 // La nube invitando a picarle se puede cerrar con la "x" — queda oculta
 // para siempre en este navegador, no solo por hoy.
@@ -53,6 +52,7 @@ function elegirVoz(): SpeechSynthesisVoice | null {
 }
 
 export function MascotWidget() {
+  const { voiceId } = useAccessibility();
   const [abierto, setAbierto] = useState(false);
   const [frase, setFrase] = useState(FRASES[0]);
   const [saltando, setSaltando] = useState(false);
@@ -113,29 +113,8 @@ export function MascotWidget() {
   const hablar = async (texto: string) => {
     callarTodo();
     try {
-      // Fetch directo (no supabase.functions.invoke): esa función asume
-      // JSON/blob según el Content-Type que reconozca, y "audio/mpeg" no
-      // es uno de los que sabe mapear a Blob — así que se pide el audio
-      // a mano, tal cual se probó por curl al armar la función.
-      const resp = await fetch(`${SUPABASE_URL}/functions/v1/greon-voice`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          apikey: SUPABASE_ANON_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ texto }),
-      });
-      if (!resp.ok) throw new Error('greon-voice respondió con error');
-
-      const bytes = await resp.blob();
-      if (bytes.size === 0) throw new Error('Sin audio');
-
-      const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
-      const url = URL.createObjectURL(audioBlob);
-      const audio = new Audio(url);
+      const audio = await generarAudioElevenLabs(texto, voiceId);
       audioRef.current = audio;
-      audio.addEventListener('ended', () => URL.revokeObjectURL(url), { once: true });
       await audio.play();
     } catch {
       hablarConNavegador(texto);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAccessibility, FiltroDaltonismo, Tema } from '../context/AccessibilityContext';
+import { VOCES_DISPONIBLES, generarAudioElevenLabs } from '../lib/voces';
 import {
   AccessibilityIcon,
   PlusIcon,
@@ -51,6 +52,9 @@ export function AccessibilityWidget() {
   const [abierto, setAbierto] = useState(false);
   const [leyendo, setLeyendo] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Clip de ElevenLabs en curso, para poder pausarlo si se le da "Detener
+  // lectura" o se pide leer de nuevo.
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!abierto) return;
@@ -63,29 +67,47 @@ export function AccessibilityWidget() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [abierto]);
 
+  const detenerLectura = () => {
+    window.speechSynthesis?.cancel();
+    audioRef.current?.pause();
+    audioRef.current = null;
+  };
+
   useEffect(() => {
-    return () => {
-      window.speechSynthesis?.cancel();
-    };
+    return () => detenerLectura();
   }, []);
 
-  const handleLeerPagina = () => {
-    if (leyendo) {
-      window.speechSynthesis.cancel();
-      setLeyendo(false);
-      return;
-    }
-    const contenido = document.querySelector('.content-body, .form-panel-inner');
-    const texto = contenido?.textContent?.trim();
-    if (!texto) return;
-
+  // Voz del navegador — respaldo si ElevenLabs falla (sin internet, cuota
+  // agotada, etc.), igual que en el monito.
+  const leerConNavegador = (texto: string) => {
     const utterance = new SpeechSynthesisUtterance(texto);
     utterance.lang = 'es-MX';
     utterance.onend = () => setLeyendo(false);
     utterance.onerror = () => setLeyendo(false);
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
+  };
+
+  const handleLeerPagina = async () => {
+    if (leyendo) {
+      detenerLectura();
+      setLeyendo(false);
+      return;
+    }
+    const contenido = document.querySelector('.content-body, .form-panel-inner');
+    const texto = contenido?.textContent?.replace(/\s+/g, ' ').trim();
+    if (!texto) return;
+
     setLeyendo(true);
+    try {
+      const audio = await generarAudioElevenLabs(texto, a11y.voiceId);
+      audioRef.current = audio;
+      audio.addEventListener('ended', () => setLeyendo(false), { once: true });
+      audio.addEventListener('error', () => setLeyendo(false), { once: true });
+      await audio.play();
+    } catch {
+      leerConNavegador(texto);
+    }
   };
 
   const cambiarFuente = (delta: number) => {
@@ -207,6 +229,21 @@ export function AccessibilityWidget() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="a11y-row a11y-row-col">
+              <span>Voz de lectura</span>
+              <select
+                value={a11y.voiceId}
+                onChange={(e) => a11y.setVoiceId(e.target.value)}
+                className="a11y-select"
+              >
+                {VOCES_DISPONIBLES.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.nombre} — {v.descripcion}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <button className="a11y-read-btn" onClick={handleLeerPagina}>

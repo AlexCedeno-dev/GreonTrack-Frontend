@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { VOZ_POR_DEFECTO } from '../lib/voces';
 
 export type Tema = 'light' | 'dark' | 'system';
 export type FiltroDaltonismo = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia';
@@ -12,6 +13,10 @@ interface AccessibilityState {
   theme: Tema;
   reducedMotion: boolean;
   highlightLinks: boolean;
+  // Voz de ElevenLabs para el texto narrado — la misma que usa el monito de
+  // Greon, así se oyen igual en toda la app en vez de una voz distinta por
+  // cada quien.
+  voiceId: string;
 }
 
 const DEFAULT_STATE: AccessibilityState = {
@@ -23,6 +28,7 @@ const DEFAULT_STATE: AccessibilityState = {
   theme: 'system',
   reducedMotion: false,
   highlightLinks: false,
+  voiceId: VOZ_POR_DEFECTO,
 };
 
 const STORAGE_KEY = 'greontrack-accesibilidad';
@@ -36,6 +42,7 @@ interface AccessibilityContextValue extends AccessibilityState {
   setTheme: (v: Tema) => void;
   setReducedMotion: (v: boolean) => void;
   setHighlightLinks: (v: boolean) => void;
+  setVoiceId: (v: string) => void;
   resetAll: () => void;
 }
 
@@ -109,6 +116,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     setTheme: (v) => setState((s) => ({ ...s, theme: v })),
     setReducedMotion: (v) => setState((s) => ({ ...s, reducedMotion: v })),
     setHighlightLinks: (v) => setState((s) => ({ ...s, highlightLinks: v })),
+    setVoiceId: (v) => setState((s) => ({ ...s, voiceId: v })),
     resetAll: () => setState(DEFAULT_STATE),
   };
 
