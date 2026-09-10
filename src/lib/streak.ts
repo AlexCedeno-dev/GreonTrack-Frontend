@@ -59,3 +59,30 @@ export function hitoAlcanzado(dias: number): HitoRacha | null {
 export function siguienteHito(dias: number): HitoRacha | null {
   return HITOS_RACHA.find((hito) => hito.dias > dias) ?? null;
 }
+
+// Qué tan avanzada está la racha a lo largo de TODA la fila de insignias
+// (0% en la primera, 100% en la última) — para dibujar la línea que las
+// conecta como una sola barra de progreso. Cada tramo entre dos insignias
+// pesa lo mismo visualmente (igual que están repartidas en la fila),
+// aunque los días entre ellas no sean iguales (3→5 no es lo mismo que
+// 50→100) — si no, un salto grande de días se vería igual de "lleno" que
+// uno chico y la barra no reflejaría en qué tramo vas de verdad.
+export function progresoEnHitos(dias: number): number {
+  const primero = HITOS_RACHA[0].dias;
+  const ultimo = HITOS_RACHA[HITOS_RACHA.length - 1].dias;
+  if (dias <= primero) return 0;
+  if (dias >= ultimo) return 100;
+
+  const pctPorTramo = 100 / (HITOS_RACHA.length - 1);
+
+  for (let i = 0; i < HITOS_RACHA.length - 1; i++) {
+    const inicioTramo = HITOS_RACHA[i].dias;
+    const finTramo = HITOS_RACHA[i + 1].dias;
+    if (dias < finTramo) {
+      const fraccion = (dias - inicioTramo) / (finTramo - inicioTramo);
+      return i * pctPorTramo + fraccion * pctPorTramo;
+    }
+  }
+
+  return 100;
+}

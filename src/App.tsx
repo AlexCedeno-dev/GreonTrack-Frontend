@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AppDataProvider } from './context/AppDataContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
+import { ToastProvider } from './context/ToastContext';
 import { AccessibilityWidget } from './components/AccessibilityWidget';
 import { MascotWidget } from './components/MascotWidget';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { AvisoPrivacidad } from './pages/AvisoPrivacidad';
 import { Home } from './pages/Home';
 import { Devices } from './pages/Devices';
 import { DeviceForm } from './pages/DeviceForm';
@@ -22,6 +24,7 @@ import { GreonSpace } from './pages/GreonSpace';
 
 export default function App() {
   return (
+    <ToastProvider>
     <AccessibilityProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthProvider>
@@ -29,6 +32,7 @@ export default function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/registro" element={<Register />} />
+              <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
               <Route
                 path="/"
                 element={
@@ -141,5 +145,6 @@ export default function App() {
       </BrowserRouter>
       <AccessibilityWidget />
     </AccessibilityProvider>
+    </ToastProvider>
   );
 }

@@ -14,6 +14,10 @@ import {
   IotIcon,
   PrinterIcon,
   PlugIcon,
+  FanIcon,
+  WaterHeaterIcon,
+  CoffeeMakerIcon,
+  VacuumIcon,
 } from '../components/icons';
 
 export const CATEGORIAS = ['Todos', 'Cómputo', 'Móviles', 'Entretenimiento', 'Hogar', 'Otro'] as const;
@@ -32,6 +36,14 @@ const CATEGORIA_POR_TIPO: Record<string, Categoria> = {
   'Foco / iluminación': 'Hogar',
   'Dispositivo IoT': 'Hogar',
   Impresora: 'Cómputo',
+  Congelador: 'Hogar',
+  'Secadora de ropa': 'Hogar',
+  'Calentador de agua': 'Hogar',
+  Ventilador: 'Hogar',
+  'Bomba de agua': 'Hogar',
+  'Router / Modem': 'Cómputo',
+  Cafetera: 'Hogar',
+  Aspiradora: 'Hogar',
 };
 
 export function categoriaDe(tipo: string): Categoria {
@@ -51,6 +63,14 @@ const ICONO_POR_TIPO: Record<string, ComponentType<{ className?: string }>> = {
   'Foco / iluminación': LightbulbIcon,
   'Dispositivo IoT': IotIcon,
   Impresora: PrinterIcon,
+  Congelador: FridgeIcon,
+  'Secadora de ropa': WashingMachineIcon,
+  'Calentador de agua': WaterHeaterIcon,
+  Ventilador: FanIcon,
+  'Bomba de agua': PlugIcon,
+  'Router / Modem': IotIcon,
+  Cafetera: CoffeeMakerIcon,
+  Aspiradora: VacuumIcon,
 };
 
 export function iconoDeTipo(tipo: string): ComponentType<{ className?: string }> {

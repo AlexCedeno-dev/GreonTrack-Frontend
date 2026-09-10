@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AuthLayout } from '../components/AuthLayout';
 import { GoogleIcon } from '../components/icons';
+import { PasswordField } from '../components/PasswordField';
 
 const COOLDOWN_REENVIO_SEGUNDOS = 30;
 
@@ -138,13 +139,12 @@ export function Login() {
 
         <div className="field">
           <label htmlFor="password">Contraseña</label>
-          <input
+          <PasswordField
             id="password"
-            type="password"
             required
             autoComplete="current-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
             placeholder="••••••••"
           />
         </div>

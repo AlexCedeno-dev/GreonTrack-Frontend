@@ -13,6 +13,15 @@ export interface InfoRegistroDispositivo {
   ipDispositivo?: string | null;
   mac?: string | null;
   vendor?: string | null;
+  // Año de compra/fabricación, si el usuario lo captura a mano — se usa
+  // solo para afinar la sugerencia de consumo en watts (ver
+  // lib/deviceEnergyAdjustment.ts), no cambia el consumo ya guardado.
+  anioDispositivo?: number | null;
+  // Dato extra que varía según el tipo de dispositivo (tamaño de pantalla
+  // en una TV, capacidad en un refrigerador, etc.) — ver
+  // lib/deviceCategoryFields.ts. Se guarda con su propia etiqueta para que
+  // se entienda solo, sin tener que saber a qué tipo pertenecía.
+  atributoCategoria?: { etiqueta: string; valor: string } | null;
 }
 
 function detectarSistemaOperativo(userAgent: string): string {
@@ -50,6 +59,8 @@ async function obtenerIpPublica(): Promise<string | null> {
 interface DatosManualesOpcionales {
   ipDispositivo?: string;
   vendor?: string;
+  anioDispositivo?: number;
+  atributoCategoria?: { etiqueta: string; valor: string };
 }
 
 export async function capturarInfoDispositivo(
@@ -70,5 +81,7 @@ export async function capturarInfoDispositivo(
     resolucionPantalla: `${screen.width} x ${screen.height}`,
     ipDispositivo: opcionales.ipDispositivo?.trim() || null,
     vendor: opcionales.vendor?.trim() || null,
+    anioDispositivo: opcionales.anioDispositivo ?? null,
+    atributoCategoria: opcionales.atributoCategoria ?? null,
   };
 }
