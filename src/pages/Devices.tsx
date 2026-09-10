@@ -104,7 +104,7 @@ function DeviceInfoModal({ device, onClose }: DeviceInfoModalProps) {
             </>
           ) : (
             <>
-              Datos del equipo usado para registrar <strong>{device.nombre}</strong>.
+              Lo que capturaste al dar de alta <strong>{device.nombre}</strong>.
             </>
           )}
         </p>
@@ -135,58 +135,86 @@ function DeviceInfoModal({ device, onClose }: DeviceInfoModalProps) {
             </li>
           </ul>
         ) : (
-          <ul className="modal-instructions">
-            <li className="modal-instruction-step">
-              <span>
-                <strong>IP pública del registro:</strong> {info.ipPublicaRegistro ?? 'No disponible'}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Sistema operativo:</strong> {info.sistemaOperativo}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Navegador:</strong> {info.navegador}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Núcleos de CPU:</strong> {info.nucleosCpu ?? 'No disponible'}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Memoria aproximada:</strong>{' '}
-                {info.memoriaAproxGB != null ? `${info.memoriaAproxGB} GB` : 'No disponible'}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Resolución de pantalla:</strong> {info.resolucionPantalla}
-              </span>
-            </li>
-            {info.ipDispositivo && (
+          <>
+            <p className="modal-info-section-title">Datos de {device.nombre}</p>
+            <ul className="modal-instructions">
+              {info.vendor && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>Marca:</strong> {info.vendor}
+                  </span>
+                </li>
+              )}
+              {info.anioDispositivo && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>Año:</strong> {info.anioDispositivo}
+                  </span>
+                </li>
+              )}
+              {info.atributoCategoria && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>{info.atributoCategoria.etiqueta}:</strong> {info.atributoCategoria.valor}
+                  </span>
+                </li>
+              )}
+              {info.ipDispositivo && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>IP del dispositivo:</strong> {info.ipDispositivo}
+                  </span>
+                </li>
+              )}
+              {!info.vendor && !info.anioDispositivo && !info.atributoCategoria && !info.ipDispositivo && (
+                <li className="modal-instruction-step">
+                  <span className="muted">No se capturó ningún dato específico de este equipo al darlo de alta.</span>
+                </li>
+              )}
               <li className="modal-instruction-step">
                 <span>
-                  <strong>IP del dispositivo:</strong> {info.ipDispositivo}
+                  <strong>Fecha de registro:</strong> {fecha}
                 </span>
               </li>
-            )}
-            {info.vendor && (
+            </ul>
+
+            <p className="modal-info-section-title modal-info-section-title-muted">
+              Registrado desde este equipo
+            </p>
+            <ul className="modal-instructions modal-instructions-muted">
               <li className="modal-instruction-step">
                 <span>
-                  <strong>Marca:</strong> {info.vendor}
+                  <strong>Sistema operativo:</strong> {info.sistemaOperativo}
                 </span>
               </li>
-            )}
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Fecha de registro:</strong> {fecha}
-              </span>
-            </li>
-          </ul>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Navegador:</strong> {info.navegador}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Núcleos de CPU:</strong> {info.nucleosCpu ?? 'No disponible'}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Memoria aproximada:</strong>{' '}
+                  {info.memoriaAproxGB != null ? `${info.memoriaAproxGB} GB` : 'No disponible'}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Resolución de pantalla:</strong> {info.resolucionPantalla}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>IP pública del registro:</strong> {info.ipPublicaRegistro ?? 'No disponible'}
+                </span>
+              </li>
+            </ul>
+          </>
         )}
 
         <button className="modal-close-btn" onClick={onClose}>
@@ -426,17 +454,19 @@ export function Devices() {
                 )}
 
                 <div className="device-card-actions">
-                  {device.info_registro && (
-                    <button className="device-action-btn" onClick={() => setInfoModalDevice(device)}>
-                      <MonitorIcon /> Info técnica
+                  <div className="device-card-actions-row">
+                    {device.info_registro && (
+                      <button className="device-action-btn" onClick={() => setInfoModalDevice(device)}>
+                        <MonitorIcon /> Info técnica
+                      </button>
+                    )}
+                    <button
+                      className="device-action-btn"
+                      onClick={() => navigate(`/dispositivos/${device.id}/editar`)}
+                    >
+                      <PencilIcon /> Editar
                     </button>
-                  )}
-                  <button
-                    className="device-action-btn"
-                    onClick={() => navigate(`/dispositivos/${device.id}/editar`)}
-                  >
-                    <PencilIcon /> Editar
-                  </button>
+                  </div>
 
                   {confirmId === device.id ? (
                     <div className="device-confirm">

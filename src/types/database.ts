@@ -10,6 +10,18 @@ export interface Perfil {
   nombre: string;
   role: Role;
   created_at: string;
+  // Fecha en que la cuenta aceptó el Aviso de Privacidad vigente — null si
+  // todavía no lo acepta (cuentas creadas antes de este control, por
+  // ejemplo). Ver components/ProtectedRoute.tsx, que exige aceptarlo antes
+  // de dejar pasar a cualquier página protegida.
+  aviso_privacidad_aceptado_en: string | null;
+  // Firma dibujada al aceptar el aviso (PNG en base64), como evidencia de
+  // esa aceptación — solo la puede leer el propio dueño de la cuenta
+  // (mismas reglas de acceso que el resto de `perfiles`).
+  aviso_privacidad_firma: string | null;
+  // Cuántas veces le ha preguntado algo a Greon — solo para mostrarle un
+  // estimado de cuánta energía/CO2 representan esas consultas.
+  greon_consultas_total: number;
 }
 
 export interface Dispositivo {
@@ -74,6 +86,14 @@ export const TIPOS_DISPOSITIVO: { tipo: string; wattsPromedio: number }[] = [
   { tipo: 'Foco / iluminación', wattsPromedio: 15 },
   { tipo: 'Dispositivo IoT', wattsPromedio: 15 },
   { tipo: 'Impresora', wattsPromedio: 30 },
+  { tipo: 'Congelador', wattsPromedio: 220 },
+  { tipo: 'Secadora de ropa', wattsPromedio: 3000 },
+  { tipo: 'Calentador de agua', wattsPromedio: 1500 },
+  { tipo: 'Ventilador', wattsPromedio: 55 },
+  { tipo: 'Bomba de agua', wattsPromedio: 750 },
+  { tipo: 'Router / Modem', wattsPromedio: 10 },
+  { tipo: 'Cafetera', wattsPromedio: 800 },
+  { tipo: 'Aspiradora', wattsPromedio: 1200 },
   { tipo: 'Otro', wattsPromedio: 50 },
 ];
 

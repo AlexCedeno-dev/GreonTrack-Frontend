@@ -566,3 +566,103 @@ export function CloseIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function FanIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="1.8" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M12 10.2c0-3 1.5-5.7 4.3-5.7 2 0 3 1.5 2 3.3-1 1.7-3.7 2.6-6.3 2.4M13.8 12c3 0 5.7 1.5 5.7 4.3 0 2-1.5 3-3.3 2-1.7-1-2.6-3.7-2.4-6.3M11.8 13.8c0 3-1.5 5.7-4.3 5.7-2 0-3-1.5-2-3.3 1-1.7 3.7-2.6 6.3-2.4M10.2 12c-3 0-5.7-1.5-5.7-4.3 0-2 1.5-3 3.3-2 1.7 1 2.6 3.7 2.4 6.3"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function WaterHeaterIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="3" width="12" height="18" rx="4" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 8h6M9 12h6M9 16h6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CoffeeMakerIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M6 8h11.5a2 2 0 0 1 2 2c0 2.2-1.8 3.5-3.5 3.5H17"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M6 8v8a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3V8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M9 4.5c0 .8-1 1-1 2M13 4.5c0 .8-1 1-1 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function VacuumIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="17.5" r="3" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M8 14.5V9a4 4 0 0 1 4-4h1.5M12 5c0 1.4 1.1 2.5 2.5 2.5S17 6.4 17 5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function WarningIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M12 3.5 21.5 20h-19L12 3.5Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M12 9.5v4.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="16.7" r="0.9" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function EyeIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+export function EyeOffIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M3 3l18 18M9.9 9.9a3 3 0 0 0 4.2 4.2M6.2 6.5C3.8 8.1 2.5 12 2.5 12s3.5 6.5 9.5 6.5c1.6 0 2.9-.34 4-.86M14.5 5.9c-.79-.26-1.63-.4-2.5-.4-6 0-9.5 6.5-9.5 6.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

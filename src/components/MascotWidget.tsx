@@ -2,21 +2,20 @@ import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import mascota from '../assets/mascota-greon-sm.png';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { useAppData } from '../context/AppDataContext';
 import { generarAudioElevenLabs } from '../lib/voces';
+import { estadoSegunConsumo, FRASES_POR_ESTADO } from '../lib/mascotMood';
 
 // La nube invitando a picarle se puede cerrar con la "x" — queda oculta
 // para siempre en este navegador, no solo por hoy.
 const HINT_OCULTO_KEY = 'greontrack-mascot-hint-oculto';
 
-const FRASES = [
-  '¡Hola! Soy Greon 🌍 — cada dato que registras ayuda a cuidar el planeta.',
-  '¿Sabías que reducir 1 hora de uso al día en tu dispositivo de mayor consumo sí se nota al mes?',
-  'Desconecta los cargadores que no estés usando — el consumo fantasma suma al final del mes.',
-  'Revisa tu Huella de carbono para ver a cuántos árboles equivale tu ahorro.',
-  '¡Pequeñas acciones, grandes cambios! Así cuidamos el planeta juntos.',
-  'No necesitas cambios drásticos: la constancia registrando tu uso es lo que más ayuda.',
-  '¿Ya viste tus Recomendaciones? Hay ahorro estimado esperando por ti.',
-];
+const ETIQUETA_ESTADO: Record<string, string> = {
+  feliz: 'Greon está contento — tu consumo bajó esta semana',
+  neutral: 'Greon está tranquilo',
+  triste: 'Greon está un poco triste — tu consumo subió esta semana',
+  frustrado: 'Greon está frustrado — tu consumo subió bastante esta semana',
+};
 
 // De las voces que ofrezca el navegador/SO, prefiere una en español latino
 // que suene amigable para Greon (Paulina/Mónica son voces femeninas
@@ -53,8 +52,11 @@ function elegirVoz(): SpeechSynthesisVoice | null {
 
 export function MascotWidget() {
   const { voiceId } = useAccessibility();
+  const { datos } = useAppData();
+  const estado = estadoSegunConsumo(datos?.cambioPct);
+  const frasesEstado = FRASES_POR_ESTADO[estado];
   const [abierto, setAbierto] = useState(false);
-  const [frase, setFrase] = useState(FRASES[0]);
+  const [frase, setFrase] = useState(frasesEstado[0]);
   const [saltando, setSaltando] = useState(false);
   const [hintOculto, setHintOculto] = useState(
     () => localStorage.getItem(HINT_OCULTO_KEY) === '1'
@@ -124,8 +126,8 @@ export function MascotWidget() {
   const handleClick = () => {
     const abriendo = !abierto;
     if (abriendo) {
-      const opciones = FRASES.filter((f) => f !== frase);
-      const nueva = opciones[Math.floor(Math.random() * opciones.length)];
+      const opciones = frasesEstado.filter((f) => f !== frase);
+      const nueva = opciones.length > 0 ? opciones[Math.floor(Math.random() * opciones.length)] : frasesEstado[0];
       setFrase(nueva);
       hablar(nueva);
     } else {
@@ -183,7 +185,12 @@ export function MascotWidget() {
           aria-label="Greon, la mascota de GreonTrack — dale clic para un consejo"
           title="¡Salúdame!"
         >
-          <img src={mascota} alt="" className="mascot-widget-img" />
+          <img src={mascota} alt="" className={`mascot-widget-img mascot-mood-${estado}`} />
+          <span
+            className={`mascot-mood-dot mascot-mood-dot-${estado}`}
+            title={ETIQUETA_ESTADO[estado]}
+            aria-hidden="true"
+          />
         </button>
       </div>
     </div>

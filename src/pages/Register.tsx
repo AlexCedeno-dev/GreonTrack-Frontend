@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AuthLayout } from '../components/AuthLayout';
 import { GoogleIcon } from '../components/icons';
+import { PasswordField } from '../components/PasswordField';
 import { PasswordStrength } from '../components/PasswordStrength';
 import { evaluarFortaleza } from '../lib/passwordStrength';
 
@@ -13,6 +14,7 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [aceptaAviso, setAceptaAviso] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +30,10 @@ export function Register() {
     }
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
+      return;
+    }
+    if (!aceptaAviso) {
+      setError('Debes leer y aceptar el Aviso de Privacidad para crear tu cuenta.');
       return;
     }
 
@@ -50,6 +56,10 @@ export function Register() {
 
   const handleGoogle = async () => {
     setError(null);
+    if (!aceptaAviso) {
+      setError('Debes leer y aceptar el Aviso de Privacidad para crear tu cuenta.');
+      return;
+    }
     const { error } = await signInWithGoogle();
     if (error) setError(error);
   };
@@ -88,13 +98,12 @@ export function Register() {
 
         <div className="field">
           <label htmlFor="password">Contraseña</label>
-          <input
+          <PasswordField
             id="password"
-            type="password"
             required
             autoComplete="new-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
             placeholder="Mínimo 8 caracteres, con mayúscula, número y símbolo"
           />
           <PasswordStrength password={password} />
@@ -102,16 +111,31 @@ export function Register() {
 
         <div className="field">
           <label htmlFor="confirmPassword">Confirmar contraseña</label>
-          <input
+          <PasswordField
             id="confirmPassword"
-            type="password"
             required
             autoComplete="new-password"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={setConfirmPassword}
             placeholder="••••••••"
           />
         </div>
+
+        <label className="auth-check-row">
+          <input
+            type="checkbox"
+            checked={aceptaAviso}
+            onChange={(e) => setAceptaAviso(e.target.checked)}
+          />
+          <span>
+            He leído y acepto el{' '}
+            <Link to="/aviso-privacidad" target="_blank" rel="noopener noreferrer">
+              Aviso de Privacidad
+            </Link>{' '}
+            — incluyendo que mis datos se usan dentro de la app y con Greon (IA) para generar mis
+            estadísticas y recomendaciones. Al entrar por primera vez te pediremos firmarlo.
+          </span>
+        </label>
 
         {error && <div className="form-error">{error}</div>}
         {success && <div className="form-success">{success}</div>}
@@ -119,7 +143,9 @@ export function Register() {
         <button
           type="submit"
           className="btn-primary"
-          disabled={loading || !evaluarFortaleza(password).esValida || password !== confirmPassword}
+          disabled={
+            loading || !evaluarFortaleza(password).esValida || password !== confirmPassword || !aceptaAviso
+          }
         >
           {loading ? 'Creando cuenta…' : 'Registrarme'}
         </button>
@@ -129,7 +155,7 @@ export function Register() {
         <span>o</span>
       </div>
 
-      <button type="button" className="btn-google" onClick={handleGoogle}>
+      <button type="button" className="btn-google" onClick={handleGoogle} disabled={!aceptaAviso}>
         <GoogleIcon /> Registrarme con Google
       </button>
 

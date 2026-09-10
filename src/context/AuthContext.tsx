@@ -15,6 +15,9 @@ interface AuthContextValue {
   reenviarCodigo: (email: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshPerfil: () => Promise<void>;
+  aceptarAvisoPrivacidad: (firmaDataUrl: string) => Promise<{ error: string | null }>;
+  registrarConsultaGreon: () => Promise<void>;
+  eliminarCuenta: (password: string) => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -105,6 +108,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session?.user) await loadPerfil(session.user.id);
   };
 
+  const aceptarAvisoPrivacidad = async (firmaDataUrl: string) => {
+    if (!session?.user) return { error: 'No hay una sesión activa.' };
+
+    const { error } = await supabase
+      .from('perfiles')
+      .update({
+        aviso_privacidad_aceptado_en: new Date().toISOString(),
+        aviso_privacidad_firma: firmaDataUrl,
+      })
+      .eq('id', session.user.id);
+
+    if (error) return { error: error.message };
+
+    await loadPerfil(session.user.id);
+    return { error: null };
+  };
+
+  // Contador informativo de "¿cuánto le hemos preguntado a Greon?", para
+  // mostrar el gasto energético aproximado de esas consultas en
+  // GreonSpace.tsx — no es crítico si falla (el chat ya respondió), por eso
+  // no propaga el error hacia quien llama.
+  const registrarConsultaGreon = async () => {
+    if (!session?.user || !perfil) return;
+
+    const { error } = await supabase
+      .from('perfiles')
+      .update({ greon_consultas_total: perfil.greon_consultas_total + 1 })
+      .eq('id', session.user.id);
+
+    if (!error) await loadPerfil(session.user.id);
+  };
+
+  // Borra la cuenta por completo (datos + acceso) — pide la contraseña
+  // actual para confirmar identidad; la Service Role key que hace el borrado
+  // real vive solo en la función de Supabase, nunca en el navegador.
+  const eliminarCuenta = async (password: string) => {
+    const { data, error } = await supabase.functions.invoke('delete-account', {
+      body: { password },
+    });
+
+    if (error) return { error: 'No pude eliminar tu cuenta. Intenta de nuevo.' };
+    if (data?.error) return { error: data.error };
+
+    await supabase.auth.signOut();
+    return { error: null };
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -119,6 +169,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         reenviarCodigo,
         signOut,
         refreshPerfil,
+        aceptarAvisoPrivacidad,
+        registrarConsultaGreon,
+        eliminarCuenta,
       }}
     >
       {children}
