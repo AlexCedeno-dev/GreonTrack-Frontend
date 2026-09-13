@@ -301,17 +301,20 @@ export function DeviceForm() {
               </div>
               {kwhPorHora !== null ? (
                 <div className="device-form-preview-strip-stats">
-                  <div>
-                    <span>Energía/h</span>
-                    <strong>{kwhPorHora.toFixed(3)} kWh</strong>
-                  </div>
-                  <div>
-                    <span>Costo/h</span>
-                    <strong>{costoPorHora !== null ? `$${costoPorHora.toFixed(2)}` : '—'}</strong>
-                  </div>
-                  <div>
-                    <span>CO₂/h</span>
-                    <strong>{co2PorHora !== null ? `${(co2PorHora * 1000).toFixed(0)} g` : '—'}</strong>
+                  <p className="device-form-preview-strip-stats-caption">Por hora de uso</p>
+                  <div className="device-form-preview-strip-stats-row">
+                    <div>
+                      <span>Energía</span>
+                      <strong>{kwhPorHora.toFixed(3)} kWh</strong>
+                    </div>
+                    <div>
+                      <span>Costo</span>
+                      <strong>{costoPorHora !== null ? `$${costoPorHora.toFixed(2)}` : '—'}</strong>
+                    </div>
+                    <div>
+                      <span>CO₂</span>
+                      <strong>{co2PorHora !== null ? `${(co2PorHora * 1000).toFixed(0)} g` : '—'}</strong>
+                    </div>
                   </div>
                 </div>
               ) : (

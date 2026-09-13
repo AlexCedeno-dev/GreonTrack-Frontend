@@ -143,9 +143,7 @@ export function Register() {
         <button
           type="submit"
           className="btn-primary"
-          disabled={
-            loading || !evaluarFortaleza(password).esValida || password !== confirmPassword || !aceptaAviso
-          }
+          disabled={loading || !evaluarFortaleza(password).esValida || password !== confirmPassword}
         >
           {loading ? 'Creando cuenta…' : 'Registrarme'}
         </button>
@@ -155,7 +153,7 @@ export function Register() {
         <span>o</span>
       </div>
 
-      <button type="button" className="btn-google" onClick={handleGoogle} disabled={!aceptaAviso}>
+      <button type="button" className="btn-google" onClick={handleGoogle}>
         <GoogleIcon /> Registrarme con Google
       </button>
 

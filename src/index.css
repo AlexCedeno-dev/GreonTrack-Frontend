@@ -2455,14 +2455,26 @@ h3 {
 }
 
 .device-form-preview-strip-stats {
-  display: flex;
-  gap: 18px;
   flex-shrink: 0;
   padding-left: 16px;
   border-left: 1px solid rgba(15, 61, 46, 0.1);
 }
 
-.device-form-preview-strip-stats > div {
+.device-form-preview-strip-stats-caption {
+  margin: 0 0 4px;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-suave);
+  opacity: 0.8;
+}
+
+.device-form-preview-strip-stats-row {
+  display: flex;
+  gap: 18px;
+}
+
+.device-form-preview-strip-stats-row > div {
   display: flex;
   flex-direction: column;
   gap: 2px;

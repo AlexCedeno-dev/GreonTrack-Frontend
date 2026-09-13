@@ -30,14 +30,14 @@ const CAMPOS_POR_TIPO: Record<string, CampoOpcionalCategoria> = {
   Lavadora: { campo: 'capacidad', etiqueta: 'Capacidad', tipo: 'numero', placeholder: 'Ej. 18', unidad: 'kg' },
   'Secadora de ropa': { campo: 'capacidad', etiqueta: 'Capacidad', tipo: 'numero', placeholder: 'Ej. 18', unidad: 'kg' },
   Microondas: { campo: 'capacidad', etiqueta: 'Capacidad', tipo: 'numero', placeholder: 'Ej. 20', unidad: 'litros' },
-  'Foco / iluminación': {
+  'Iluminación': {
     campo: 'tipoFoco',
     etiqueta: 'Tipo de foco',
     tipo: 'select',
     opciones: ['LED', 'Incandescente', 'Halógeno', 'Fluorescente compacto'],
   },
   'Dispositivo IoT': { campo: 'modelo', etiqueta: 'Modelo', tipo: 'texto', placeholder: 'Ej. Echo Dot' },
-  'Router / Modem': { campo: 'modelo', etiqueta: 'Modelo', tipo: 'texto', placeholder: 'Ej. Infinitum' },
+  'Router': { campo: 'modelo', etiqueta: 'Modelo', tipo: 'texto', placeholder: 'Ej. Infinitum' },
   Impresora: {
     campo: 'tipoImpresora',
     etiqueta: 'Tipo',
@@ -72,7 +72,7 @@ const TIPOS_CON_IP = new Set([
   'Consola de videojuegos',
   'Dispositivo IoT',
   'Impresora',
-  'Router / Modem',
+  'Router',
 ]);
 
 export function tipoTieneIp(tipo: string): boolean {

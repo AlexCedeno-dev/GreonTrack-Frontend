@@ -343,7 +343,7 @@ export function Settings() {
                     </span>
                     <div>
                       <span className="status-card-label">Factor de CO₂</span>
-                      <span className="status-card-value">{configuracion.factor_co2} kg/kWh</span>
+                      <span className="status-card-value">{configuracion.factor_co2} kg por kWh</span>
                     </div>
                   </div>
                 </div>

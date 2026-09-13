@@ -22,7 +22,7 @@ import { LeafIcon, SparkChartIcon, TreeIcon, CarIcon, TrendUpIcon, TrendDownIcon
 const KG_CO2_POR_ARBOL_AL_ANIO = 21;
 const KG_CO2_POR_KM_AUTO = 0.15;
 
-// Consumo residencial promedio de referencia en México (~250 kWh/mes,
+// Consumo residencial promedio de referencia en México (~250 kWh al mes,
 // cifra aproximada — varía por región, clima y tarifa de CFE). Se usa el
 // factor_co2 configurado en la cuenta para mantener la misma metodología
 // que el resto de esta página.
@@ -208,8 +208,8 @@ function ContenidoHuella({ datos, userId }: { datos: ConsumptionData; userId: st
           </div>
           <p className="muted" style={{ fontSize: '0.85rem', marginTop: 14, marginBottom: 0 }}>
             {diferenciaPct <= 0
-              ? `Tu huella está ${Math.abs(diferenciaPct).toFixed(0)}% por debajo del promedio estimado de un hogar mexicano (~${KWH_HOGAR_PROMEDIO_MX_MES} kWh/mes) — vas mejor que el promedio.`
-              : `Tu huella está ${diferenciaPct.toFixed(0)}% por arriba del promedio estimado de un hogar mexicano (~${KWH_HOGAR_PROMEDIO_MX_MES} kWh/mes).`}
+              ? `Tu huella está ${Math.abs(diferenciaPct).toFixed(0)}% por debajo del promedio estimado de un hogar mexicano (~${KWH_HOGAR_PROMEDIO_MX_MES} kWh al mes) — vas mejor que el promedio.`
+              : `Tu huella está ${diferenciaPct.toFixed(0)}% por arriba del promedio estimado de un hogar mexicano (~${KWH_HOGAR_PROMEDIO_MX_MES} kWh al mes).`}
           </p>
           <p className="muted" style={{ fontSize: '0.72rem', marginTop: 6, marginBottom: 0 }}>
             Promedio de referencia aproximado; el consumo real varía mucho por región, clima y tamaño del

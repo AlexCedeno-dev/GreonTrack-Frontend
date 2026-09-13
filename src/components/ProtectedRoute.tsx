@@ -1,6 +1,7 @@
 import { Link, Navigate } from 'react-router-dom';
-import { useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { SignaturePad, type SignaturePadHandle } from './SignaturePad';
 import mascota from '../assets/mascota-greon-sm.png';
 
@@ -9,10 +10,19 @@ import mascota from '../assets/mascota-greon-sm.png';
 // falte (nuevas o viejas, da igual), se le pide firmar antes de seguir.
 function CandadoAvisoPrivacidad() {
   const { aceptarAvisoPrivacidad, signOut } = useAuth();
+  const { mostrarError } = useToast();
   const firmaRef = useRef<SignaturePadHandle>(null);
   const [hayFirma, setHayFirma] = useState(false);
   const [aceptando, setAceptando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Además del candado (que ya de por sí bloquea todo), una alerta explícita
+  // al entrar — para que quede clarísimo que no es opcional, no solo que
+  // "la pantalla se ve distinta".
+  useEffect(() => {
+    mostrarError('Necesitas aceptar y firmar el Aviso de Privacidad para seguir usando GreonTrack.');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAceptar = async () => {
     const firma = firmaRef.current?.exportar();
