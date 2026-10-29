@@ -1,0 +1,30 @@
+# Configuración de Auth del proyecto de Supabase (se sube con `supabase config push`).
+# Solo está lo que GreonTrack necesita; el proveedor de Google y el SMTP propio
+# se configuran en el dashboard porque llevan secretos que no deben ir al repo.
+project_id = "pbbuwqqymeernejqzkgj"
+
+[auth]
+enabled = true
+site_url = "https://alexcedeno-dev.github.io/GreonTrack-Frontend/"
+additional_redirect_urls = [
+  "https://alexcedeno-dev.github.io/GreonTrack-Frontend/**",
+  "http://localhost:5173/GreonTrack-Frontend/**",
+]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+
+# Las plantillas de correo personalizadas solo se pueden aplicar si el proyecto usa un
+# SMTP propio (el plan gratis con el SMTP por defecto de Supabase las rechaza).
+# Cuando se configure el SMTP en el dashboard, descomenta esto y corre `supabase config push`.
+# [auth.email.template.confirmation]
+# subject = "Confirma tu cuenta de GreonTrack"
+# content_path = "./supabase/email-templates/confirm-signup.html"
+#
+# [auth.email.template.magic_link]
+# subject = "Tu código de acceso a GreonTrack"
+# content_path = "./supabase/email-templates/magic-link-otp.html"
