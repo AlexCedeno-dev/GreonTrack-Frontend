@@ -18,13 +18,12 @@ enable_signup = true
 enable_confirmations = true
 double_confirm_changes = true
 
-# Las plantillas de correo personalizadas solo se pueden aplicar si el proyecto usa un
-# SMTP propio (el plan gratis con el SMTP por defecto de Supabase las rechaza).
-# Cuando se configure el SMTP en el dashboard, descomenta esto y corre `supabase config push`.
-# [auth.email.template.confirmation]
-# subject = "Confirma tu cuenta de GreonTrack"
-# content_path = "./supabase/email-templates/confirm-signup.html"
-#
-# [auth.email.template.magic_link]
-# subject = "Tu código de acceso a GreonTrack"
-# content_path = "./supabase/email-templates/magic-link-otp.html"
+# Requieren SMTP propio configurado en el dashboard (Authentication → SMTP);
+# con el SMTP por defecto de Supabase el push de estas plantillas se rechaza.
+[auth.email.template.confirmation]
+subject = "Confirma tu cuenta de GreonTrack"
+content_path = "./supabase/email-templates/confirm-signup.html"
+
+[auth.email.template.magic_link]
+subject = "Tu código de acceso a GreonTrack"
+content_path = "./supabase/email-templates/magic-link-otp.html"
