@@ -6,6 +6,7 @@ import {
   BoltIcon,
   CasaIcon,
   CloseIcon,
+  GeneratorIcon,
   MinusIcon,
   MoonIcon,
   PauseIcon,
@@ -25,6 +26,7 @@ import {
   CASA_DE_EJEMPLO,
   CATALOGO,
   CUARTOS,
+  GENERADOR,
   ESCENA,
   casaDesdeDispositivos,
   crearAparato,
@@ -39,6 +41,7 @@ import {
   type CuartoId,
 } from '../lib/casa';
 import { esDeNoche, formatoHora, intensidadSol } from '../lib/cielo';
+import { SECCIONES, seccionDeTipo } from '../lib/deviceCategories';
 import { sonidos } from '../lib/sonidos';
 import {
   DIAS_POR_BIMESTRE,
@@ -56,6 +59,7 @@ interface Guardado {
   aparatos: AparatoCasa[];
   tarifa: TarifaCfe;
   paneles: number;
+  generador?: { activo: boolean; horas: number };
 }
 
 const CLAVE_SONIDO = 'greontrack-casa-sonido';
@@ -86,6 +90,7 @@ export function MiCasa() {
   const [aparatos, setAparatos] = useState<AparatoCasa[]>(guardado?.aparatos ?? CASA_DE_EJEMPLO);
   const [tarifa, setTarifa] = useState<TarifaCfe>(guardado?.tarifa ?? '1');
   const [paneles, setPaneles] = useState(guardado?.paneles ?? 0);
+  const [generador, setGenerador] = useState(guardado?.generador ?? { activo: false, horas: 3 });
   const [hora, setHora] = useState(14);
   const [reloj, setReloj] = useState(false);
   const [velocidad, setVelocidad] = useState(1);
@@ -112,11 +117,11 @@ export function MiCasa() {
   useEffect(() => {
     if (!user?.id) return;
     try {
-      localStorage.setItem(CLAVE + user.id, JSON.stringify({ aparatos, tarifa, paneles } satisfies Guardado));
+      localStorage.setItem(CLAVE + user.id, JSON.stringify({ aparatos, tarifa, paneles, generador } satisfies Guardado));
     } catch {
       // Es solo una comodidad: si el navegador no deja guardar, la casa sigue funcionando.
     }
-  }, [aparatos, tarifa, paneles, user?.id]);
+  }, [aparatos, tarifa, paneles, generador, user?.id]);
 
   useEffect(() => {
     if (!aviso) return;
@@ -151,10 +156,22 @@ export function MiCasa() {
   const totalKwh = totalKwhBimestre(aparatos);
   const solarBim = kwhSolarBimestre(paneles);
   // Medición neta: lo que producen los paneles se descuenta de lo que se usa.
-  const kwhFacturados = Math.max(0, totalKwh - solarBim);
+  const trasSolar = Math.max(0, totalKwh - solarBim);
+  // El generador (opcional) cubre una parte de lo que los paneles no alcanzan.
+  const generadoBim = generador.activo
+    ? Math.min(GENERADOR.kw * generador.horas * DIAS_POR_BIMESTRE, trasSolar)
+    : 0;
+  const litrosBim = generadoBim * GENERADOR.litrosPorKwh;
+  const costoCombustible = litrosBim * GENERADOR.precioLitro;
+  const co2Generador = litrosBim * GENERADOR.co2KgPorLitro;
+  const kwhFacturados = Math.max(0, trasSolar - generadoBim);
   const sobraSolar = Math.max(0, solarBim - totalKwh);
   const recibo = useMemo(() => calcularRecibo(kwhFacturados, tarifa), [kwhFacturados, tarifa]);
   const reciboSinPaneles = useMemo(() => calcularRecibo(totalKwh, tarifa), [totalKwh, tarifa]);
+  const reciboConSolar = useMemo(() => calcularRecibo(trasSolar, tarifa), [trasSolar, tarifa]);
+  const ahorroSolar = reciboSinPaneles.total - reciboConSolar.total;
+  const bajaGenerador = reciboConSolar.total - recibo.total;
+  const ahorroNetoGenerador = bajaGenerador - costoCombustible;
   const ahorroBimestre = reciboSinPaneles.total - recibo.total;
   const kwConsumo = kwAhora(aparatos);
   const kwSolar = kwSolarAhora(paneles, intensidadSol(hora));
@@ -280,7 +297,7 @@ export function MiCasa() {
             </span>
             <div>
               <strong>{formatoPesos(recibo.total)}</strong>
-              <small>{paneles > 0 ? `con ${paneles} paneles` : 'tu recibo estimado'}</small>
+              <small>{paneles > 0 ? `con ${paneles} ${paneles === 1 ? 'panel' : 'paneles'}` : 'tu recibo estimado'}</small>
             </div>
           </li>
         </ul>
@@ -297,6 +314,7 @@ export function MiCasa() {
             kwConsumo={kwConsumo}
             kwSolar={kwSolar}
             velocidad={velocidad}
+            generador={generador.activo}
             onMonoHabla={() => tocar('hola')}
           />
 
@@ -371,13 +389,37 @@ export function MiCasa() {
 
           {bandeja && (
             <div className="casa-bandeja" role="dialog" aria-label="Agregar aparato">
-              {CATALOGO.map((c, i) => (
-                <button key={c.visual} type="button" className="casa-bandeja-item" onClick={() => agregar(i)} style={{ animationDelay: `${i * 22}ms` }}>
-                  <IconoAparato visual={c.visual} />
-                  <span className="casa-bandeja-nombre">{c.nombre}</span>
-                  <span className="casa-bandeja-dato">{c.watts >= 1000 ? `${c.watts / 1000} kW` : `${c.watts} W`}</span>
-                </button>
-              ))}
+              {SECCIONES.map((seccion) => {
+                const items = CATALOGO.map((c, indice) => ({ c, indice })).filter(
+                  ({ c }) => seccionDeTipo(c.tipoDb).id === seccion.id
+                );
+                if (items.length === 0) return null;
+                const IconoSeccion = seccion.icono;
+                return (
+                  <section key={seccion.id} className="casa-bandeja-seccion">
+                    <h3>
+                      <IconoSeccion /> {seccion.nombre}
+                    </h3>
+                    <div className="casa-bandeja-grid">
+                      {items.map(({ c, indice }, n) => (
+                        <button
+                          key={c.visual}
+                          type="button"
+                          className="casa-bandeja-item"
+                          onClick={() => agregar(indice)}
+                          style={{ animationDelay: `${n * 28}ms` }}
+                        >
+                          <IconoAparato visual={c.visual} />
+                          <span className="casa-bandeja-nombre">{c.nombre}</span>
+                          <span className="casa-bandeja-dato">
+                            {c.watts >= 1000 ? `${c.watts / 1000} kW` : `${c.watts} W`}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           )}
 
@@ -389,7 +431,9 @@ export function MiCasa() {
               <BoltIcon /> {todosPrendidos ? 'Apagar todo' : 'Prender todo'}
             </button>
 
-            <div className="casa-paneles" role="group" aria-label="Paneles solares">
+            <div className="casa-apoyo" role="group" aria-label="Apoyo opcional">
+              <span className="casa-apoyo-etiqueta">Apoyo opcional</span>
+              <div className="casa-paneles" role="group" aria-label="Paneles solares">
               <SolarPanelIcon />
               <button type="button" onClick={() => cambiarPaneles(-1)} disabled={paneles === 0} aria-label="Quitar un panel">
                 <MinusIcon />
@@ -401,6 +445,35 @@ export function MiCasa() {
                 <PlusIcon />
               </button>
               <small>paneles</small>
+            </div>
+
+              <div className={`casa-generador${generador.activo ? ' activo' : ''}`}>
+                <button
+                  type="button"
+                  className="casa-generador-btn"
+                  aria-pressed={generador.activo}
+                  onClick={() => {
+                    tocar(generador.activo ? 'apagar' : 'prender');
+                    setGenerador((g) => ({ ...g, activo: !g.activo }));
+                  }}
+                >
+                  <GeneratorIcon /> Generador
+                </button>
+                {generador.activo && (
+                  <>
+                    <input
+                      type="range"
+                      min={1}
+                      max={GENERADOR.maxHoras}
+                      step={1}
+                      value={generador.horas}
+                      onChange={(e) => setGenerador((g) => ({ ...g, horas: Number(e.target.value) }))}
+                      aria-label="Horas al día que trabaja el generador"
+                    />
+                    <output>{generador.horas} h/día</output>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="casa-reloj">
@@ -457,7 +530,7 @@ export function MiCasa() {
               <span className="casa-etiqueta">Tu recibo estimado, cada 2 meses</span>
               <strong className="casa-total" key={Math.round(recibo.total)}>
                 {formatoPesos(recibo.total)}
-                {paneles > 0 && ahorroBimestre > 0.5 && (
+                {(paneles > 0 || generador.activo) && ahorroBimestre > 0.5 && (
                   <s className="casa-total-antes">{formatoPesos(reciboSinPaneles.total)}</s>
                 )}
               </strong>
@@ -523,13 +596,34 @@ export function MiCasa() {
                   {paneles} {paneles === 1 ? 'panel' : 'paneles'} de {PANEL.watts} W
                 </strong>{' '}
                 producen unos {formatoKwh(solarBim)} kWh al bimestre ({Math.round((solarBim / Math.max(totalKwh, 1)) * 100)}%
-                de lo que gastas). Tu recibo baja {formatoPesos(Math.max(0, ahorroBimestre))} cada dos meses, unos{' '}
-                <strong>{formatoPesos(Math.max(0, ahorroBimestre) * 6)} al año</strong>.
+                de lo que gastas). Tu recibo baja {formatoPesos(Math.max(0, ahorroSolar))} cada dos meses, unos{' '}
+                <strong>{formatoPesos(Math.max(0, ahorroSolar) * 6)} al año</strong>.
                 {sobraSolar > 0 &&
                   ` Te sobran ${formatoKwh(sobraSolar)} kWh: se quedan a tu favor para los recibos siguientes.`}
               </p>
             )}
           </div>
+
+          {generador.activo && (
+            <div className="casa-solar-resumen activo casa-gen-resumen">
+              <span className="casa-solar-icono">
+                <GeneratorIcon />
+              </span>
+              <p>
+                <strong>Generador de {GENERADOR.kw} kW</strong>, {generador.horas} {generador.horas === 1 ? 'hora' : 'horas'} al
+                día: cubre unos {formatoKwh(generadoBim)} kWh al bimestre y gasta unos {formatoKwh(litrosBim)} litros de
+                gasolina ({formatoPesos(costoCombustible)}). Tu recibo baja {formatoPesos(Math.max(0, bajaGenerador))}, pero el
+                combustible cuesta más:{' '}
+                <strong>
+                  {ahorroNetoGenerador >= 0
+                    ? `ahorras ${formatoPesos(ahorroNetoGenerador)} en total`
+                    : `te sale ${formatoPesos(-ahorroNetoGenerador)} más caro en total`}
+                </strong>
+                . Sirve de apoyo en apagones o cuando se junta mucha carga, no para ahorrar. Emite unos{' '}
+                {formatoKwh(co2Generador)} kg de CO₂.
+              </p>
+            </div>
+          )}
 
           <table className="casa-tabla">
             <thead>

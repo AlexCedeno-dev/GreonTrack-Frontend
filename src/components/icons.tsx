@@ -1,6 +1,8 @@
 // Iconos de línea, dibujados a mano en SVG (sin librerías externas) para que
 // combinen con el estilo del logo y no dependan de un icon-set genérico.
 
+import type { ReactNode } from 'react';
+
 type IconProps = { className?: string };
 
 export function MonitorIcon({ className }: IconProps) {
@@ -727,5 +729,212 @@ export function SolarPanelIcon({ className }: IconProps) {
       <path d="M9.7 8 8.5 16M14.3 8l1.2 8M4 12h16M12 16v4M8.5 20h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       <path d="M12 2.5v2M6.2 4.2l1.2 1.4M17.8 4.2l-1.2 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
+  );
+}
+
+// ── Iconos de aparatos y secciones (línea, 24×24) ───────────────────────────
+
+function Trazo({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {children}
+    </svg>
+  );
+}
+
+export function IronIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M3 17.5h18c0-5-3-8.5-8-8.5H9c-3.3 0-4.8 2-5.2 4.2L3 17.5Z" />
+      <path d="M8 13.5h6M5 20.5h14" />
+    </Trazo>
+  );
+}
+
+export function HairDryerIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M3.5 8.5a4 4 0 0 1 4-4h8l4 2.5v4l-4 2.5h-8a4 4 0 0 1-4-4Z" />
+      <path d="M9.5 13.5 8 20h3l1.5-6.5" />
+    </Trazo>
+  );
+}
+
+export function KettleIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M6 10.5h9l1.2 8.5a1 1 0 0 1-1 1.2H6.8a1 1 0 0 1-1-1.2L6 10.5Z" />
+      <path d="M15 12.5h2.7a2 2 0 0 1 0 4H16M8 10.5V8a2.5 2.5 0 0 1 5 0v2.5" />
+    </Trazo>
+  );
+}
+
+export function BlenderIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M7 3.5h10l-1.4 11H8.4L7 3.5Z" />
+      <path d="M7.5 14.5h9l1 5h-11l1-5ZM6 6.5h12" />
+    </Trazo>
+  );
+}
+
+export function ToasterIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="3.5" y="9.5" width="17" height="9" rx="3" />
+      <path d="M7.5 9.5V7.5h3.6v2M12.9 9.5V7.5h3.6v2M17.5 14h.01M6.5 18.5v1.5M17.5 18.5v1.5" />
+    </Trazo>
+  );
+}
+
+export function OvenIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="3.5" y="4" width="17" height="16" rx="2" />
+      <path d="M3.5 8.5h17" />
+      <rect x="7" y="11" width="10" height="6" rx="1" />
+      <path d="M7 6.3h.01M10 6.3h.01" />
+    </Trazo>
+  );
+}
+
+export function DishwasherIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="4" y="3.5" width="16" height="17" rx="2" />
+      <path d="M4 8h16M7.5 5.7h.01M10.5 5.7h.01" />
+      <path d="M8 16a4 4 0 0 1 8 0M10 13.5l.01.01M13.5 13l.01.01" />
+    </Trazo>
+  );
+}
+
+export function StoveIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="3.5" y="4" width="17" height="16" rx="2" />
+      <circle cx="8.5" cy="9" r="2" />
+      <circle cx="15.5" cy="9" r="2" />
+      <path d="M3.5 14h17M8 17h.01M12 17h.01M16 17h.01" />
+    </Trazo>
+  );
+}
+
+export function PotIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M4.5 10.5h15v5.5a3.5 3.5 0 0 1-3.5 3.5H8a3.5 3.5 0 0 1-3.5-3.5v-5.5Z" />
+      <path d="M6 10.5a6 6 0 0 1 12 0M12 4.5V3M10 14.5h4" />
+    </Trazo>
+  );
+}
+
+export function HeaterIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="4" y="5.5" width="16" height="12" rx="2.5" />
+      <path d="M8 9v5M12 9v5M16 9v5M7 17.5V20M17 17.5V20" />
+    </Trazo>
+  );
+}
+
+export function DehumidifierIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="6" y="3.5" width="12" height="17" rx="2.5" />
+      <path d="M9 7h6M12 17.2c-1.6 0-2.7-1.1-2.7-2.5 0-1.2 1.4-2.8 2.7-4.2 1.3 1.4 2.7 3 2.7 4.2 0 1.4-1.1 2.5-2.7 2.5Z" />
+    </Trazo>
+  );
+}
+
+export function SpeakerIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="6" y="3" width="12" height="18" rx="2.5" />
+      <circle cx="12" cy="14.5" r="3.2" />
+      <circle cx="12" cy="7.2" r="1.2" />
+    </Trazo>
+  );
+}
+
+export function ProjectorIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="3" y="8" width="18" height="8.5" rx="2.5" />
+      <circle cx="15.5" cy="12.2" r="2.6" />
+      <path d="M6.5 11h2.5M7 16.5V19M17 16.5V19" />
+    </Trazo>
+  );
+}
+
+export function TabletIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="5" y="3" width="14" height="18" rx="2.2" />
+      <path d="M11 17.7h2" />
+    </Trazo>
+  );
+}
+
+export function BikeIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <circle cx="6" cy="16" r="3.6" />
+      <circle cx="18" cy="16" r="3.6" />
+      <path d="M6 16 9.5 8.5H13M13 8.5 11 16h-5M13 8.5l5 7.5M9 6h3" />
+    </Trazo>
+  );
+}
+
+export function GeneratorIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="3" y="7" width="18" height="11" rx="2" />
+      <path d="M6 18v2M18 18v2M7 7V5h4v2M12.6 9.6 10.4 13h3.2l-2.2 3.4" />
+    </Trazo>
+  );
+}
+
+export function PumpIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <circle cx="10" cy="13" r="4.5" />
+      <path d="M14.5 13H21M10 8.5V4.5h5M5.5 13H3M7 19.5h6" />
+    </Trazo>
+  );
+}
+
+export function ChefIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M7 11.5a3.5 3.5 0 0 1 .6-6.9A4.5 4.5 0 0 1 16.4 4.6A3.5 3.5 0 0 1 17 11.5" />
+      <path d="M7 11.5V19a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-7.5M7 15.5h10" />
+    </Trazo>
+  );
+}
+
+export function WaveIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M3 8c2.2-2 4.200-2 6 0s3.8 2 6 0 4-2 6 0M3 13c2.2-2 4.2-2 6 0s3.8 2 6 0 4-2 6 0M3 18c2.2-2 4.2-2 6 0s3.8 2 6 0 4-2 6 0" />
+    </Trazo>
+  );
+}
+
+export function ScissorsIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <circle cx="6" cy="6.5" r="2.5" />
+      <circle cx="6" cy="17.5" r="2.5" />
+      <path d="M8 8 20 18M8 16 20 6" />
+    </Trazo>
   );
 }

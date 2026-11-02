@@ -16,7 +16,7 @@ import {
   posicionAparato,
   type AparatoCasa,
 } from '../../lib/casa';
-import { ALTO_APARATO, Sprite } from './Sprites';
+import { ALTO_APARATO, Generador, Sprite } from './Sprites';
 
 interface Props {
   aparatos: AparatoCasa[];
@@ -29,6 +29,7 @@ interface Props {
   kwConsumo: number;
   kwSolar: number;
   velocidad: number;
+  generador: boolean;
   onMonoHabla?: () => void;
 }
 
@@ -161,6 +162,7 @@ function ruta(a: AparatoCasa): string {
 function cajaClic(a: AparatoCasa) {
   if (a.visual === 'coche') return { x: -66, y: -52, w: 132, h: 52 };
   if (a.visual === 'foco') return { x: -22, y: -150, w: 44, h: 40 };
+  if (a.visual === 'ventiTecho') return { x: -38, y: -150, w: 76, h: 28 };
   if (a.visual === 'minisplit') return { x: -32, y: -114, w: 64, h: 24 };
   const alto = ALTO_APARATO[a.visual];
   return { x: -30, y: -alto, w: 60, h: alto };
@@ -175,6 +177,7 @@ export function CasaInteractiva({
   kwConsumo,
   kwSolar,
   velocidad,
+  generador,
   onMonoHabla,
 }: Props) {
   const aparatosRef = useRef(aparatos);
@@ -338,7 +341,7 @@ export function CasaInteractiva({
       </g>
 
       {/* Arbustos y árboles */}
-      <g className="casa-planta">
+      <g className="casa-planta" transform="translate(52 0)">
         <rect x={886} y={400} width={9} height={70} className="tronco" />
         <circle cx={890} cy={388} r={34} className="copa" />
         <circle cx={868} cy={402} r={22} className="copa2" />
@@ -347,6 +350,26 @@ export function CasaInteractiva({
         <ellipse cx={170} cy={478} rx={26} ry={14} className="arbusto" />
         <ellipse cx={780} cy={500} rx={30} ry={11} className="arbusto" />
       </g>
+
+      {/* Generador eléctrico opcional, en el jardín */}
+      {generador && (
+        <g className="casa-generador">
+          <rect className="caja-transferencia" x={848} y={424} width={16} height={26} rx={3} />
+          <path className="cable-gen" d="M898 458 H880 V438 H864" />
+          <path className="cable-gen-flujo" d="M898 458 H880 V438 H864" filter="url(#casa-brillo)" />
+          <g transform="translate(900 488)">
+            <ellipse className="aparato-sombra" cx={0} cy={1} rx={38} ry={4} />
+            <Generador on={generador} />
+            <g className="insignia" transform="translate(0 -72)">
+              <rect x={-26} y={-9} width={52} height={15} rx={7.5} />
+              <path d="M-17 -6 l-3 6 h3 l-1.5 5 l5 -7 h-3 l2 -4 Z" />
+              <text x={4} y={2.5} textAnchor="middle">
+                3.5 kW
+              </text>
+            </g>
+          </g>
+        </g>
+      )}
 
       {/* Poste y medidor */}
       <g className="casa-poste">

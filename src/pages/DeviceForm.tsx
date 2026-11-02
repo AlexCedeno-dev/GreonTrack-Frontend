@@ -6,7 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { supabase } from '../lib/supabase';
 import { TIPOS_DISPOSITIVO } from '../types/database';
 import { capturarInfoDispositivo } from '../lib/deviceInfo';
-import { iconoDeTipo } from '../lib/deviceCategories';
+import { SECCIONES, iconoDeTipo } from '../lib/deviceCategories';
 import { ajustarConsumoSugerido, marcasParaTipo } from '../lib/deviceEnergyAdjustment';
 import { campoOpcionalDeTipo, tipoTieneIp } from '../lib/deviceCategoryFields';
 import { ArrowLeftIcon, BoltIcon, SparkChartIcon } from '../components/icons';
@@ -265,23 +265,37 @@ export function DeviceForm() {
 
             <div className="device-form-field">
               <label>Tipo de dispositivo</label>
-              <div className="type-picker">
-                {TIPOS_DISPOSITIVO.map((t) => {
-                  const Icono = iconoDeTipo(t.tipo);
-                  const activo = tipo === t.tipo;
+              <div className="type-picker-grupos">
+                {SECCIONES.map((seccion) => {
+                  const tipos = TIPOS_DISPOSITIVO.filter((t) => seccion.tipos.includes(t.tipo));
+                  if (tipos.length === 0) return null;
+                  const IconoSeccion = seccion.icono;
                   return (
-                    <button
-                      key={t.tipo}
-                      type="button"
-                      className={`type-picker-option${activo ? ' active' : ''}`}
-                      onClick={() => handleTipoChange(t.tipo)}
-                      aria-pressed={activo}
-                    >
-                      <span className="type-picker-icon">
-                        <Icono />
-                      </span>
-                      <span className="type-picker-label">{t.tipo}</span>
-                    </button>
+                    <div key={seccion.id} className="type-picker-grupo">
+                      <h3 className="type-picker-grupo-titulo">
+                        <IconoSeccion /> {seccion.nombre}
+                      </h3>
+                      <div className="type-picker">
+                        {tipos.map((t) => {
+                          const Icono = iconoDeTipo(t.tipo);
+                          const activo = tipo === t.tipo;
+                          return (
+                            <button
+                              key={t.tipo}
+                              type="button"
+                              className={`type-picker-option${activo ? ' active' : ''}`}
+                              onClick={() => handleTipoChange(t.tipo)}
+                              aria-pressed={activo}
+                            >
+                              <span className="type-picker-icon">
+                                <Icono />
+                              </span>
+                              <span className="type-picker-label">{t.tipo}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   );
                 })}
               </div>

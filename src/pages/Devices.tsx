@@ -13,7 +13,7 @@ import {
   CopyIcon,
   MonitorIcon,
 } from '../components/icons';
-import { CATEGORIAS, categoriaDe, iconoDeTipo, Categoria } from '../lib/deviceCategories';
+import { CATEGORIAS, SECCIONES, categoriaDe, iconoDeCategoria, iconoDeTipo, seccionDeTipo, Categoria } from '../lib/deviceCategories';
 import mascota from '../assets/mascota-greon-sm.png';
 
 // Techo de referencia (W) usado solo para escalar la barra de consumo relativo;
@@ -350,15 +350,21 @@ export function Devices() {
 
       {!loading && devices.length > 0 && (
         <div className="category-filter">
-          {CATEGORIAS.map((cat) => (
-            <button
-              key={cat}
-              className={`category-chip${categoriaActiva === cat ? ' active' : ''}`}
-              onClick={() => setCategoriaActiva(cat)}
-            >
-              {cat}
-            </button>
-          ))}
+          {CATEGORIAS.filter((cat) => cat === 'Todos' || devices.some((d) => categoriaDe(d.tipo) === cat)).map((cat) => {
+            const IconoCat = cat === 'Todos' ? PlugIcon : iconoDeCategoria(cat);
+            const cuantos = cat === 'Todos' ? devices.length : devices.filter((d) => categoriaDe(d.tipo) === cat).length;
+            return (
+              <button
+                key={cat}
+                className={`category-chip${categoriaActiva === cat ? ' active' : ''}`}
+                onClick={() => setCategoriaActiva(cat)}
+              >
+                <IconoCat />
+                {cat}
+                <span className="category-chip-count">{cuantos}</span>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -383,8 +389,25 @@ export function Devices() {
           </div>
         </div>
       ) : (
-        <div className="device-grid">
-          {devicesFiltrados.map((device) => {
+        <div className="device-secciones">
+          {SECCIONES.map((seccion) => {
+            const items = devicesFiltrados.filter((d) => seccionDeTipo(d.tipo).id === seccion.id);
+            if (items.length === 0) return null;
+            const IconoSeccion = seccion.icono;
+            const watts = items.reduce((suma, d) => suma + d.consumo_watts_promedio, 0);
+            return (
+              <section key={seccion.id} className="device-seccion">
+                <header className="device-seccion-cab">
+                  <span className="device-seccion-icono">
+                    <IconoSeccion />
+                  </span>
+                  <h2>{seccion.nombre}</h2>
+                  <span className="device-seccion-dato">
+                    {items.length} {items.length === 1 ? 'aparato' : 'aparatos'} · {watts.toLocaleString('es-MX')} W
+                  </span>
+                </header>
+                <div className="device-grid">
+                  {items.map((device) => {
             const nivel = nivelPotencia(device.consumo_watts_promedio);
             const pct = Math.min(100, (device.consumo_watts_promedio / REFERENCIA_WATTS) * 100);
             const fecha = new Date(device.created_at).toLocaleDateString('es-MX', {
@@ -491,6 +514,10 @@ export function Devices() {
                   )}
                 </div>
               </article>
+            );
+                  })}
+                </div>
+              </section>
             );
           })}
         </div>

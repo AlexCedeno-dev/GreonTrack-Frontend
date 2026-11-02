@@ -53,24 +53,16 @@ export function slotX(cuarto: Cuarto, slot: number): number {
 }
 
 export type Visual =
-  | 'tv'
-  | 'minisplit'
-  | 'refri'
-  | 'ventilador'
-  | 'foco'
-  | 'laptop'
-  | 'compu'
-  | 'consola'
-  | 'plancha'
-  | 'secadora'
-  | 'micro'
-  | 'lavadora'
-  | 'boiler'
-  | 'router'
-  | 'cafetera'
-  | 'aspiradora'
-  | 'coche'
-  | 'generico';
+  | 'tv' | 'minisplit' | 'refri' | 'congelador' | 'ventilador' | 'ventiTecho' | 'foco' | 'laptop' | 'compu'
+  | 'consola' | 'plancha' | 'secadora' | 'micro' | 'lavadora' | 'secadoraRopa' | 'boiler' | 'router'
+  | 'cafetera' | 'aspiradora' | 'coche' | 'bici' | 'horno' | 'estufa' | 'tostador' | 'licuadora'
+  | 'lavavajillas' | 'hervidor' | 'olla' | 'calefactor' | 'deshumidificador' | 'bocina' | 'proyector'
+  | 'tablet' | 'impresora' | 'bomba' | 'generico';
+
+// Algunos aparatos van colgados del techo o la pared: no ocupan lugar en el piso.
+export function capaDe(visual: Visual): 'piso' | 'alto' {
+  return visual === 'foco' || visual === 'ventiTecho' || visual === 'minisplit' ? 'alto' : 'piso';
+}
 
 export interface AparatoCatalogo {
   visual: Visual;
@@ -83,23 +75,41 @@ export interface AparatoCatalogo {
 }
 
 export const CATALOGO: AparatoCatalogo[] = [
-  { visual: 'tv', nombre: 'Televisión', tipoDb: 'Televisión (LED)', watts: 100, horas: 5, cuarto: 'sala' },
-  { visual: 'minisplit', nombre: 'Minisplit', tipoDb: 'Aire acondicionado', watts: 900, horas: 6, cuarto: 'principal' },
   { visual: 'refri', nombre: 'Refrigerador', tipoDb: 'Refrigerador', watts: 150, horas: 8, cuarto: 'cocina' },
-  { visual: 'foco', nombre: 'Focos LED', tipoDb: 'Iluminación', watts: 60, horas: 5, cuarto: 'sala' },
+  { visual: 'congelador', nombre: 'Congelador', tipoDb: 'Congelador', watts: 220, horas: 8, cuarto: 'garage' },
+  { visual: 'micro', nombre: 'Microondas', tipoDb: 'Microondas', watts: 1000, horas: 0.4, cuarto: 'cocina' },
+  { visual: 'horno', nombre: 'Horno eléctrico', tipoDb: 'Horno eléctrico', watts: 1500, horas: 0.6, cuarto: 'cocina' },
+  { visual: 'estufa', nombre: 'Estufa eléctrica', tipoDb: 'Estufa eléctrica', watts: 1800, horas: 1, cuarto: 'cocina' },
+  { visual: 'tostador', nombre: 'Tostador', tipoDb: 'Tostador', watts: 800, horas: 0.2, cuarto: 'cocina' },
+  { visual: 'licuadora', nombre: 'Licuadora', tipoDb: 'Licuadora', watts: 400, horas: 0.15, cuarto: 'cocina' },
+  { visual: 'hervidor', nombre: 'Hervidor eléctrico', tipoDb: 'Hervidor eléctrico', watts: 1500, horas: 0.3, cuarto: 'cocina' },
+  { visual: 'olla', nombre: 'Olla arrocera', tipoDb: 'Olla arrocera', watts: 600, horas: 0.5, cuarto: 'cocina' },
+  { visual: 'cafetera', nombre: 'Cafetera', tipoDb: 'Cafetera', watts: 800, horas: 0.4, cuarto: 'cocina' },
+  { visual: 'lavavajillas', nombre: 'Lavavajillas', tipoDb: 'Lavavajillas', watts: 1200, horas: 1, cuarto: 'cocina' },
+  { visual: 'lavadora', nombre: 'Lavadora', tipoDb: 'Lavadora', watts: 500, horas: 1, cuarto: 'garage' },
+  { visual: 'secadoraRopa', nombre: 'Secadora de ropa', tipoDb: 'Secadora de ropa', watts: 3000, horas: 0.8, cuarto: 'garage' },
+  { visual: 'plancha', nombre: 'Plancha', tipoDb: 'Plancha', watts: 1200, horas: 0.5, cuarto: 'principal' },
+  { visual: 'aspiradora', nombre: 'Aspiradora', tipoDb: 'Aspiradora', watts: 1200, horas: 0.3, cuarto: 'sala' },
+  { visual: 'minisplit', nombre: 'Minisplit', tipoDb: 'Aire acondicionado', watts: 900, horas: 6, cuarto: 'principal' },
   { visual: 'ventilador', nombre: 'Ventilador', tipoDb: 'Ventilador', watts: 55, horas: 6, cuarto: 'ninos' },
+  { visual: 'ventiTecho', nombre: 'Ventilador de techo', tipoDb: 'Ventilador de techo', watts: 75, horas: 6, cuarto: 'sala' },
+  { visual: 'calefactor', nombre: 'Calefactor', tipoDb: 'Calefactor', watts: 1500, horas: 2, cuarto: 'principal' },
+  { visual: 'deshumidificador', nombre: 'Deshumidificador', tipoDb: 'Deshumidificador', watts: 300, horas: 5, cuarto: 'sala' },
+  { visual: 'boiler', nombre: 'Calentador de agua', tipoDb: 'Calentador de agua', watts: 1500, horas: 1.5, cuarto: 'garage' },
+  { visual: 'bomba', nombre: 'Bomba de agua', tipoDb: 'Bomba de agua', watts: 750, horas: 1, cuarto: 'garage' },
+  { visual: 'tv', nombre: 'Televisión', tipoDb: 'Televisión (LED)', watts: 100, horas: 5, cuarto: 'sala' },
+  { visual: 'consola', nombre: 'Consola', tipoDb: 'Consola de videojuegos', watts: 150, horas: 3, cuarto: 'ninos' },
+  { visual: 'bocina', nombre: 'Bocina o estéreo', tipoDb: 'Bocina o estéreo', watts: 40, horas: 4, cuarto: 'sala' },
+  { visual: 'proyector', nombre: 'Proyector', tipoDb: 'Proyector', watts: 250, horas: 2, cuarto: 'sala' },
   { visual: 'laptop', nombre: 'Laptop', tipoDb: 'Laptop', watts: 65, horas: 6, cuarto: 'oficina' },
   { visual: 'compu', nombre: 'Computadora', tipoDb: 'Computadora de escritorio', watts: 200, horas: 5, cuarto: 'oficina' },
-  { visual: 'consola', nombre: 'Consola', tipoDb: 'Consola de videojuegos', watts: 150, horas: 3, cuarto: 'ninos' },
-  { visual: 'plancha', nombre: 'Plancha', tipoDb: 'Otro', watts: 1200, horas: 0.5, cuarto: 'principal' },
-  { visual: 'secadora', nombre: 'Secadora de pelo', tipoDb: 'Otro', watts: 1800, horas: 0.3, cuarto: 'principal' },
-  { visual: 'micro', nombre: 'Microondas', tipoDb: 'Microondas', watts: 1000, horas: 0.4, cuarto: 'cocina' },
-  { visual: 'cafetera', nombre: 'Cafetera', tipoDb: 'Cafetera', watts: 800, horas: 0.4, cuarto: 'cocina' },
-  { visual: 'lavadora', nombre: 'Lavadora', tipoDb: 'Lavadora', watts: 500, horas: 1, cuarto: 'garage' },
-  { visual: 'boiler', nombre: 'Calentador de agua', tipoDb: 'Calentador de agua', watts: 1500, horas: 1.5, cuarto: 'garage' },
+  { visual: 'impresora', nombre: 'Impresora', tipoDb: 'Impresora', watts: 30, horas: 0.3, cuarto: 'oficina' },
   { visual: 'router', nombre: 'Router de internet', tipoDb: 'Router', watts: 10, horas: 24, cuarto: 'sala' },
-  { visual: 'aspiradora', nombre: 'Aspiradora', tipoDb: 'Aspiradora', watts: 1200, horas: 0.3, cuarto: 'sala' },
-  { visual: 'coche', nombre: 'Coche eléctrico', tipoDb: 'Otro', watts: 3300, horas: 3, cuarto: 'garage' },
+  { visual: 'foco', nombre: 'Focos LED', tipoDb: 'Iluminación', watts: 60, horas: 5, cuarto: 'sala' },
+  { visual: 'tablet', nombre: 'Tablet cargando', tipoDb: 'Tablet (carga)', watts: 15, horas: 4, cuarto: 'ninos' },
+  { visual: 'secadora', nombre: 'Secadora de pelo', tipoDb: 'Secadora de pelo', watts: 1800, horas: 0.3, cuarto: 'principal' },
+  { visual: 'coche', nombre: 'Coche eléctrico', tipoDb: 'Coche eléctrico', watts: 3300, horas: 3, cuarto: 'garage' },
+  { visual: 'bici', nombre: 'Bicicleta eléctrica', tipoDb: 'Bicicleta eléctrica', watts: 250, horas: 2, cuarto: 'garage' },
 ];
 
 export interface AparatoCasa {
@@ -115,33 +125,18 @@ export interface AparatoCasa {
 
 // Mismo mapeo, pero desde el tipo de un dispositivo real de GreonTrack.
 const VISUAL_POR_TIPO_DB: Record<string, { visual: Visual; cuarto: CuartoId }> = {
-  Laptop: { visual: 'laptop', cuarto: 'oficina' },
-  'Computadora de escritorio': { visual: 'compu', cuarto: 'oficina' },
-  'Televisión (LED)': { visual: 'tv', cuarto: 'sala' },
-  Refrigerador: { visual: 'refri', cuarto: 'cocina' },
-  'Aire acondicionado': { visual: 'minisplit', cuarto: 'principal' },
-  'Celular (carga)': { visual: 'generico', cuarto: 'principal' },
-  'Consola de videojuegos': { visual: 'consola', cuarto: 'ninos' },
-  Lavadora: { visual: 'lavadora', cuarto: 'garage' },
-  Microondas: { visual: 'micro', cuarto: 'cocina' },
-  Iluminación: { visual: 'foco', cuarto: 'sala' },
+  ...Object.fromEntries(CATALOGO.map((c) => [c.tipoDb, { visual: c.visual, cuarto: c.cuarto }])),
+  'Celular (carga)': { visual: 'tablet', cuarto: 'principal' },
   'Dispositivo IoT': { visual: 'router', cuarto: 'sala' },
-  Impresora: { visual: 'generico', cuarto: 'oficina' },
-  Congelador: { visual: 'refri', cuarto: 'garage' },
-  'Secadora de ropa': { visual: 'lavadora', cuarto: 'garage' },
-  'Calentador de agua': { visual: 'boiler', cuarto: 'garage' },
-  Ventilador: { visual: 'ventilador', cuarto: 'ninos' },
-  'Bomba de agua': { visual: 'boiler', cuarto: 'garage' },
-  Router: { visual: 'router', cuarto: 'oficina' },
-  Cafetera: { visual: 'cafetera', cuarto: 'cocina' },
-  Aspiradora: { visual: 'aspiradora', cuarto: 'sala' },
 };
 
 // A qué altura del piso se conecta el cable de cada aparato.
 export const ALTURA_ENCHUFE: Record<Visual, number> = {
-  tv: 14, minisplit: 94, refri: 14, ventilador: 8, foco: 138, laptop: 14, compu: 14, consola: 10,
-  plancha: 14, secadora: 14, micro: 14, lavadora: 14, boiler: 14, router: 14, cafetera: 14,
-  aspiradora: 8, coche: 22, generico: 10,
+  tv: 14, minisplit: 94, refri: 14, congelador: 12, ventilador: 8, ventiTecho: 138, foco: 138, laptop: 14,
+  compu: 14, consola: 10, plancha: 14, secadora: 14, micro: 14, lavadora: 14, secadoraRopa: 14, boiler: 14,
+  router: 14, cafetera: 14, aspiradora: 8, coche: 22, bici: 10, horno: 14, estufa: 14, tostador: 14,
+  licuadora: 14, lavavajillas: 14, hervidor: 14, olla: 14, calefactor: 10, deshumidificador: 10, bocina: 10,
+  proyector: 14, tablet: 10, impresora: 14, bomba: 10, generico: 10,
 };
 
 // Punto de la maqueta donde está un aparato (sobre el piso) y donde se enchufa.
@@ -160,11 +155,11 @@ export function slotsQueOcupa(visual: Visual): number[] {
   return visual === 'coche' ? [0, 1, 2] : [0];
 }
 
-function ocupados(lista: AparatoCasa[], cuarto: CuartoId): Set<number> {
+function ocupados(lista: AparatoCasa[], cuarto: CuartoId, capa: 'piso' | 'alto'): Set<number> {
   const set = new Set<number>();
   for (const a of lista) {
-    if (a.cuarto !== cuarto) continue;
-    if (a.visual === 'coche') slotsQueOcupa('coche').forEach((s) => set.add(s));
+    if (a.cuarto !== cuarto || capaDe(a.visual) !== capa) continue;
+    if (a.visual === 'coche') slotsQueOcupa('coche').forEach((n) => set.add(n));
     else set.add(a.slot);
   }
   return set;
@@ -178,10 +173,11 @@ export function buscarLugar(
 ): { cuarto: CuartoId; slot: number } | null {
   const orden = [preferido, ...CUARTOS_ORDEN.filter((c) => c !== preferido)];
   const necesarios = slotsQueOcupa(visual);
+  const capa = capaDe(visual);
   for (const cuarto of orden) {
-    const usados = ocupados(lista, cuarto);
+    const usados = ocupados(lista, cuarto, capa);
     if (necesarios.length > 1) {
-      if (necesarios.every((s) => !usados.has(s))) return { cuarto, slot: 0 };
+      if (necesarios.every((n) => !usados.has(n))) return { cuarto, slot: 0 };
       continue;
     }
     for (let slot = 0; slot < SLOTS_POR_CUARTO; slot++) {
@@ -277,4 +273,21 @@ export function kwhSolarBimestre(paneles: number): number {
 // Lo que están produciendo los paneles ahora mismo, en kW (intensidad 0–1 según la hora).
 export function kwSolarAhora(paneles: number, intensidad: number): number {
   return (paneles * PANEL.watts * PANEL.eficiencia * intensidad) / 1000;
+}
+
+// ── Generador eléctrico (opcional) ─────────────────────────────────────────
+// Una planta de gasolina de 3.5 kW que ayuda a cubrir parte del consumo. Se
+// cuenta cuánto cuesta el combustible porque casi siempre sale más caro que la
+// luz de CFE: sirve de apoyo (apagones, cargas grandes), no para ahorrar.
+
+export const GENERADOR = {
+  kw: 3.5,
+  litrosPorKwh: 0.45,
+  precioLitro: 24.5,
+  co2KgPorLitro: 2.3,
+  maxHoras: 8,
+};
+
+export function kwhGeneradorPorDia(horas: number, consumoDiarioKwh: number): number {
+  return Math.min(GENERADOR.kw * horas, Math.max(0, consumoDiarioKwh));
 }
