@@ -3,9 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import { Avatar } from './Avatar';
 import logoIcon from '../assets/logo-icon.png';
 import logoWordmark from '../assets/logo-wordmark.png';
-import mascotaMini from '../assets/mascota-greon-sm.png';
 import {
   HomeIcon,
+  CasaIcon,
   PlugIcon,
   ClockIcon,
   SparkChartIcon,
@@ -18,13 +18,9 @@ import {
   CloseIcon,
 } from './icons';
 
-function GreonNavIcon() {
-  return <img src={mascotaMini} alt="" className="sidebar-link-mascot" />;
-}
-
 const NAV_ITEMS = [
   { to: '/', label: 'Inicio', icon: HomeIcon, enabled: true },
-  { to: '/greon', label: 'Greon', icon: GreonNavIcon, enabled: true },
+  { to: '/mi-casa', label: 'Mi casa', icon: CasaIcon, enabled: true },
   { to: '/dispositivos', label: 'Dispositivos', icon: PlugIcon, enabled: true },
   { to: '/registrar-uso', label: 'Registrar uso', icon: ClockIcon, enabled: true },
   { to: '/estadisticas', label: 'Estadísticas', icon: SparkChartIcon, enabled: true },

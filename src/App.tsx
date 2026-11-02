@@ -10,6 +10,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { AvisoPrivacidad } from './pages/AvisoPrivacidad';
 import { Home } from './pages/Home';
+import { MiCasa } from './pages/MiCasa';
 import { Devices } from './pages/Devices';
 import { DeviceForm } from './pages/DeviceForm';
 import { DeviceSniffer } from './pages/DeviceSniffer';
@@ -20,7 +21,6 @@ import { Recommendations } from './pages/Recommendations';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { Guide } from './pages/Guide';
-import { GreonSpace } from './pages/GreonSpace';
 
 export default function App() {
   return (
@@ -42,10 +42,10 @@ export default function App() {
                 }
               />
               <Route
-                path="/greon"
+                path="/mi-casa"
                 element={
                   <ProtectedRoute>
-                    <GreonSpace />
+                    <MiCasa />
                   </ProtectedRoute>
                 }
               />

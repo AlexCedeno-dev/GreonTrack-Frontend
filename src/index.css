@@ -4321,11 +4321,6 @@ h3 {
   animation: mascot-mood-shake 2.6s ease-in-out infinite;
 }
 
-.mascot-mood-nervioso {
-  filter: saturate(0.85) brightness(1.04);
-  animation: mascot-mood-jitter 1.6s ease-in-out infinite;
-}
-
 @keyframes mascot-mood-shake {
   0%,
   100% {
@@ -4375,10 +4370,6 @@ h3 {
   background: #e05d44;
 }
 
-.mascot-mood-dot-nervioso {
-  background: #8a7ae0;
-}
-
 .mascot-widget-btn:hover {
   transform: scale(1.06);
 }
@@ -4421,18 +4412,6 @@ h3 {
   animation: eco-tip-fade-in 0.25s ease;
 }
 
-.mascot-widget-bubble-link {
-  align-self: flex-end;
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--verde);
-  text-decoration: none;
-}
-
-.mascot-widget-bubble-link:hover {
-  text-decoration: underline;
-}
-
 .mascot-widget-bubble-tail {
   position: absolute;
   right: 22px;
@@ -4451,258 +4430,6 @@ h3 {
 :root[data-theme-dark] .mascot-widget-hint-tail,
 :root[data-theme-dark] .mascot-widget-hint-close {
   border-color: rgba(167, 215, 160, 0.18);
-}
-
-/* ---------- Espacio de Greon ---------- */
-
-.greon-hero {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  padding: 24px 28px;
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--verde-muy-claro), var(--superficie) 140%);
-  border: 1px solid rgba(15, 61, 46, 0.08);
-  margin-bottom: 20px;
-}
-
-.greon-hero-mood {
-  margin: 6px 0 0;
-  font-size: 0.82rem;
-  font-style: italic;
-  color: var(--texto-suave);
-}
-
-.greon-hero-mascot {
-  flex-shrink: 0;
-  width: 96px;
-  height: auto;
-  animation: mascot-idle-float 3.6s ease-in-out infinite;
-}
-
-:root[data-theme-dark] .greon-hero {
-  border-color: rgba(167, 215, 160, 0.14);
-}
-
-.greon-energy-note {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  margin: 0 0 20px;
-  padding: 16px 20px;
-  border-radius: var(--radius);
-  background: var(--verde-muy-claro);
-  border: 1px dashed rgba(46, 125, 50, 0.3);
-}
-
-.greon-energy-note-icon {
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--superficie);
-  color: var(--verde);
-  box-shadow: 0 2px 6px rgba(15, 61, 46, 0.1);
-}
-
-.greon-energy-note-icon svg {
-  width: 17px;
-  height: 17px;
-}
-
-.greon-energy-note p {
-  margin: 0;
-  color: var(--texto-suave);
-  font-size: 0.86rem;
-  line-height: 1.6;
-}
-
-.greon-energy-note strong {
-  color: var(--texto-titulo);
-}
-
-.greon-energy-note p.greon-energy-note-tally {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed rgba(46, 125, 50, 0.25);
-}
-
-.greon-energy-note-tally-nota {
-  opacity: 0.75;
-  font-size: 0.92em;
-}
-
-:root[data-theme-dark] .greon-energy-note {
-  border-color: rgba(167, 215, 160, 0.22);
-}
-
-.greon-chat-card {
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--radius);
-  background: var(--superficie);
-  border: 1px solid rgba(15, 61, 46, 0.08);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-:root[data-theme-dark] .greon-chat-card {
-  border-color: rgba(167, 215, 160, 0.14);
-}
-
-.greon-chat-messages {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 22px 20px;
-  max-height: 440px;
-  overflow-y: auto;
-}
-
-.greon-msg {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  max-width: 78%;
-}
-
-.greon-msg-usuario {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-  max-width: 70%;
-}
-
-.greon-msg-avatar {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.greon-msg-bubble {
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  background: var(--verde-muy-claro);
-  color: var(--texto);
-  border-bottom-left-radius: 4px;
-}
-
-.greon-msg-usuario .greon-msg-bubble {
-  background: linear-gradient(135deg, var(--verde-medio), var(--verde) 85%);
-  color: var(--blanco);
-  border-bottom-left-radius: 14px;
-  border-bottom-right-radius: 4px;
-}
-
-.greon-msg-typing {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 13px 14px;
-}
-
-.greon-msg-typing span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--texto-suave);
-  opacity: 0.6;
-  animation: greon-typing-bounce 1.1s ease-in-out infinite;
-}
-
-.greon-msg-typing span:nth-child(2) {
-  animation-delay: 0.15s;
-}
-
-.greon-msg-typing span:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-@keyframes greon-typing-bounce {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  30% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
-}
-
-.greon-chat-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 0 20px 14px;
-  border-top: 1px solid rgba(15, 61, 46, 0.08);
-  padding-top: 14px;
-}
-
-:root[data-theme-dark] .greon-chat-suggestions {
-  border-color: rgba(167, 215, 160, 0.12);
-}
-
-.greon-suggestion-chip {
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 61, 46, 0.14);
-  background: none;
-  color: var(--texto-suave);
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-}
-
-.greon-suggestion-chip:hover:not(:disabled) {
-  background: var(--verde-muy-claro);
-  color: var(--texto-titulo);
-  border-color: var(--verde-medio);
-}
-
-.greon-suggestion-chip:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-:root[data-theme-dark] .greon-suggestion-chip {
-  border-color: rgba(167, 215, 160, 0.18);
-}
-
-.greon-chat-input-row {
-  display: flex;
-  gap: 10px;
-  padding: 16px 20px;
-  border-top: 1px solid rgba(15, 61, 46, 0.08);
-  background: var(--verde-muy-claro);
-}
-
-:root[data-theme-dark] .greon-chat-input-row {
-  border-color: rgba(167, 215, 160, 0.12);
-}
-
-.greon-chat-input-row input {
-  flex: 1;
-  min-width: 0;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(15, 61, 46, 0.14);
-  background: var(--superficie);
-  color: var(--texto);
-  font-size: 0.9rem;
-  font-family: var(--font-sans);
-  outline: none;
-}
-
-.greon-chat-input-row input:focus {
-  border-color: var(--verde-medio);
 }
 
 .consent-gate {
@@ -5040,4 +4767,2397 @@ h3 {
 
 .device-form-shake {
   animation: device-form-shake 0.4s ease;
+}
+
+/* ---------- Mi casa (maqueta interactiva) ---------- */
+
+.casa-hero {
+  padding: 0;
+  overflow: hidden;
+}
+
+.casa-escena {
+  position: relative;
+  --cielo-a: #a9dcf2;
+  --cielo-b: #e9f6ea;
+}
+
+.casa-escena[data-noche='1'] {
+  --cielo-a: #0c1a3a;
+  --cielo-b: #2b4672;
+}
+
+.casa-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.casa-svg .cielo-a {
+  stop-color: var(--cielo-a);
+}
+
+.casa-svg .cielo-b {
+  stop-color: var(--cielo-b);
+}
+
+.casa-svg .sol circle {
+  fill: #ffd24a;
+}
+
+.casa-svg .sol .rayos {
+  transform-origin: 0 0;
+  animation: casa-girar 26s linear infinite;
+}
+
+.casa-svg .sol .rayos line {
+  stroke: #ffc933;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.casa-svg .luna circle {
+  fill: #f1efe0;
+}
+
+.casa-svg .luna .crater {
+  fill: #d8d5c0;
+}
+
+.casa-svg .estrellas circle {
+  fill: #fff;
+  animation: casa-titilar 2.6s ease-in-out infinite;
+}
+
+.casa-svg .nube ellipse {
+  fill: #fff;
+  opacity: 0.92;
+}
+
+.casa-svg.noche .nube ellipse {
+  fill: #8ea3c9;
+  opacity: 0.3;
+}
+
+.casa-svg .nube.n1 {
+  animation: casa-nube 70s ease-in-out infinite alternate;
+}
+
+.casa-svg .nube.n2 {
+  animation: casa-nube 90s ease-in-out infinite alternate-reverse;
+}
+
+.casa-svg .casa-colina {
+  fill: #cde8c4;
+}
+
+.casa-svg.noche .casa-colina {
+  fill: #1c3a4b;
+}
+
+.casa-svg .casa-pasto {
+  fill: #93d67e;
+}
+
+.casa-svg.noche .casa-pasto {
+  fill: #2d6a4b;
+}
+
+.casa-svg .casa-banqueta {
+  fill: #ddd8cb;
+}
+
+.casa-svg.noche .casa-banqueta {
+  fill: #6a7280;
+}
+
+.casa-svg .casa-calle {
+  fill: #6f7783;
+}
+
+.casa-svg.noche .casa-calle {
+  fill: #2f3541;
+}
+
+.casa-svg .casa-calle-raya {
+  stroke: #f4efe0;
+  stroke-width: 3;
+  stroke-dasharray: 28 22;
+}
+
+.casa-svg .casa-planta .copa {
+  fill: #4fae5c;
+}
+
+.casa-svg .casa-planta .copa2 {
+  fill: #66c473;
+}
+
+.casa-svg .casa-planta .tronco {
+  fill: #7a5a3c;
+}
+
+.casa-svg .casa-planta .arbusto {
+  fill: #4fae5c;
+}
+
+.casa-svg.noche .casa-planta .copa,
+.casa-svg.noche .casa-planta .arbusto {
+  fill: #2c6f4a;
+}
+
+.casa-svg.noche .casa-planta .copa2 {
+  fill: #348157;
+}
+
+.casa-svg .casa-poste .poste {
+  fill: #8a6b4a;
+}
+
+.casa-svg .casa-poste .transformador {
+  fill: #7e8a93;
+}
+
+.casa-svg .casa-poste .aislante {
+  fill: #dfe3e6;
+}
+
+.casa-svg .cable-red {
+  fill: none;
+  stroke: #2c3a40;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.casa-svg .cable-red.corre {
+  stroke: #f0a800;
+  stroke-width: 3;
+  stroke-dasharray: 3 11;
+  animation: casa-fluir 0.7s linear infinite;
+}
+
+.casa-svg .medidor-caja {
+  fill: #eef1f3;
+  stroke: #b3bec5;
+  stroke-width: 1.5;
+}
+
+.casa-svg .medidor-vidrio {
+  fill: #d4ecf8;
+  stroke: #8fa4ae;
+  stroke-width: 1.5;
+}
+
+.casa-svg .medidor-disco line {
+  stroke: #d9534f;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.casa-svg .medidor-disco {
+  transform-origin: 18px 20px;
+}
+
+.casa-svg .medidor-disco.gira {
+  animation: casa-girar linear infinite;
+}
+
+.casa-svg .medidor-pantalla {
+  fill: #1b2b2f;
+}
+
+.casa-svg .medidor-kw {
+  fill: #ffd36b;
+  font-size: 7.5px;
+  font-weight: 700;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+.casa-svg .medidor-etiqueta {
+  fill: #405257;
+  font-size: 8px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+}
+
+.casa-svg.noche .medidor-etiqueta {
+  fill: #cfe0e6;
+}
+
+.casa-svg .casa-cimiento {
+  fill: #b9b2a4;
+}
+
+.casa-svg .casa-muro {
+  fill: #ece7da;
+  stroke: #d1c9b6;
+}
+
+.casa-svg .casa-losa {
+  fill: #d8cdb8;
+}
+
+.casa-svg .casa-techo {
+  fill: #53707a;
+}
+
+.casa-svg .casa-techo-borde {
+  fill: #3f585f;
+}
+
+.casa-svg .casa-division {
+  fill: #e6dec9;
+  stroke: #d1c6ad;
+  stroke-width: 0.8;
+}
+
+.casa-svg .cuarto-pared {
+  fill: #f6ecd8;
+}
+
+.casa-svg .cuarto-principal .cuarto-pared {
+  fill: #f5e1d7;
+}
+
+.casa-svg .cuarto-ninos .cuarto-pared {
+  fill: #dcecf4;
+}
+
+.casa-svg .cuarto-oficina .cuarto-pared {
+  fill: #e5f0d8;
+}
+
+.casa-svg .cuarto-garage .cuarto-pared {
+  fill: #dde1e4;
+}
+
+.casa-svg .cuarto-cocina .cuarto-pared {
+  fill: #f8f1cf;
+}
+
+.casa-svg .cuarto-zocalo {
+  fill: #c8a87d;
+}
+
+.casa-svg .cuarto-nombre {
+  fill: rgba(70, 58, 44, 0.55);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  pointer-events: none;
+}
+
+.casa-svg .ventana-vidrio {
+  fill: #cfeaf8;
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.casa-svg .ventana line {
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.casa-svg.noche .ventana-vidrio {
+  fill: #20386a;
+}
+
+.casa-svg .garage-puerta rect {
+  fill: #eceff1;
+  stroke: #c3cacf;
+  stroke-width: 2;
+}
+
+.casa-svg .garage-puerta line {
+  stroke: #c3cacf;
+  stroke-width: 2;
+}
+
+.casa-svg .cuarto-oscuro {
+  fill: #09142c;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.casa-svg .cuarto-oscuro.activa {
+  opacity: 0.55;
+}
+
+.casa-svg .escalera-cuerpo {
+  fill: #c99f6d;
+  opacity: 0.92;
+}
+
+.casa-svg .escalera-peldano {
+  stroke: #8d6840;
+  stroke-width: 2;
+}
+
+.casa-svg .cable {
+  fill: none;
+  stroke: #5d6d75;
+  stroke-width: 2;
+  opacity: 0.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.casa-svg .cable.dibuja {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: casa-dibujar 1.1s ease-out forwards;
+}
+
+.casa-svg .cable-flujo {
+  fill: none;
+  stroke: #ffb800;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 2 14;
+  animation: casa-fluir linear infinite;
+}
+
+/* Aparatos */
+
+.casa-svg .aparato {
+  cursor: pointer;
+  outline: none;
+  transform-box: view-box;
+  transition: filter 0.2s ease;
+}
+
+.casa-svg .aparato.off {
+  filter: saturate(0.75) brightness(0.97);
+}
+
+.casa-svg .aparato:hover {
+  filter: brightness(1.07) saturate(1.1);
+}
+
+.casa-svg .aparato.entra {
+  transform-origin: 0 0;
+  animation: casa-caer 0.95s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.casa-svg .aparato-clic {
+  fill: transparent;
+}
+
+.casa-svg .aparato-sombra {
+  fill: rgba(0, 0, 0, 0.13);
+}
+
+.casa-svg .aparato-anillo {
+  fill: none;
+  stroke: #2e7d32;
+  stroke-width: 2.5;
+  stroke-dasharray: 6 5;
+  animation: casa-latir 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.casa-svg .aparato:focus-visible .aparato-clic {
+  stroke: #2e7d32;
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+.casa-svg .onda-nueva {
+  fill: none;
+  stroke: #ffb800;
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: casa-onda 1.1s ease-out 0.5s both;
+}
+
+.casa-svg .sp-madera {
+  fill: #b98b5a;
+}
+
+.casa-svg .sp-negro {
+  fill: #2a3238;
+}
+
+.casa-svg .sp-negro-linea {
+  stroke: #2a3238;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.casa-svg .sp-blanco {
+  fill: #f6f8f9;
+  stroke: #cbd4d9;
+  stroke-width: 1;
+}
+
+.casa-svg .sp-sombra {
+  fill: rgba(0, 0, 0, 0.13);
+}
+
+.casa-svg .sp-gris {
+  fill: #9ba8af;
+}
+
+.casa-svg .sp-gris-claro {
+  fill: #d3d9dd;
+  stroke: #aab5bb;
+}
+
+.casa-svg .sp-pantalla {
+  fill: #16212a;
+  transition: fill 0.3s;
+}
+
+.casa-svg .sp-pantalla.on {
+  fill: #5fb7e8;
+  animation: casa-pantalla 2.8s ease-in-out infinite;
+}
+
+.casa-svg .sp-tv-brillo {
+  fill: rgba(255, 255, 255, 0.2);
+}
+
+.casa-svg .sp-led {
+  fill: #5b666c;
+}
+
+.casa-svg .sp-led.on {
+  fill: #38d46a;
+}
+
+.casa-svg .sp-led.on.frio {
+  fill: #4cc3ff;
+}
+
+.casa-svg .sp-led.on.azul {
+  fill: #4c8dff;
+  animation: casa-parpadeo 1.1s ease-in-out infinite alternate;
+}
+
+.casa-svg .sp-led.on.rojo {
+  fill: #ff5a4d;
+}
+
+.casa-svg .sp-aire path,
+.casa-svg .sp-frio-vapor {
+  fill: none;
+  stroke: #7fd0f5;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.casa-svg .sp-aire path {
+  animation: casa-aire 1.7s ease-in-out infinite;
+}
+
+.casa-svg .sp-aire path:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.casa-svg .sp-aire path:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.casa-svg .sp-frio-vapor {
+  stroke-width: 1.5;
+  animation: casa-subir 2.2s ease-out infinite;
+}
+
+.casa-svg .sp-vibra {
+  animation: casa-vibra 0.24s linear infinite;
+}
+
+.casa-svg .sp-vibra-fuerte {
+  animation: casa-vibra-fuerte 0.14s linear infinite;
+}
+
+.casa-svg .sp-aspas.gira {
+  transform-origin: 0px -46px;
+  animation: casa-girar 0.45s linear infinite;
+}
+
+.casa-svg .sp-malla {
+  fill: rgba(170, 190, 200, 0.18);
+  stroke: #8fa1a9;
+  stroke-width: 1.5;
+}
+
+.casa-svg .sp-aspa {
+  fill: #7ec8a9;
+}
+
+.casa-svg .sp-viento {
+  fill: none;
+  stroke: #a5dff5;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 5 5;
+  animation: casa-fluir 0.6s linear infinite;
+}
+
+.casa-svg .sp-cable {
+  stroke: #4a5560;
+  stroke-width: 1.5;
+}
+
+.casa-svg .sp-casquillo {
+  fill: #6a757c;
+}
+
+.casa-svg .sp-foco {
+  fill: #dde1e3;
+  stroke: #b7c0c5;
+}
+
+.casa-svg .sp-foco.on {
+  fill: #ffe27a;
+  stroke: #ffc933;
+}
+
+.casa-svg .sp-halo {
+  fill: rgba(255, 226, 122, 0.32);
+  animation: casa-latir 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.casa-svg .sp-cono {
+  fill: rgba(255, 238, 168, 0.2);
+}
+
+.casa-svg.noche .sp-cono {
+  fill: rgba(255, 238, 168, 0.42);
+}
+
+.casa-svg .sp-pulso {
+  fill: none;
+  stroke: #7fe0a5;
+  stroke-width: 1.6;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: casa-onda 1.8s ease-out infinite;
+}
+
+.casa-svg .sp-plancha {
+  fill: #c9ced2;
+}
+
+.casa-svg .sp-plancha.on {
+  fill: #ff8a5c;
+}
+
+.casa-svg .sp-vapor {
+  fill: none;
+  stroke: #b8c5cc;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  animation: casa-subir 1.9s ease-out infinite;
+}
+
+.casa-svg .sp-secadora {
+  fill: #e87aa6;
+}
+
+.casa-svg .sp-ventana-micro {
+  fill: #2a3238;
+}
+
+.casa-svg .sp-ventana-micro.on {
+  fill: #ffcf6b;
+  animation: casa-parpadeo 1.3s ease-in-out infinite alternate;
+}
+
+.casa-svg .sp-plato {
+  fill: #e8a23a;
+  opacity: 0.85;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: casa-plato 0.9s ease-in-out infinite alternate;
+}
+
+.casa-svg .sp-tambor {
+  fill: #4a5b66;
+}
+
+.casa-svg .sp-tambor.on {
+  fill: #58b3e8;
+}
+
+.casa-svg .sp-remolino {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-origin: 0px -19px;
+  animation: casa-girar 0.8s linear infinite;
+}
+
+.casa-svg .sp-boiler-banda {
+  fill: #9ba8af;
+}
+
+.casa-svg .sp-boiler-banda.on {
+  fill: #ff7a45;
+  animation: casa-parpadeo 1.2s ease-in-out infinite alternate;
+}
+
+.casa-svg .sp-burbujas circle {
+  fill: #ffd8c0;
+  animation: casa-subir 1.7s ease-out infinite;
+}
+
+.casa-svg .sp-burbujas circle:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.casa-svg .sp-burbujas circle:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.casa-svg .sp-wifi path {
+  fill: none;
+  stroke: #4c8dff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  animation: casa-parpadeo 1.2s ease-in-out infinite alternate;
+}
+
+.casa-svg .sp-wifi path:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+.casa-svg .sp-cafe {
+  fill: #b9bfc3;
+}
+
+.casa-svg .sp-cafe.on {
+  fill: #7a4a2a;
+}
+
+.casa-svg .sp-aspiradora {
+  fill: #e0524d;
+}
+
+.casa-svg .sp-polvo circle {
+  fill: #b8a58b;
+  animation: casa-viaja 1.1s ease-out infinite;
+}
+
+.casa-svg .sp-polvo circle:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.casa-svg .sp-polvo circle:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.casa-svg .sp-coche {
+  fill: #e0584d;
+}
+
+.casa-svg .sp-vidrio {
+  fill: #c3e5f3;
+}
+
+.casa-svg .sp-llanta {
+  fill: #2a3238;
+}
+
+.casa-svg .sp-rin {
+  fill: #cfd6da;
+}
+
+.casa-svg .sp-faro {
+  fill: #ffe9a0;
+}
+
+.casa-svg .sp-bateria-marco {
+  fill: #fff;
+  stroke: #2a3238;
+  stroke-width: 1.2;
+}
+
+.casa-svg .sp-bateria-nivel {
+  fill: #cfd6da;
+}
+
+.casa-svg .sp-bateria-nivel.carga {
+  fill: #38d46a;
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: casa-carga 3.2s ease-in-out infinite;
+}
+
+.casa-svg .sp-rayo {
+  fill: #ffd24a;
+  stroke: #e0a100;
+  stroke-width: 1;
+  animation: casa-parpadeo 0.8s ease-in-out infinite alternate;
+}
+
+/* Monitos */
+
+.casa-svg .mono {
+  cursor: pointer;
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+
+.casa-svg .mono-a .mono-torso {
+  fill: #3f7de0;
+}
+
+.casa-svg .mono-b .mono-torso {
+  fill: #e0584d;
+}
+
+.casa-svg .mono-c .mono-torso {
+  fill: #f2c230;
+}
+
+.casa-svg .mono-a .mono-pelo {
+  fill: #2d2118;
+}
+
+.casa-svg .mono-b .mono-pelo {
+  fill: #6b3a1e;
+}
+
+.casa-svg .mono-c .mono-pelo {
+  fill: #c0392b;
+}
+
+.casa-svg .mono-pierna {
+  fill: #34495e;
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+}
+
+.casa-svg .mono-brazo {
+  fill: #f1c9a5;
+  transform-box: fill-box;
+  transform-origin: 50% 8%;
+}
+
+.casa-svg .mono-cara {
+  fill: #f6d5b5;
+}
+
+.casa-svg .mono-ojo {
+  fill: #2a3238;
+}
+
+.casa-svg .mono.camina .mono-pierna.pa {
+  animation: casa-paso 0.5s ease-in-out infinite alternate;
+}
+
+.casa-svg .mono.camina .mono-pierna.pb {
+  animation: casa-paso 0.5s ease-in-out infinite alternate-reverse;
+}
+
+.casa-svg .mono.camina .mono-brazo.ba {
+  animation: casa-paso 0.5s ease-in-out infinite alternate-reverse;
+}
+
+.casa-svg .mono.camina .mono-brazo.bb {
+  animation: casa-paso 0.5s ease-in-out infinite alternate;
+}
+
+.casa-svg .mono.camina .mono-cuerpo {
+  animation: casa-rebote 0.5s ease-in-out infinite;
+}
+
+.casa-svg .mono.usando .mono-cuerpo {
+  animation: casa-rebote 1.3s ease-in-out infinite;
+}
+
+.casa-svg .mono-globo rect,
+.casa-svg .mono-globo path {
+  fill: #fff;
+  stroke: #cfd8d3;
+}
+
+.casa-svg .mono-globo path {
+  stroke: none;
+}
+
+.casa-svg .mono-globo text {
+  fill: #12241c;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+}
+
+.casa-svg .mono-globo {
+  animation: casa-aparece 0.25s ease-out both;
+}
+
+/* Controles sobre la maqueta */
+
+.casa-barra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--superficie);
+  border-top: 1px solid rgba(15, 61, 46, 0.08);
+}
+
+.casa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  font: 700 0.92rem var(--font-sans);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.casa-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.casa-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.casa-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.casa-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.casa-btn-principal {
+  background: var(--verde);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.32);
+}
+
+.casa-btn-principal:hover:not(:disabled) {
+  background: #276b2b;
+}
+
+.casa-btn-suave {
+  background: var(--verde-muy-claro);
+  color: var(--texto-titulo);
+}
+
+.casa-btn-suave:hover:not(:disabled) {
+  background: var(--verde-claro);
+}
+
+:root[data-theme-dark] .casa-btn-suave:hover:not(:disabled) {
+  background: #25443a;
+}
+
+.casa-btn-icono {
+  padding: 0;
+  width: 42px;
+  font-size: 1.15rem;
+}
+
+.casa-btn-chico {
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 0.82rem;
+}
+
+.casa-btn-prender {
+  background: #f2b84b;
+  color: #3a2a00;
+}
+
+.casa-btn-apagar {
+  background: #3a4a52;
+  color: #fff;
+}
+
+.casa-btn-quitar {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.casa-pista {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  max-width: calc(100% - 24px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15, 36, 28, 0.72);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.casa-aviso {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 8;
+  max-width: calc(100% - 24px);
+  padding: 9px 16px;
+  border-radius: 12px;
+  background: var(--verde-oscuro);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(15, 61, 46, 0.3);
+  animation: casa-aparece 0.3s ease-out both;
+}
+
+.casa-bandeja {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 76px;
+  z-index: 6;
+  max-height: calc(100% - 100px);
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 8px;
+  padding: 12px;
+  border-radius: 18px;
+  background: var(--superficie);
+  box-shadow: 0 16px 40px rgba(15, 61, 46, 0.28);
+  animation: casa-sube 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.casa-bandeja-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 6px 8px;
+  border: 1px solid rgba(15, 61, 46, 0.1);
+  border-radius: 14px;
+  background: var(--superficie);
+  color: var(--texto);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  animation: casa-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.casa-bandeja-item:hover {
+  transform: translateY(-3px);
+  border-color: var(--verde-medio);
+  background: var(--verde-muy-claro);
+}
+
+.casa-icono {
+  width: 56px;
+  height: 44px;
+}
+
+.casa-icono .sp-madera {
+  fill: #b98b5a;
+}
+
+.casa-icono .sp-negro {
+  fill: #2a3238;
+}
+
+.casa-icono .sp-negro-linea {
+  stroke: #2a3238;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.casa-icono .sp-blanco {
+  fill: #f6f8f9;
+  stroke: #b9c3c9;
+}
+
+.casa-icono .sp-sombra {
+  fill: rgba(0, 0, 0, 0.13);
+}
+
+.casa-icono .sp-gris {
+  fill: #9ba8af;
+}
+
+.casa-icono .sp-gris-claro {
+  fill: #d3d9dd;
+  stroke: #aab5bb;
+}
+
+.casa-icono .sp-pantalla {
+  fill: #16212a;
+}
+
+.casa-icono .sp-led {
+  fill: #5b666c;
+}
+
+.casa-icono .sp-malla {
+  fill: rgba(170, 190, 200, 0.18);
+  stroke: #8fa1a9;
+  stroke-width: 1.5;
+}
+
+.casa-icono .sp-aspa {
+  fill: #7ec8a9;
+}
+
+.casa-icono .sp-cable {
+  stroke: #4a5560;
+  stroke-width: 1.5;
+}
+
+.casa-icono .sp-casquillo {
+  fill: #6a757c;
+}
+
+.casa-icono .sp-foco {
+  fill: #ffe27a;
+  stroke: #ffc933;
+}
+
+.casa-icono .sp-plancha {
+  fill: #c9ced2;
+}
+
+.casa-icono .sp-secadora {
+  fill: #e87aa6;
+}
+
+.casa-icono .sp-ventana-micro {
+  fill: #2a3238;
+}
+
+.casa-icono .sp-tambor {
+  fill: #4a5b66;
+}
+
+.casa-icono .sp-boiler-banda {
+  fill: #9ba8af;
+}
+
+.casa-icono .sp-cafe {
+  fill: #b9bfc3;
+}
+
+.casa-icono .sp-aspiradora {
+  fill: #e0524d;
+}
+
+.casa-icono .sp-coche {
+  fill: #e0584d;
+}
+
+.casa-icono .sp-vidrio {
+  fill: #c3e5f3;
+}
+
+.casa-icono .sp-llanta {
+  fill: #2a3238;
+}
+
+.casa-icono .sp-rin {
+  fill: #cfd6da;
+}
+
+.casa-icono .sp-faro {
+  fill: #ffe9a0;
+}
+
+.casa-icono .sp-bateria-marco {
+  fill: #fff;
+  stroke: #2a3238;
+  stroke-width: 1.2;
+}
+
+.casa-icono .sp-bateria-nivel {
+  fill: #cfd6da;
+}
+
+.casa-bandeja-nombre {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.casa-bandeja-dato {
+  font-size: 0.72rem;
+  color: var(--texto-suave);
+}
+
+/* Ventanita del aparato seleccionado */
+
+.casa-popover {
+  position: absolute;
+  top: 52px;
+  z-index: 5;
+  width: min(272px, calc(100% - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-radius: 16px;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid rgba(15, 61, 46, 0.1);
+  box-shadow: 0 14px 34px rgba(15, 61, 46, 0.28);
+  animation: casa-aparece 0.22s ease-out both;
+}
+
+/* Se acomoda del lado contrario al aparato para no taparlo. */
+.casa-popover[data-lado='izq'] {
+  left: 12px;
+}
+
+.casa-popover[data-lado='der'] {
+  right: 12px;
+}
+
+.casa-popover strong {
+  padding-right: 24px;
+  color: var(--texto-titulo);
+  font-size: 1rem;
+}
+
+.casa-popover-dato {
+  margin-top: -6px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.casa-popover-cerrar {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.casa-popover-cerrar:hover {
+  background: var(--verde-muy-claro);
+}
+
+.casa-popover-cerrar svg {
+  width: 14px;
+  height: 14px;
+}
+
+.casa-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+}
+
+.casa-campo b {
+  color: var(--texto);
+}
+
+.casa-campo input[type='range'] {
+  width: 100%;
+  accent-color: var(--verde);
+}
+
+.casa-campo-fila {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.casa-campo select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 61, 46, 0.18);
+  background: var(--superficie);
+  color: var(--texto);
+  font: inherit;
+}
+
+.casa-popover-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.casa-popover-acciones .casa-btn {
+  flex: 1;
+  min-height: 38px;
+  padding: 0 12px;
+  font-size: 0.85rem;
+}
+
+/* Cuentas: recibo y ranking */
+
+.casa-cuentas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.casa-recibo,
+.casa-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px;
+}
+
+.casa-recibo-cab {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.casa-recibo-cab > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.casa-etiqueta {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.casa-total {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.4vw, 2.8rem);
+  line-height: 1.05;
+  color: var(--texto-titulo);
+  font-variant-numeric: tabular-nums;
+  animation: casa-pop 0.35s ease-out both;
+}
+
+.casa-tarifa {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+.casa-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.casa-chip {
+  min-width: 38px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(15, 61, 46, 0.16);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto);
+  font: 700 0.85rem var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.casa-chip:hover {
+  background: var(--verde-muy-claro);
+}
+
+.casa-chip.activa {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #fff;
+  transform: scale(1.06);
+}
+
+.casa-pista-wrap {
+  position: relative;
+  padding-top: 22px;
+}
+
+.casa-pista-escalones {
+  display: flex;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(15, 61, 46, 0.09);
+}
+
+.casa-tramo {
+  height: 100%;
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.casa-tramo-basico {
+  background: #54b96c;
+}
+
+.casa-tramo-intermedio {
+  background: #f1b744;
+}
+
+.casa-tramo-excedente {
+  background: #e0574b;
+}
+
+.casa-marca-dac {
+  position: absolute;
+  top: 0;
+  bottom: -4px;
+  width: 0;
+  border-left: 2px dashed var(--texto);
+  transition: left 0.5s ease;
+}
+
+.casa-marca-dac span {
+  position: absolute;
+  top: -1px;
+  left: -2px;
+  transform: translateX(-100%);
+  padding-right: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--texto);
+}
+
+.casa-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.casa-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.casa-punto {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.casa-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.casa-tabla th {
+  padding: 6px 8px;
+  text-align: right;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  border-bottom: 1px solid rgba(15, 61, 46, 0.12);
+}
+
+.casa-tabla th:first-child,
+.casa-tabla td:first-child {
+  text-align: left;
+}
+
+.casa-tabla td {
+  padding: 9px 8px;
+  text-align: right;
+  border-bottom: 1px solid rgba(15, 61, 46, 0.07);
+}
+
+.casa-tabla td small {
+  margin-left: 6px;
+  color: var(--texto-suave);
+}
+
+.casa-tabla tr.vacio td {
+  opacity: 0.45;
+}
+
+.casa-tabla tr.total td {
+  padding-top: 12px;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--texto-titulo);
+  border-bottom: 0;
+}
+
+.casa-alerta {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.casa-alerta-aviso {
+  background: #fdf3dc;
+  color: #6b4a00;
+}
+
+.casa-alerta-peligro {
+  background: var(--error-bg);
+  color: var(--error);
+  font-weight: 600;
+}
+
+:root[data-theme-dark] .casa-alerta-aviso {
+  background: #3a3017;
+  color: #f1d58a;
+}
+
+.casa-nota {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.casa-ranking-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.casa-ranking-cab h2 {
+  margin: 0;
+}
+
+.casa-ranking-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-ranking-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(40px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--texto);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.casa-ranking-fila:hover,
+.casa-ranking-fila.sel {
+  background: var(--verde-muy-claro);
+}
+
+.casa-ranking-fila.sel {
+  border-color: var(--verde-medio);
+}
+
+.casa-ranking-nombre {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.casa-ranking-nombre small,
+.casa-ranking-valor small {
+  font-weight: 500;
+  font-size: 0.74rem;
+  color: var(--texto-suave);
+}
+
+.casa-ranking-barra {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(15, 61, 46, 0.09);
+  overflow: hidden;
+}
+
+.casa-ranking-barra span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--verde-medio), #f1b744);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.casa-ranking-valor {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 980px) {
+  .casa-cuentas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .casa-recibo,
+  .casa-ranking {
+    padding: 18px;
+  }
+
+  /* En el celular la maqueta es chiquita: la ventanita va debajo, sin taparla. */
+  .casa-popover,
+  .casa-popover[data-lado] {
+    position: static;
+    width: auto;
+    margin: 10px 12px 0;
+  }
+
+  .casa-bandeja {
+    bottom: 140px;
+  }
+
+  .casa-pista {
+    display: none;
+  }
+
+  .casa-ranking-fila {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .casa-ranking-barra {
+    display: none;
+  }
+}
+
+/* Animaciones de la maqueta */
+
+@keyframes casa-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes casa-fluir {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+@keyframes casa-dibujar {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes casa-caer {
+  0% {
+    transform: translateY(-80px) scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes casa-onda {
+  from {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(4.2);
+    opacity: 0;
+  }
+}
+
+@keyframes casa-latir {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+@keyframes casa-parpadeo {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes casa-titilar {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes casa-nube {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(160px);
+  }
+}
+
+@keyframes casa-pantalla {
+  0%,
+  100% {
+    fill: #5fb7e8;
+  }
+  35% {
+    fill: #8e7be0;
+  }
+  70% {
+    fill: #47d3a8;
+  }
+}
+
+@keyframes casa-aire {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+}
+
+@keyframes casa-subir {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes casa-viaja {
+  0% {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+@keyframes casa-vibra {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(0.8px);
+  }
+}
+
+@keyframes casa-vibra-fuerte {
+  0%,
+  100% {
+    transform: translateX(-1px);
+  }
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes casa-plato {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0.4);
+  }
+}
+
+@keyframes casa-carga {
+  from {
+    transform: scaleX(0.12);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes casa-paso {
+  from {
+    transform: rotate(-26deg);
+  }
+  to {
+    transform: rotate(26deg);
+  }
+}
+
+@keyframes casa-rebote {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes casa-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes casa-aparece {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes casa-sube {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casa-svg *,
+  .casa-bandeja,
+  .casa-bandeja-item,
+  .casa-popover,
+  .casa-total {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Mi casa: portada, reloj, paneles y extras ---------- */
+
+.casa-portada {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 6px 0 4px;
+}
+
+.casa-portada > * {
+  animation: casa-sube 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.casa-portada > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.casa-portada > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.casa-portada > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+.casa-portada-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  background: var(--verde-muy-claro);
+  color: var(--texto-titulo);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.casa-portada-etiqueta svg {
+  width: 18px;
+  height: 18px;
+  animation: casa-latir 2.2s ease-in-out infinite;
+}
+
+.casa-portada-titulo {
+  margin: 0;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--texto-titulo);
+  text-wrap: balance;
+}
+
+.casa-portada-titulo em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--verde);
+  background: linear-gradient(transparent 82%, rgba(241, 183, 68, 0.55) 82%, rgba(241, 183, 68, 0.55) 94%, transparent 94%);
+  background-size: 100% 100%;
+  padding-right: 0.06em;
+}
+
+:root[data-theme-dark] .casa-portada-titulo em {
+  color: var(--verde-medio);
+}
+
+.casa-portada-texto {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--texto-suave);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.casa-portada-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-portada-datos li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px 10px 10px;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: var(--shadow);
+}
+
+.casa-portada-datos strong {
+  display: block;
+  font-size: 1.18rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-titulo);
+}
+
+.casa-portada-datos small {
+  display: block;
+  color: var(--texto-suave);
+  font-size: 0.76rem;
+}
+
+.casa-dato-icono {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffe08a, #f1b744);
+  color: #3a2a00;
+}
+
+.casa-portada-datos li:nth-child(2) .casa-dato-icono {
+  background: linear-gradient(135deg, #b9e5c0, #66bb6a);
+  color: #0f3d2e;
+}
+
+.casa-portada-datos li:nth-child(3) .casa-dato-icono {
+  background: linear-gradient(135deg, #bcd9f7, #6aa3e8);
+  color: #0d2a52;
+}
+
+.casa-dato-icono svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Barra de controles */
+
+.casa-paneles,
+.casa-reloj {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  border-radius: 999px;
+  background: var(--verde-muy-claro);
+  color: var(--texto-titulo);
+}
+
+.casa-paneles {
+  padding: 0 14px 0 12px;
+}
+
+.casa-paneles > svg {
+  width: 22px;
+  height: 22px;
+}
+
+.casa-paneles button,
+.casa-btn-redondo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto-titulo);
+  font: 800 0.74rem var(--font-sans);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(15, 61, 46, 0.16);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.casa-paneles button:hover:not(:disabled),
+.casa-btn-redondo:hover {
+  transform: scale(1.1);
+  background: var(--verde-claro);
+}
+
+:root[data-theme-dark] .casa-paneles button:hover:not(:disabled),
+:root[data-theme-dark] .casa-btn-redondo:hover {
+  background: #2b4a3e;
+}
+
+.casa-paneles button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.casa-paneles button svg,
+.casa-btn-redondo svg {
+  width: 15px;
+  height: 15px;
+}
+
+.casa-btn-redondo[aria-pressed='true'] {
+  background: var(--verde);
+  color: #fff;
+}
+
+.casa-paneles-n {
+  min-width: 1.2ch;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  animation: casa-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.casa-paneles small {
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+
+.casa-reloj {
+  flex: 1 1 340px;
+  max-width: 560px;
+  padding: 0 8px 0 14px;
+}
+
+.casa-reloj input[type='range'] {
+  flex: 1;
+  min-width: 80px;
+  accent-color: var(--verde);
+}
+
+.casa-reloj output {
+  min-width: 4.2ch;
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.casa-reloj-astro {
+  display: grid;
+  place-items: center;
+  color: #e0a100;
+}
+
+.casa-reloj-astro.luna {
+  color: #8d8fe0;
+}
+
+.casa-reloj-astro svg {
+  width: 20px;
+  height: 20px;
+}
+
+.casa-btn-velocidad {
+  padding: 0 9px;
+}
+
+.casa-total-antes {
+  margin-left: 12px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.casa-solar-resumen {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--verde-muy-claro);
+  color: var(--texto);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.casa-solar-resumen p {
+  margin: 0;
+}
+
+.casa-solar-resumen.activo {
+  background: linear-gradient(120deg, rgba(102, 187, 106, 0.2), rgba(241, 183, 68, 0.22));
+}
+
+.casa-solar-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--superficie);
+  color: var(--verde);
+}
+
+.casa-solar-icono svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Extras de la escena */
+
+.casa-svg .sol .sol-halo {
+  fill: rgba(255, 214, 64, 0.2);
+  animation: casa-latir 3s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.casa-svg .rayos-solares line {
+  stroke: rgba(255, 205, 64, 0.5);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 7 13;
+  animation: casa-fluir 0.9s linear infinite;
+}
+
+.casa-svg .pajaro {
+  animation: casa-vuela linear infinite both;
+}
+
+.casa-svg .pajaro path {
+  fill: none;
+  stroke: #33414a;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: casa-aletea 0.34s ease-in-out infinite alternate;
+}
+
+.casa-svg .auto-pasa {
+  animation: casa-pasa 22s linear infinite;
+  animation-delay: -7s;
+}
+
+.casa-svg .auto-cuerpo {
+  fill: #3f86c9;
+}
+
+.casa-svg .auto-vidrio {
+  fill: #cfeaf6;
+}
+
+.casa-svg .auto-llanta {
+  fill: #2a3238;
+}
+
+.casa-svg .auto-luz {
+  fill: rgba(255, 236, 160, 0);
+}
+
+.casa-svg.noche .auto-luz {
+  fill: rgba(255, 236, 160, 0.4);
+}
+
+.casa-svg .medidor-disco.reversa {
+  animation-direction: reverse;
+}
+
+.casa-svg .medidor-kw.exporta {
+  fill: #7dffb5;
+}
+
+.casa-svg .cable-red.sale {
+  stroke: #3ddc84;
+  animation-direction: reverse;
+}
+
+.casa-svg .cuarto-frio {
+  fill: #79cffb;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.casa-svg .cuarto-frio.activa {
+  opacity: 0.2;
+}
+
+.casa-svg .solar-cable {
+  fill: none;
+  stroke: #5d6d75;
+  stroke-width: 2;
+  opacity: 0.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.casa-svg .solar-flujo {
+  fill: none;
+  stroke: #3ddc84;
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 2 14;
+  animation: casa-fluir 0.75s linear infinite;
+}
+
+.casa-svg .panel-cuerpo {
+  fill: #2f5da8;
+  stroke: #a9c4ee;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+.casa-svg .panel-rejilla {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.38);
+  stroke-width: 1;
+}
+
+.casa-svg .panel-pata {
+  stroke: #6b7a82;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.casa-svg .panel-brillo {
+  fill: rgba(255, 255, 255, 0.75);
+  animation: casa-barrido 2.8s ease-in-out infinite;
+}
+
+.casa-svg .panel-solar.entra {
+  transform-origin: 34px -5px;
+  animation: casa-caer 0.95s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.casa-svg .onda-nueva.solar {
+  stroke: #3ddc84;
+}
+
+.casa-svg .chispas circle {
+  animation: casa-chispa 0.95s ease-out 0.55s both;
+}
+
+.casa-svg .chispa-a {
+  fill: #ffb800;
+}
+
+.casa-svg .chispa-b {
+  fill: #3ddc84;
+}
+
+.casa-svg .insignia {
+  animation: casa-flota 1.8s ease-in-out infinite alternate;
+}
+
+.casa-svg .insignia rect {
+  fill: rgba(18, 36, 28, 0.88);
+}
+
+.casa-svg .insignia path {
+  fill: #ffd24a;
+}
+
+.casa-svg .insignia text {
+  fill: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  font-family: var(--font-sans);
+}
+
+.casa-svg .sp-tv-luz {
+  fill: rgba(95, 183, 232, 0.14);
+  animation: casa-parpadeo 2.4s ease-in-out infinite alternate;
+}
+
+.casa-svg.noche .sp-tv-luz {
+  fill: rgba(95, 183, 232, 0.34);
+}
+
+@keyframes casa-vuela {
+  from {
+    transform: translateX(-60px);
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(1020px);
+    opacity: 0;
+  }
+}
+
+@keyframes casa-aletea {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.25);
+  }
+}
+
+@keyframes casa-pasa {
+  from {
+    transform: translateX(-140px);
+  }
+  to {
+    transform: translateX(1100px);
+  }
+}
+
+@keyframes casa-barrido {
+  0% {
+    transform: translateX(-4px);
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+}
+
+@keyframes casa-chispa {
+  from {
+    transform: translate(0, 0) scale(1.2);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(0.15);
+    opacity: 0;
+  }
+}
+
+@keyframes casa-flota {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-3px);
+  }
+}
+
+@media (max-width: 640px) {
+  .casa-reloj {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .casa-portada-titulo {
+    max-width: none;
+  }
 }

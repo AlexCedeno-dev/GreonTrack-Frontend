@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
-import { Link } from 'react-router-dom';
 import mascota from '../assets/mascota-greon-sm.png';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useAppData } from '../context/AppDataContext';
@@ -157,9 +156,6 @@ export function MascotWidget() {
         <div className="mascot-widget-bubble" role="status">
           <span className="mascot-widget-bubble-tail" aria-hidden="true" />
           <span>{frase}</span>
-          <Link to="/greon" className="mascot-widget-bubble-link" onClick={() => setAbierto(false)}>
-            Ir con Greon →
-          </Link>
         </div>
       )}
       {!abierto && !hintOculto && (

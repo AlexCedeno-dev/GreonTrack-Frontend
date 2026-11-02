@@ -89,6 +89,17 @@ export function HomeIcon({ className }: IconProps) {
   );
 }
 
+export function CasaIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3.5 9 12 3.5 20.5 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="5" y="9" width="14" height="11.5" rx="1.2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 14.8h14" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M12.8 5.8 11 9.2h2.4L11.6 12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function PlugIcon({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -663,6 +674,58 @@ export function EyeOffIcon({ className }: IconProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+export function PlayIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 5.5v13l10.5-6.5L8 5.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function PauseIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 5.5v13M15 5.5v13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function VolumeIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4v-5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function VolumeOffIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4v-5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="m16 9.5 5 5M21 9.5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function SpeedIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 6.5v11l7-5.5-7-5.5ZM12 6.5v11l7-5.5-7-5.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function SolarPanelIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 8h14l2 8H3l2-8Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M9.7 8 8.5 16M14.3 8l1.2 8M4 12h16M12 16v4M8.5 20h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M12 2.5v2M6.2 4.2l1.2 1.4M17.8 4.2l-1.2 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }

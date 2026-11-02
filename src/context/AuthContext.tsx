@@ -16,7 +16,6 @@ interface AuthContextValue {
   signOut: () => Promise<void>;
   refreshPerfil: () => Promise<void>;
   aceptarAvisoPrivacidad: (firmaDataUrl: string) => Promise<{ error: string | null }>;
-  registrarConsultaGreon: () => Promise<void>;
   eliminarCuenta: (password: string) => Promise<{ error: string | null }>;
 }
 
@@ -125,21 +124,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   };
 
-  // Contador informativo de "¿cuánto le hemos preguntado a Greon?", para
-  // mostrar el gasto energético aproximado de esas consultas en
-  // GreonSpace.tsx — no es crítico si falla (el chat ya respondió), por eso
-  // no propaga el error hacia quien llama.
-  const registrarConsultaGreon = async () => {
-    if (!session?.user || !perfil) return;
-
-    const { error } = await supabase
-      .from('perfiles')
-      .update({ greon_consultas_total: perfil.greon_consultas_total + 1 })
-      .eq('id', session.user.id);
-
-    if (!error) await loadPerfil(session.user.id);
-  };
-
   // Borra la cuenta por completo (datos + acceso) — pide la contraseña
   // actual para confirmar identidad; la Service Role key que hace el borrado
   // real vive solo en la función de Supabase, nunca en el navegador.
@@ -170,7 +154,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         refreshPerfil,
         aceptarAvisoPrivacidad,
-        registrarConsultaGreon,
         eliminarCuenta,
       }}
     >
