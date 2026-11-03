@@ -1,6 +1,9 @@
 export interface InfoRegistroDispositivo {
   origen: 'manual' | 'sniffer';
   fecha: string; // ISO
+  // Identificador de este navegador/equipo (se guarda en localStorage) para
+  // saber si ya se agregó el equipo desde el que se entra.
+  equipoId?: string;
   // Alta manual: datos del equipo/navegador que hizo el registro.
   ipPublicaRegistro?: string | null;
   sistemaOperativo?: string;
@@ -24,7 +27,7 @@ export interface InfoRegistroDispositivo {
   atributoCategoria?: { etiqueta: string; valor: string } | null;
 }
 
-function detectarSistemaOperativo(userAgent: string): string {
+export function detectarSistemaOperativo(userAgent: string): string {
   if (userAgent.includes('Windows')) return 'Windows';
   if (userAgent.includes('Mac OS')) return 'macOS';
   if (userAgent.includes('Android')) return 'Android';
@@ -33,7 +36,7 @@ function detectarSistemaOperativo(userAgent: string): string {
   return 'Desconocido';
 }
 
-function detectarNavegador(userAgent: string): string {
+export function detectarNavegador(userAgent: string): string {
   if (userAgent.includes('Edg/')) return 'Edge';
   if (userAgent.includes('Chrome/')) return 'Chrome';
   if (userAgent.includes('Firefox/')) return 'Firefox';
@@ -56,6 +59,15 @@ async function obtenerIpPublica(): Promise<string | null> {
   }
 }
 
+// Qué tipo de equipo es el que está usando la página, según lo que dice el navegador.
+export function detectarTipoEquipoActual(userAgent = navigator.userAgent): string {
+  const esIpad = userAgent.includes('iPad') || (userAgent.includes('Macintosh') && navigator.maxTouchPoints > 1);
+  if (esIpad) return 'Tablet (carga)';
+  if (userAgent.includes('iPhone')) return 'Celular (carga)';
+  if (userAgent.includes('Android')) return userAgent.includes('Mobile') ? 'Celular (carga)' : 'Tablet (carga)';
+  return 'Laptop';
+}
+
 interface DatosManualesOpcionales {
   ipDispositivo?: string;
   vendor?: string;
@@ -64,7 +76,7 @@ interface DatosManualesOpcionales {
 }
 
 export async function capturarInfoDispositivo(
-  opcionales: DatosManualesOpcionales = {}
+  opcionales: DatosManualesOpcionales & { equipoId?: string } = {}
 ): Promise<InfoRegistroDispositivo> {
   const userAgent = navigator.userAgent;
   // deviceMemory es una extensión no estándar (solo Chrome/Edge); en Safari/Firefox queda null.
@@ -73,6 +85,7 @@ export async function capturarInfoDispositivo(
   return {
     origen: 'manual',
     fecha: new Date().toISOString(),
+    equipoId: opcionales.equipoId,
     ipPublicaRegistro: await obtenerIpPublica(),
     sistemaOperativo: detectarSistemaOperativo(userAgent),
     navegador: detectarNavegador(userAgent),

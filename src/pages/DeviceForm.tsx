@@ -6,7 +6,8 @@ import { useToast } from '../context/ToastContext';
 import { supabase } from '../lib/supabase';
 import { TIPOS_DISPOSITIVO } from '../types/database';
 import { capturarInfoDispositivo } from '../lib/deviceInfo';
-import { SECCIONES, iconoDeTipo } from '../lib/deviceCategories';
+import { SECCIONES } from '../lib/deviceCategories';
+import { DibujoTipo } from '../components/casa/Sprites';
 import { ajustarConsumoSugerido, marcasParaTipo } from '../lib/deviceEnergyAdjustment';
 import { campoOpcionalDeTipo, tipoTieneIp } from '../lib/deviceCategoryFields';
 import { ArrowLeftIcon, BoltIcon, SparkChartIcon } from '../components/icons';
@@ -141,7 +142,6 @@ export function DeviceForm() {
   };
 
   const marcasDisponibles = marcasParaTipo(tipo);
-  const IconoTipo = iconoDeTipo(tipo);
   const campoOpcional = campoOpcionalDeTipo(tipo);
   const mostrarIp = tipoTieneIp(tipo);
 
@@ -277,7 +277,6 @@ export function DeviceForm() {
                       </h3>
                       <div className="type-picker">
                         {tipos.map((t) => {
-                          const Icono = iconoDeTipo(t.tipo);
                           const activo = tipo === t.tipo;
                           return (
                             <button
@@ -287,8 +286,8 @@ export function DeviceForm() {
                               onClick={() => handleTipoChange(t.tipo)}
                               aria-pressed={activo}
                             >
-                              <span className="type-picker-icon">
-                                <Icono />
+                              <span className="type-picker-dibujo">
+                                <DibujoTipo tipo={t.tipo} />
                               </span>
                               <span className="type-picker-label">{t.tipo}</span>
                             </button>
@@ -302,8 +301,8 @@ export function DeviceForm() {
             </div>
 
             <div className="device-form-preview-strip">
-              <span className="device-form-preview-icon">
-                <IconoTipo />
+              <span className="device-form-preview-icon con-dibujo">
+                <DibujoTipo tipo={tipo} />
               </span>
               <div className="device-form-preview-strip-name">
                 <p className="device-form-preview-name">{nombre.trim() || 'Tu dispositivo'}</p>

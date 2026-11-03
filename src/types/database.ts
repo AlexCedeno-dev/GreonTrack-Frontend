@@ -145,4 +145,10 @@ export interface SnifferEstado {
   usuario_id: string;
   ultimo_sondeo: string;
   dispositivos_detectados: number;
+  // Control desde la web (columnas de la migración 20261103_sniffer_control):
+  // si faltan, el sniffer se comporta como siempre encendido.
+  encendido?: boolean;
+  escaneando?: boolean;
+  escanear_ahora?: string | null;
+  bitacora?: Array<{ t: string; m: string }>;
 }

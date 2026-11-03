@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { AppShell } from '../components/AppShell';
 import { CasaInteractiva } from '../components/casa/CasaInteractiva';
 import { IconoAparato } from '../components/casa/Sprites';
@@ -9,6 +9,10 @@ import {
   GeneratorIcon,
   MinusIcon,
   MoonIcon,
+  ObraIcon,
+  PinturaIcon,
+  RecibotIcon,
+  TrofeoIcon,
   PauseIcon,
   PlayIcon,
   PlugIcon,
@@ -26,9 +30,17 @@ import {
   CASA_DE_EJEMPLO,
   CATALOGO,
   CUARTOS,
+  DISENO_BASE,
+  ESTILOS_CASA,
+  FACHADAS,
   GENERADOR,
+  PINTURAS,
+  TECHOS,
   ESCENA,
   casaDesdeDispositivos,
+  colorDePared,
+  leerDiseno,
+  nombreDeCuarto,
   crearAparato,
   PANEL,
   kwAhora,
@@ -39,6 +51,7 @@ import {
   totalKwhBimestre,
   type AparatoCasa,
   type CuartoId,
+  type Diseno,
 } from '../lib/casa';
 import { esDeNoche, formatoHora, intensidadSol } from '../lib/cielo';
 import { SECCIONES, seccionDeTipo } from '../lib/deviceCategories';
@@ -60,9 +73,46 @@ interface Guardado {
   tarifa: TarifaCfe;
   paneles: number;
   generador?: { activo: boolean; horas: number };
+  diseno?: Diseno;
 }
 
 const CLAVE_SONIDO = 'greontrack-casa-sonido';
+const CLAVE_OBRA = 'greontrack-casa-obra-vista-';
+
+// Lo que dura la construcción y en qué momento empieza cada etapa (segundos).
+const DURACION_OBRA = 7.6;
+const ETAPAS_OBRA = [
+  { desde: 0, nombre: 'Cimientos' },
+  { desde: 1.1, nombre: 'Muros' },
+  { desde: 2, nombre: 'Planta baja' },
+  { desde: 3.3, nombre: 'Losa y planta alta' },
+  { desde: 5.2, nombre: 'Techo' },
+  { desde: 6.3, nombre: 'Instalación eléctrica' },
+];
+
+// Título de sección: etiqueta con icono, título grande y una palabra resaltada.
+function TituloSeccion({
+  icono,
+  etiqueta,
+  children,
+  accion,
+}: {
+  icono: ReactNode;
+  etiqueta: string;
+  children: ReactNode;
+  accion?: ReactNode;
+}) {
+  return (
+    <div className="casa-sec-cab">
+      <span className="casa-sec-icono">{icono}</span>
+      <div className="casa-sec-texto">
+        <span className="casa-sec-etiqueta">{etiqueta}</span>
+        <h2 className="casa-sec-titulo">{children}</h2>
+      </div>
+      {accion && <div className="casa-sec-accion">{accion}</div>}
+    </div>
+  );
+}
 const VELOCIDADES = [1, 2, 4];
 
 function leerGuardado(userId: string | undefined): Guardado | null {
@@ -91,6 +141,11 @@ export function MiCasa() {
   const [tarifa, setTarifa] = useState<TarifaCfe>(guardado?.tarifa ?? '1');
   const [paneles, setPaneles] = useState(guardado?.paneles ?? 0);
   const [generador, setGenerador] = useState(guardado?.generador ?? { activo: false, horas: 3 });
+  const [diseno, setDiseno] = useState<Diseno>(() => leerDiseno(guardado?.diseno));
+  const [personalizando, setPersonalizando] = useState(false);
+  const [cuartoEditando, setCuartoEditando] = useState<CuartoId>('principal');
+  const [obra, setObra] = useState(false);
+  const [etapaObra, setEtapaObra] = useState(0);
   const [hora, setHora] = useState(14);
   const [reloj, setReloj] = useState(false);
   const [velocidad, setVelocidad] = useState(1);
@@ -117,17 +172,67 @@ export function MiCasa() {
   useEffect(() => {
     if (!user?.id) return;
     try {
-      localStorage.setItem(CLAVE + user.id, JSON.stringify({ aparatos, tarifa, paneles, generador } satisfies Guardado));
+      localStorage.setItem(CLAVE + user.id, JSON.stringify({ aparatos, tarifa, paneles, generador, diseno } satisfies Guardado));
     } catch {
       // Es solo una comodidad: si el navegador no deja guardar, la casa sigue funcionando.
     }
-  }, [aparatos, tarifa, paneles, generador, user?.id]);
+  }, [aparatos, tarifa, paneles, generador, diseno, user?.id]);
 
   useEffect(() => {
     if (!aviso) return;
     const t = window.setTimeout(() => setAviso(null), 3200);
     return () => window.clearTimeout(t);
   }, [aviso]);
+
+  // Construcción: se ve la casa levantándose, etapa por etapa.
+  const temporizadoresObra = useRef<number[]>([]);
+  const terminarObra = () => {
+    temporizadoresObra.current.forEach((t) => window.clearTimeout(t));
+    temporizadoresObra.current = [];
+    setObra(false);
+  };
+  const iniciarObra = () => {
+    terminarObra();
+    setBandeja(false);
+    setPersonalizando(false);
+    setSeleccionadoUid(null);
+    setEtapaObra(0);
+    setObra(true);
+    tocar('agregar');
+    ETAPAS_OBRA.forEach((e, i) => {
+      if (i === 0) return;
+      temporizadoresObra.current.push(
+        window.setTimeout(() => {
+          setEtapaObra(i);
+          tocar('agregar');
+        }, e.desde * 1000)
+      );
+    });
+    temporizadoresObra.current.push(
+      window.setTimeout(() => {
+        setObra(false);
+        tocar('panel');
+      }, DURACION_OBRA * 1000)
+    );
+  };
+
+  // La primera vez que entra, la casa se construye sola.
+  useEffect(() => {
+    if (!user?.id) return;
+    let vista = false;
+    try {
+      vista = localStorage.getItem(CLAVE_OBRA + user.id) === '1';
+      if (!vista) localStorage.setItem(CLAVE_OBRA + user.id, '1');
+    } catch {
+      vista = true;
+    }
+    if (vista) return;
+    const t = window.setTimeout(iniciarObra, 500);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  useEffect(() => () => temporizadoresObra.current.forEach((t) => window.clearTimeout(t)), []);
 
   // Reloj de la casa: pasa un día completo en unos 40 segundos (más rápido con 2x y 4x).
   useEffect(() => {
@@ -205,7 +310,7 @@ export function MiCasa() {
     tocar('agregar');
     setBandeja(false);
     setSeleccionadoUid(nuevo.uid);
-    setAviso(`${nuevo.nombre} agregado en ${CUARTOS.find((c) => c.id === nuevo.cuarto)?.nombre.toLowerCase()}.`);
+    setAviso(`${nuevo.nombre} agregado en ${nombreDeCuarto(diseno, nuevo.cuarto).toLowerCase()}.`);
   };
 
   const quitar = (uid: string) => {
@@ -304,7 +409,29 @@ export function MiCasa() {
       </header>
 
       <section className="casa-hero card">
+        <div className="casa-hero-cab">
+          <TituloSeccion icono={<CasaIcon />} etiqueta="Maqueta en vivo">
+            Tu casa, <em>en acción.</em>
+          </TituloSeccion>
+        </div>
         <div className="casa-escena" data-noche={noche ? '1' : '0'}>
+          {obra && (
+            <div className="casa-obra" role="status" aria-live="polite">
+              <span className="casa-obra-icono">
+                <ObraIcon />
+              </span>
+              <div className="casa-obra-texto">
+                <strong>Construyendo tu casa…</strong>
+                <span key={etapaObra}>{ETAPAS_OBRA[etapaObra].nombre}</span>
+                <span className="casa-obra-barra">
+                  <i style={{ animationDuration: `${DURACION_OBRA}s` }} />
+                </span>
+              </div>
+              <button type="button" className="casa-btn casa-btn-suave casa-btn-chico" onClick={terminarObra}>
+                Saltar
+              </button>
+            </div>
+          )}
           <CasaInteractiva
             aparatos={aparatos}
             seleccionadoUid={seleccionadoUid}
@@ -315,6 +442,8 @@ export function MiCasa() {
             kwSolar={kwSolar}
             velocidad={velocidad}
             generador={generador.activo}
+            diseno={diseno}
+            obra={obra}
             onMonoHabla={() => tocar('hola')}
           />
 
@@ -355,7 +484,7 @@ export function MiCasa() {
                 >
                   {CUARTOS.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.nombre}
+                      {nombreDeCuarto(diseno, c.id)}
                     </option>
                   ))}
                 </select>
@@ -384,6 +513,131 @@ export function MiCasa() {
           {aviso && (
             <div className="casa-aviso" role="status">
               {aviso}
+            </div>
+          )}
+
+
+          {personalizando && (
+            <div className="casa-personaliza" role="dialog" aria-label="Personalizar la casa">
+              <header className="casa-personaliza-cab">
+                <h3>
+                  <PinturaIcon /> Personaliza tu casa
+                </h3>
+                <button type="button" className="casa-popover-cerrar" onClick={() => setPersonalizando(false)} aria-label="Cerrar">
+                  <CloseIcon />
+                </button>
+              </header>
+
+              <div className="casa-personaliza-bloque">
+                <span className="casa-personaliza-etiqueta">Estilos listos</span>
+                <div className="casa-estilos">
+                  {ESTILOS_CASA.map((e) => (
+                    <button
+                      key={e.id}
+                      type="button"
+                      className="casa-estilo"
+                      onClick={() => setDiseno((d) => ({ ...e.diseno, nombres: d.nombres }))}
+                    >
+                      <span className="casa-estilo-casita" style={{ '--t': e.diseno.techo, '--f': e.diseno.fachada } as CSSProperties}>
+                        <i />
+                      </span>
+                      {e.nombre}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="casa-personaliza-bloque">
+                <span className="casa-personaliza-etiqueta">Cuarto</span>
+                <div className="casa-chips" role="radiogroup" aria-label="Cuarto a personalizar">
+                  {CUARTOS.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={cuartoEditando === c.id}
+                      className={`casa-chip casa-chip-cuarto${cuartoEditando === c.id ? ' activa' : ''}`}
+                      onClick={() => setCuartoEditando(c.id)}
+                    >
+                      <i style={{ background: colorDePared(diseno, c.id) }} />
+                      {nombreDeCuarto(diseno, c.id)}
+                    </button>
+                  ))}
+                </div>
+                <label className="casa-campo">
+                  <span>Nombre del cuarto</span>
+                  <input
+                    type="text"
+                    maxLength={22}
+                    value={diseno.nombres[cuartoEditando] ?? ''}
+                    placeholder={CUARTOS.find((c) => c.id === cuartoEditando)?.nombre}
+                    onChange={(e) =>
+                      setDiseno((d) => ({ ...d, nombres: { ...d.nombres, [cuartoEditando]: e.target.value } }))
+                    }
+                  />
+                </label>
+                <span className="casa-personaliza-etiqueta">Pintura de las paredes</span>
+                <div className="casa-muestras">
+                  {PINTURAS.map((p) => (
+                    <button
+                      key={p.color}
+                      type="button"
+                      className={`casa-muestra${colorDePared(diseno, cuartoEditando) === p.color ? ' activa' : ''}`}
+                      style={{ background: p.color }}
+                      onClick={() => {
+                        setDiseno((d) => ({ ...d, paredes: { ...d.paredes, [cuartoEditando]: p.color } }));
+                        tocar('agregar');
+                      }}
+                      aria-label={`Pintar de ${p.nombre}`}
+                      title={p.nombre}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="casa-personaliza-fila">
+                <div className="casa-personaliza-bloque">
+                  <span className="casa-personaliza-etiqueta">Techo</span>
+                  <div className="casa-muestras">
+                    {TECHOS.map((t) => (
+                      <button
+                        key={t.color}
+                        type="button"
+                        className={`casa-muestra${diseno.techo === t.color ? ' activa' : ''}`}
+                        style={{ background: t.color }}
+                        onClick={() => setDiseno((d) => ({ ...d, techo: t.color }))}
+                        aria-label={`Techo ${t.nombre}`}
+                        title={t.nombre}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="casa-personaliza-bloque">
+                  <span className="casa-personaliza-etiqueta">Fachada</span>
+                  <div className="casa-muestras">
+                    {FACHADAS.map((f) => (
+                      <button
+                        key={f.color}
+                        type="button"
+                        className={`casa-muestra${diseno.fachada === f.color ? ' activa' : ''}`}
+                        style={{ background: f.color }}
+                        onClick={() => setDiseno((d) => ({ ...d, fachada: f.color }))}
+                        aria-label={`Fachada ${f.nombre}`}
+                        title={f.nombre}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="casa-personaliza-pie">
+                <button type="button" className="casa-btn casa-btn-suave casa-btn-chico" onClick={() => setDiseno(DISENO_BASE)}>
+                  Restablecer
+                </button>
+                <button type="button" className="casa-btn casa-btn-principal casa-btn-chico" onClick={iniciarObra}>
+                  <ObraIcon /> Ver cómo se construye
+                </button>
+              </div>
             </div>
           )}
 
@@ -424,8 +678,30 @@ export function MiCasa() {
           )}
 
           <div className="casa-barra">
-            <button type="button" className="casa-btn casa-btn-principal" onClick={() => setBandeja((v) => !v)} aria-expanded={bandeja}>
+            <button
+              type="button"
+              className="casa-btn casa-btn-principal"
+              onClick={() => {
+                setPersonalizando(false);
+                setBandeja((v) => !v);
+              }}
+              aria-expanded={bandeja}
+            >
               {bandeja ? 'Cerrar' : <><PlugIcon /> Agregar aparato</>}
+            </button>
+            <button
+              type="button"
+              className="casa-btn casa-btn-suave"
+              onClick={() => {
+                setBandeja(false);
+                setPersonalizando((v) => !v);
+              }}
+              aria-expanded={personalizando}
+            >
+              <PinturaIcon /> Personalizar
+            </button>
+            <button type="button" className="casa-btn casa-btn-suave" onClick={iniciarObra} disabled={obra}>
+              <ObraIcon /> Construir
             </button>
             <button type="button" className="casa-btn casa-btn-suave" onClick={prenderTodo} disabled={aparatos.length === 0}>
               <BoltIcon /> {todosPrendidos ? 'Apagar todo' : 'Prender todo'}
@@ -525,6 +801,9 @@ export function MiCasa() {
 
       <section className="casa-cuentas">
         <article className="card casa-recibo">
+          <TituloSeccion icono={<RecibotIcon />} etiqueta="Recibo de CFE">
+            Así se arma <em>tu recibo.</em>
+          </TituloSeccion>
           <header className="casa-recibo-cab">
             <div>
               <span className="casa-etiqueta">Tu recibo estimado, cada 2 meses</span>
@@ -557,6 +836,7 @@ export function MiCasa() {
             </label>
           </header>
 
+          <h3 className="casa-sub-titulo">Tus escalones de CFE</h3>
           <div className="casa-escalones" aria-label="Cómo se reparte tu consumo en los escalones de CFE">
             <div className="casa-pista-wrap">
               <div className="casa-pista-escalones">
@@ -625,6 +905,7 @@ export function MiCasa() {
             </div>
           )}
 
+          <h3 className="casa-sub-titulo">El desglose</h3>
           <table className="casa-tabla">
             <thead>
               <tr>
@@ -685,12 +966,17 @@ export function MiCasa() {
         </article>
 
         <article className="card casa-ranking">
-          <header className="casa-ranking-cab">
-            <h2>Quién gasta más</h2>
-            <button type="button" className="casa-btn casa-btn-suave casa-btn-chico" onClick={usarMisDispositivos}>
-              Usar mis dispositivos
-            </button>
-          </header>
+          <TituloSeccion
+            icono={<TrofeoIcon />}
+            etiqueta="Ranking de consumo"
+            accion={
+              <button type="button" className="casa-btn casa-btn-suave casa-btn-chico" onClick={usarMisDispositivos}>
+                Usar mis dispositivos
+              </button>
+            }
+          >
+            Quién gasta <em>más.</em>
+          </TituloSeccion>
           {ranking.length === 0 ? (
             <p className="muted">Tu casa está vacía. Agrega un aparato para empezar.</p>
           ) : (

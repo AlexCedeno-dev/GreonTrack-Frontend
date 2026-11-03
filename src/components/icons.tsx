@@ -938,3 +938,43 @@ export function ScissorsIcon({ className }: IconProps) {
     </Trazo>
   );
 }
+
+export function PinturaIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <rect x="4" y="3.5" width="13" height="5.5" rx="1.4" />
+      <path d="M17 6h2.5v4.2H12V13" />
+      <rect x="10.4" y="13" width="3.2" height="7.5" rx="1.2" />
+    </Trazo>
+  );
+}
+
+export function ObraIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M4 17.5h16" />
+      <path d="M5.5 17.5a6.5 6.5 0 0 1 13 0" />
+      <path d="M12 8.5V11M9.2 11.2V9.8a2.8 2.8 0 0 1 5.6 0v1.4" />
+      <path d="M3 20.5h18" />
+    </Trazo>
+  );
+}
+
+export function RecibotIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M6 3.5h12v17l-2.2-1.5-1.9 1.5-1.9-1.5-1.9 1.5L8 19l-2 1.5Z" />
+      <path d="M9 8.5h6M9 12h6M9 15.3h3.5" />
+    </Trazo>
+  );
+}
+
+export function TrofeoIcon({ className }: IconProps) {
+  return (
+    <Trazo className={className}>
+      <path d="M8 4h8v5a4 4 0 0 1-8 0Z" />
+      <path d="M8 6H5.2v1.2A3 3 0 0 0 8 10.2M16 6h2.8v1.2a3 3 0 0 1-2.8 3" />
+      <path d="M12 13v4M8.5 20.5h7M9.5 17h5" />
+    </Trazo>
+  );
+}

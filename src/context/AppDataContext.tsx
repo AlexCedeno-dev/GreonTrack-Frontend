@@ -4,6 +4,7 @@ import { fetchConsumptionData, ConsumptionData } from '../lib/consumption';
 import { generarNotificaciones, NotificacionItem } from '../lib/notifications';
 import { estaDescartadaHoy, descartarNotificacion } from '../lib/notifDismiss';
 import { calcularRacha, RachaInfo } from '../lib/streak';
+import { guardarCache, leerCache } from '../lib/cacheLocal';
 
 interface AppDataContextValue {
   datos: ConsumptionData | null;
@@ -28,6 +29,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [notificaciones, setNotificaciones] = useState<NotificacionItem[]>([]);
   const [racha, setRacha] = useState<RachaInfo | null>(null);
 
+  const aplicar = useCallback(
+    (resultado: ConsumptionData, userId: string) => {
+      setDatos(resultado);
+      const todas = generarNotificaciones(resultado);
+      setNotificaciones(todas.filter((n) => !estaDescartadaHoy(userId, n.id)));
+      setRacha(calcularRacha(resultado.porDia));
+    },
+    []
+  );
+
   const cargar = useCallback(() => {
     if (!user) {
       setDatos(null);
@@ -37,20 +48,26 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    setCargando(true);
+    // Con una copia de la última vez, la app se pinta al instante y se
+    // actualiza por detrás; sin copia (primera vez) sí espera al servidor.
+    const copia = leerCache<ConsumptionData>(`datos-${user.id}`);
+    if (copia) {
+      aplicar(copia, user.id);
+      setCargando(false);
+    } else {
+      setCargando(true);
+    }
     fetchConsumptionData(user.id)
       .then((resultado) => {
-        setDatos(resultado);
-        const todas = generarNotificaciones(resultado);
-        setNotificaciones(todas.filter((n) => !estaDescartadaHoy(user.id, n.id)));
-        setRacha(calcularRacha(resultado.porDia));
+        aplicar(resultado, user.id);
+        guardarCache(`datos-${user.id}`, resultado);
       })
       .catch(() => {
         // Racha/notificaciones son un plus informativo; si falla la carga
         // no rompemos el resto de la app por esto.
       })
       .finally(() => setCargando(false));
-  }, [user]);
+  }, [user, aplicar]);
 
   useEffect(() => {
     cargar();

@@ -130,6 +130,11 @@ const VISUAL_POR_TIPO_DB: Record<string, { visual: Visual; cuarto: CuartoId }> =
   'Dispositivo IoT': { visual: 'router', cuarto: 'sala' },
 };
 
+// El dibujo que le toca a cada tipo de dispositivo (para el formulario y la lista).
+export function visualDeTipo(tipo: string): Visual {
+  return VISUAL_POR_TIPO_DB[tipo]?.visual ?? 'generico';
+}
+
 // A qué altura del piso se conecta el cable de cada aparato.
 export const ALTURA_ENCHUFE: Record<Visual, number> = {
   tv: 14, minisplit: 94, refri: 14, congelador: 12, ventilador: 8, ventiTecho: 138, foco: 138, laptop: 14,
@@ -290,4 +295,127 @@ export const GENERADOR = {
 
 export function kwhGeneradorPorDia(horas: number, consumoDiarioKwh: number): number {
   return Math.min(GENERADOR.kw * horas, Math.max(0, consumoDiarioKwh));
+}
+
+// ── Personalizar la casa ────────────────────────────────────────────────────
+
+export interface Diseno {
+  nombres: Partial<Record<CuartoId, string>>;
+  paredes: Partial<Record<CuartoId, string>>;
+  techo: string;
+  fachada: string;
+}
+
+export const PARED_BASE: Record<CuartoId, string> = {
+  principal: '#f5e1d7',
+  ninos: '#dcecf4',
+  oficina: '#e5f0d8',
+  garage: '#dde1e4',
+  sala: '#f6ecd8',
+  cocina: '#f8f1cf',
+};
+
+export const DISENO_BASE: Diseno = { nombres: {}, paredes: {}, techo: '#53707a', fachada: '#ece7da' };
+
+export const PINTURAS: Array<{ nombre: string; color: string }> = [
+  { nombre: 'Crema', color: '#f6ecd8' },
+  { nombre: 'Durazno', color: '#f5d5c3' },
+  { nombre: 'Rosa', color: '#f3cfdc' },
+  { nombre: 'Cielo', color: '#cfe6f5' },
+  { nombre: 'Menta', color: '#d3ecd8' },
+  { nombre: 'Limón', color: '#f4eeb0' },
+  { nombre: 'Lavanda', color: '#ddd4f2' },
+  { nombre: 'Terracota', color: '#e3a98a' },
+  { nombre: 'Salvia', color: '#a9c4a3' },
+  { nombre: 'Azul noche', color: '#7d96c4' },
+  { nombre: 'Gris', color: '#d5d8dc' },
+  { nombre: 'Blanco', color: '#fbfaf6' },
+];
+
+export const TECHOS: Array<{ nombre: string; color: string }> = [
+  { nombre: 'Pizarra', color: '#53707a' },
+  { nombre: 'Teja', color: '#b5593a' },
+  { nombre: 'Bosque', color: '#3f6b4e' },
+  { nombre: 'Vino', color: '#7d3b4a' },
+  { nombre: 'Negro', color: '#363b41' },
+  { nombre: 'Arena', color: '#c4a46f' },
+];
+
+export const FACHADAS: Array<{ nombre: string; color: string }> = [
+  { nombre: 'Hueso', color: '#ece7da' },
+  { nombre: 'Blanco', color: '#faf9f5' },
+  { nombre: 'Ladrillo', color: '#c9805f' },
+  { nombre: 'Piedra', color: '#b9b2a4' },
+  { nombre: 'Verde', color: '#a8c9a6' },
+  { nombre: 'Azul', color: '#a7c1dd' },
+];
+
+// Estilos listos: con un clic cambian todo el diseño.
+export const ESTILOS_CASA: Array<{ id: string; nombre: string; diseno: Diseno }> = [
+  { id: 'clasica', nombre: 'Clásica', diseno: DISENO_BASE },
+  {
+    id: 'colonial',
+    nombre: 'Colonial',
+    diseno: {
+      nombres: {},
+      techo: '#b5593a',
+      fachada: '#f2e2c4',
+      paredes: { principal: '#f3cfdc', ninos: '#f4eeb0', oficina: '#d3ecd8', garage: '#e8dcc6', sala: '#f5d5c3', cocina: '#f4eeb0' },
+    },
+  },
+  {
+    id: 'moderna',
+    nombre: 'Moderna',
+    diseno: {
+      nombres: {},
+      techo: '#363b41',
+      fachada: '#faf9f5',
+      paredes: { principal: '#d5d8dc', ninos: '#fbfaf6', oficina: '#d5d8dc', garage: '#bfc4ca', sala: '#fbfaf6', cocina: '#fbfaf6' },
+    },
+  },
+  {
+    id: 'bosque',
+    nombre: 'Bosque',
+    diseno: {
+      nombres: {},
+      techo: '#3f6b4e',
+      fachada: '#a8c9a6',
+      paredes: { principal: '#d3ecd8', ninos: '#cfe6f5', oficina: '#a9c4a3', garage: '#d5d8dc', sala: '#e6f0d6', cocina: '#f4eeb0' },
+    },
+  },
+  {
+    id: 'playa',
+    nombre: 'Playa',
+    diseno: {
+      nombres: {},
+      techo: '#c4a46f',
+      fachada: '#a7c1dd',
+      paredes: { principal: '#cfe6f5', ninos: '#f3cfdc', oficina: '#fbfaf6', garage: '#ddd4f2', sala: '#f6ecd8', cocina: '#f4eeb0' },
+    },
+  },
+];
+
+export function nombreDeCuarto(diseno: Diseno, id: CuartoId): string {
+  return diseno.nombres[id]?.trim() || cuartoPorId(id).nombre;
+}
+
+export function colorDePared(diseno: Diseno, id: CuartoId): string {
+  return diseno.paredes[id] ?? PARED_BASE[id];
+}
+
+// Oscurece un color #rrggbb (para el borde del techo).
+export function oscurecer(hex: string, cuanto: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  const f = (v: number) => Math.max(0, Math.round(v * (1 - cuanto)));
+  return `rgb(${f((n >> 16) & 255)}, ${f((n >> 8) & 255)}, ${f(n & 255)})`;
+}
+
+export function leerDiseno(crudo: unknown): Diseno {
+  const d = (crudo ?? {}) as Partial<Diseno>;
+  return {
+    nombres: { ...(d.nombres ?? {}) },
+    paredes: { ...(d.paredes ?? {}) },
+    techo: typeof d.techo === 'string' ? d.techo : DISENO_BASE.techo,
+    fachada: typeof d.fachada === 'string' ? d.fachada : DISENO_BASE.fachada,
+  };
 }

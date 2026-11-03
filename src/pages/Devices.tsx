@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { useAuth } from '../context/AuthContext';
+import { useAppData } from '../context/AppDataContext';
 import { supabase } from '../lib/supabase';
 import type { Dispositivo } from '../types/database';
 import {
@@ -12,8 +13,12 @@ import {
   PlusIcon,
   CopyIcon,
   MonitorIcon,
+  CasaIcon,
 } from '../components/icons';
-import { CATEGORIAS, SECCIONES, categoriaDe, iconoDeCategoria, iconoDeTipo, seccionDeTipo, Categoria } from '../lib/deviceCategories';
+import { CATEGORIAS, SECCIONES, categoriaDe, iconoDeCategoria, seccionDeTipo, Categoria } from '../lib/deviceCategories';
+import { DibujoTipo } from '../components/casa/Sprites';
+import { EquipoActual } from '../components/EquipoActual';
+import { useSnifferEstado } from '../lib/useSnifferEstado';
 import mascota from '../assets/mascota-greon-sm.png';
 
 // Techo de referencia (W) usado solo para escalar la barra de consumo relativo;
@@ -227,9 +232,13 @@ function DeviceInfoModal({ device, onClose }: DeviceInfoModalProps) {
 
 export function Devices() {
   const { user } = useAuth();
+  const { datos } = useAppData();
+  const { activo: monitorRedActivo, cargado: monitorRedCargado } = useSnifferEstado(user?.id, 15_000);
   const navigate = useNavigate();
-  const [devices, setDevices] = useState<Dispositivo[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Si la app ya tiene tus dispositivos en memoria, se pintan al instante y se
+  // actualizan por detrás; solo la primera vez se ve "Cargando".
+  const [devices, setDevices] = useState<Dispositivo[]>(() => datos?.dispositivos ?? []);
+  const [loading, setLoading] = useState(() => datos === null);
   const [error, setError] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -241,7 +250,7 @@ export function Devices() {
 
   const loadDevices = async () => {
     if (!user) return;
-    setLoading(true);
+    if (devices.length === 0) setLoading(true);
     setError(null);
 
     const { data, error } = await supabase
@@ -330,6 +339,20 @@ export function Devices() {
       <div className="devices-toolbar">
         <p className="muted">Alta, edición y borrado de tus equipos electrónicos.</p>
         <div className="devices-toolbar-actions">
+          {monitorRedCargado && (
+            <button
+              type="button"
+              className={`monitor-red-chip ${monitorRedActivo ? 'activo' : 'inactivo'}`}
+              onClick={() => navigate('/dispositivos/sniffer')}
+              title="Estado del monitor que escanea tu red"
+            >
+              <span className="sniffer-status-dot" />
+              Monitor de red: {monitorRedActivo ? 'encendido' : 'apagado'}
+            </button>
+          )}
+          <button className="btn-add" onClick={() => navigate('/dispositivos/rapido')}>
+            <CasaIcon /> Armar mi casa
+          </button>
           <button className="btn-add btn-add-outline" onClick={() => navigate('/dispositivos/sniffer')}>
             <WifiIcon /> Detectar en mi red
           </button>
@@ -347,6 +370,8 @@ export function Devices() {
           </button>
         </div>
       )}
+
+      {user && <EquipoActual userId={user.id} onAgregado={loadDevices} />}
 
       {!loading && devices.length > 0 && (
         <div className="category-filter">
@@ -376,6 +401,9 @@ export function Devices() {
           <div>
             <p className="device-empty-title">Aún no tienes dispositivos</p>
             <p className="muted">Cuando agregues uno, aparecerá aquí con su consumo y origen.</p>
+            <button className="btn-add" onClick={() => navigate('/dispositivos/rapido')}>
+              <CasaIcon /> Armar mi casa en un minuto
+            </button>
           </div>
         </div>
       ) : devicesFiltrados.length === 0 ? (
@@ -418,14 +446,13 @@ export function Devices() {
             const isAgente = device.origen === 'agente';
             const puedeVincularAgente =
               device.tipo === TIPO_LAPTOP && device.origen === 'manual' && !device.device_token;
-            const IconoDispositivo = iconoDeTipo(device.tipo);
 
             return (
               <article key={device.id} className="card device-card">
                 <div className="device-card-top">
                   <div className="device-card-identity">
-                    <span className="device-card-icon">
-                      <IconoDispositivo />
+                    <span className="device-card-icon con-dibujo">
+                      <DibujoTipo tipo={device.tipo} />
                     </span>
                     <div className="device-card-text">
                       <p className="device-card-name">{device.nombre}</p>

@@ -12,9 +12,13 @@ import {
   ESCALERA_ALTA_X,
   ESCALERA_BAJA_X,
   ESCENA,
+  colorDePared,
+  nombreDeCuarto,
+  oscurecer,
   pisoY,
   posicionAparato,
   type AparatoCasa,
+  type Diseno,
 } from '../../lib/casa';
 import { ALTO_APARATO, Generador, Sprite } from './Sprites';
 
@@ -30,6 +34,9 @@ interface Props {
   kwSolar: number;
   velocidad: number;
   generador: boolean;
+  diseno: Diseno;
+  // true mientras se reproduce la animación de construcción.
+  obra: boolean;
   onMonoHabla?: () => void;
 }
 
@@ -178,6 +185,8 @@ export function CasaInteractiva({
   kwSolar,
   velocidad,
   generador,
+  diseno,
+  obra,
   onMonoHabla,
 }: Props) {
   const aparatosRef = useRef(aparatos);
@@ -223,6 +232,24 @@ export function CasaInteractiva({
     return () => window.clearTimeout(t);
   }, [paneles]);
 
+  // Cuando se cambia el color de un cuarto, la brocha lo pinta de lado a lado.
+  const paredesPrevias = useRef(diseno.paredes);
+  const [pintando, setPintando] = useState<Array<{ id: string; color: string; k: number }>>([]);
+  useEffect(() => {
+    const previas = paredesPrevias.current;
+    paredesPrevias.current = diseno.paredes;
+    const cambios = CUARTOS.filter((c) => previas[c.id] !== diseno.paredes[c.id]).map((c) => ({
+      id: c.id,
+      color: colorDePared(diseno, c.id),
+      k: Date.now(),
+    }));
+    if (cambios.length === 0) return;
+    setPintando(cambios);
+    const t = window.setTimeout(() => setPintando([]), 1100);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diseno.paredes]);
+
   const [dicho, setDicho] = useState<{ id: string; texto: string } | null>(null);
   useEffect(() => {
     if (!dicho) return;
@@ -243,11 +270,21 @@ export function CasaInteractiva({
 
   return (
     <svg
-      className={`casa-svg${noche ? ' noche' : ''}`}
+      className={`casa-svg${noche ? ' noche' : ''}${obra ? ' obra' : ''}`}
       viewBox={`0 0 ${ESCENA.w} ${ESCENA.h}`}
       role="img"
       aria-label="Maqueta de una casa de dos pisos con sus aparatos eléctricos"
-      style={{ '--cielo-a': cielo.a, '--cielo-b': cielo.b } as CSSProperties}
+      style={
+        {
+          '--cielo-a': cielo.a,
+          '--cielo-b': cielo.b,
+          '--techo': diseno.techo,
+          '--techo-borde': oscurecer(diseno.techo, 0.25),
+          '--fachada': diseno.fachada,
+          '--fachada-borde': oscurecer(diseno.fachada, 0.1),
+          ...Object.fromEntries(CUARTOS.map((c) => [`--pared-${c.id}`, colorDePared(diseno, c.id)])),
+        } as CSSProperties
+      }
       onClick={() => onSeleccionar(null)}
     >
       <defs>
@@ -401,17 +438,26 @@ export function CasaInteractiva({
       </g>
 
       {/* Casa: cimientos, muros y techo */}
-      <rect className="casa-cimiento" x={CASA.x - 8} y={ESCENA.pisoBajoY} width={CASA.w + 16} height={12} rx={2} />
-      <rect className="casa-muro" x={CASA.x - 8} y={130} width={8} height={332} />
-      <rect className="casa-muro" x={CASA.x + CASA.w} y={130} width={8} height={332} />
+      <rect className="casa-cimiento c-cimiento" x={CASA.x - 8} y={ESCENA.pisoBajoY} width={CASA.w + 16} height={12} rx={2} />
+      <rect className="casa-muro c-muro" x={CASA.x - 8} y={130} width={8} height={332} />
+      <rect className="casa-muro c-muro" x={CASA.x + CASA.w} y={130} width={8} height={332} />
 
-      {CUARTOS.map((c) => {
+      {CUARTOS.map((c, indiceCuarto) => {
         const piso = pisoY(c.piso);
         const techo = piso - 158;
         const iluminado = aparatos.some((a) => a.cuarto === c.id && a.visual === 'foco' && a.encendido);
         return (
-          <g key={c.id} className={`cuarto cuarto-${c.id}`}>
+          <g
+            key={c.id}
+            className={`cuarto cuarto-${c.id} c-cuarto ${c.piso === 0 ? 'c-baja' : 'c-alta'}`}
+            style={{ '--i': indiceCuarto % 3 } as CSSProperties}
+          >
             <rect className="cuarto-pared" x={c.x} y={techo} width={c.w} height={158} />
+            {pintando
+              .filter((p) => p.id === c.id)
+              .map((p) => (
+                <rect key={p.k} className="cuarto-pintura" x={c.x} y={techo} width={c.w} height={158} style={{ fill: p.color }} />
+              ))}
             <rect className="cuarto-zocalo" x={c.x} y={piso - 10} width={c.w} height={10} />
             {c.id === 'garage' ? (
               <g className="garage-puerta">
@@ -428,7 +474,7 @@ export function CasaInteractiva({
               </g>
             )}
             <text className="cuarto-nombre" x={c.x + 12} y={techo + 18}>
-              {c.nombre}
+              {nombreDeCuarto(diseno, c.id)}
             </text>
             <rect
               className={`cuarto-frio${aparatos.some((a) => a.cuarto === c.id && a.visual === 'minisplit' && a.encendido) ? ' activa' : ''}`}
@@ -451,7 +497,7 @@ export function CasaInteractiva({
       })}
 
       {/* Escalera */}
-      <g className="casa-escalera">
+      <g className="casa-escalera c-escalera">
         <path d="M344 460 L358 460 L402 302 L388 302 Z" className="escalera-cuerpo" />
         {Array.from({ length: 9 }).map((_, i) => {
           const t = (i + 1) / 10;
@@ -462,11 +508,13 @@ export function CasaInteractiva({
       </g>
 
       {/* Losa entre pisos, techo y divisiones */}
-      <rect className="casa-losa" x={CASA.x - 8} y={ESCENA.pisoAltoY} width={CASA.w + 16} height={10} />
-      <rect className="casa-techo" x={CASA.x - 20} y={112} width={CASA.w + 40} height={20} rx={4} />
-      <rect className="casa-techo-borde" x={CASA.x - 20} y={128} width={CASA.w + 40} height={4} />
+      <rect className="casa-losa c-losa" x={CASA.x - 8} y={ESCENA.pisoAltoY} width={CASA.w + 16} height={10} />
+      <g className="c-techo">
+        <rect className="casa-techo" x={CASA.x - 20} y={112} width={CASA.w + 40} height={20} rx={4} />
+        <rect className="casa-techo-borde" x={CASA.x - 20} y={128} width={CASA.w + 40} height={4} />
+      </g>
       {paneles > 0 && (
-        <g className="casa-solar">
+        <g className="casa-solar c-interior">
           <path className="solar-cable" d="M128 108 H106 V406 H102" />
           {generando && <path className="solar-flujo" d="M128 108 H106 V406 H102" filter="url(#casa-brillo)" />}
           {Array.from({ length: paneles }).map((_, i) => {
@@ -492,12 +540,15 @@ export function CasaInteractiva({
         </g>
       )}
       {[370, 610].map((x) => (
-        <rect key={`a${x}`} className="casa-division" x={x - 3} y={132} width={6} height={72} />
+ <rect key={`a${x}`} className="casa-division c-escalera" x={x - 3} y={132} width={6} height={72} />
       ))}
       {[340, 590].map((x) => (
-        <rect key={`b${x}`} className="casa-division" x={x - 3} y={300} width={6} height={72} />
+ <rect key={`b${x}`} className="casa-division c-escalera" x={x - 3} y={300} width={6} height={72} />
       ))}
 
+      {obra && <Obra />}
+
+      <g className="c-interior">
       {/* Cables */}
       <g className="casa-cables">
         {aparatos.map((a) => (
@@ -632,6 +683,76 @@ export function CasaInteractiva({
           </text>
         </g>
       )}
+      </g>
     </svg>
+  );
+}
+
+// La obra: andamios, una grúa que sube y baja vigas, polvo y chispas de soldadura.
+// Solo se dibuja mientras corre la animación de construcción.
+function Obra() {
+  const nivelesAndamio = [150, 188, 226, 264, 302, 340, 378, 416, 454];
+  return (
+    <g className="obra-capa" pointerEvents="none">
+      {[92, 852].map((x) => (
+        <g key={x} className="andamio">
+          <path d={`M${x} 468 V140 M${x + 24} 468 V140`} />
+          {nivelesAndamio.map((y) => (
+            <path key={y} d={`M${x} ${y} H${x + 24} M${x} ${y} L${x + 24} ${y + 38} M${x + 24} ${y} L${x} ${y + 38}`} />
+          ))}
+        </g>
+      ))}
+
+      <g transform="translate(-22 0)">
+      <g className="grua">
+        <path className="grua-torre" d="M905 468 V66 M927 468 V66" />
+        {Array.from({ length: 12 }).map((_, i) => (
+          <path key={i} className="grua-torre" d={`M905 ${468 - i * 33.5} L927 ${468 - (i + 1) * 33.5} M927 ${468 - i * 33.5} L905 ${468 - (i + 1) * 33.5}`} />
+        ))}
+        <g className="grua-pluma">
+          <rect className="grua-brazo" x={640} y={58} width={340} height={9} rx={2} />
+          <path className="grua-torre" d="M650 67 L700 58 L760 67 L820 58 L880 67 L940 58" />
+          <rect className="grua-contrapeso" x={948} y={67} width={28} height={30} rx={3} />
+          <rect className="grua-cabina" x={896} y={68} width={38} height={26} rx={5} />
+          <rect className="grua-vidrio" x={904} y={73} width={16} height={12} rx={2} />
+          <g className="grua-gancho">
+            <path className="grua-cable" d="M720 67 V150" />
+            <rect className="grua-viga" x={690} y={150} width={60} height={9} rx={2} />
+            <path className="grua-cable" d="M720 150 L696 150 M720 150 L744 150" />
+          </g>
+        </g>
+      </g>
+      </g>
+
+      {[
+        [136, 468, 0.3],
+        [490, 468, 0.55],
+        [826, 468, 0.4],
+        [112, 130, 1.5],
+        [848, 130, 1.7],
+      ].map(([x, y, delay], i) => (
+        <g key={i} transform={`translate(${x} ${y})`}>
+          <circle className="polvo" r={14} style={{ animationDelay: `${delay}s` }} />
+          <circle className="polvo" r={9} cx={14} style={{ animationDelay: `${Number(delay) + 0.2}s` }} />
+        </g>
+      ))}
+
+      {[
+        [112, 130],
+        [848, 130],
+        [CASA.x + 180, 112],
+        [CASA.x + 520, 112],
+      ].map(([x, y], i) => (
+        <g key={i} transform={`translate(${x} ${y})`} className="soldadura" style={{ animationDelay: `${i * 0.35}s` }}>
+          {[0, 60, 120, 180, 240, 300].map((a) => (
+            <path
+              key={a}
+              d="M0 0 L7 0"
+              transform={`rotate(${a})`}
+            />
+          ))}
+        </g>
+      ))}
+    </g>
   );
 }

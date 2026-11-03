@@ -3,6 +3,7 @@
 // (.sp-*) para que el tema claro/oscuro y la noche los afecten desde el CSS.
 
 import type { ReactNode } from 'react';
+import { visualDeTipo } from '../../lib/casa';
 import type { Visual } from '../../lib/casa';
 
 interface SpriteProps {
@@ -645,4 +646,9 @@ export function IconoAparato({ visual }: { visual: Visual }) {
       <Sprite visual={visual} on={false} />
     </svg>
   );
+}
+
+// El dibujo del aparato según el tipo con el que se guarda en GreonTrack.
+export function DibujoTipo({ tipo }: { tipo: string }) {
+  return <IconoAparato visual={visualDeTipo(tipo)} />;
 }
