@@ -10,6 +10,18 @@ export interface Perfil {
   nombre: string;
   role: Role;
   created_at: string;
+  // Fecha en que la cuenta aceptó el Aviso de Privacidad vigente — null si
+  // todavía no lo acepta (cuentas creadas antes de este control, por
+  // ejemplo). Ver components/ProtectedRoute.tsx, que exige aceptarlo antes
+  // de dejar pasar a cualquier página protegida.
+  aviso_privacidad_aceptado_en: string | null;
+  // Firma dibujada al aceptar el aviso (PNG en base64), como evidencia de
+  // esa aceptación — solo la puede leer el propio dueño de la cuenta
+  // (mismas reglas de acceso que el resto de `perfiles`).
+  aviso_privacidad_firma: string | null;
+  // Cuántas veces le ha preguntado algo a Greon — solo para mostrarle un
+  // estimado de cuánta energía/CO2 representan esas consultas.
+  greon_consultas_total: number;
 }
 
 export interface Dispositivo {
@@ -71,9 +83,34 @@ export const TIPOS_DISPOSITIVO: { tipo: string; wattsPromedio: number }[] = [
   { tipo: 'Consola de videojuegos', wattsPromedio: 150 },
   { tipo: 'Lavadora', wattsPromedio: 500 },
   { tipo: 'Microondas', wattsPromedio: 1000 },
-  { tipo: 'Foco / iluminación', wattsPromedio: 15 },
+  { tipo: 'Iluminación', wattsPromedio: 15 },
   { tipo: 'Dispositivo IoT', wattsPromedio: 15 },
   { tipo: 'Impresora', wattsPromedio: 30 },
+  { tipo: 'Congelador', wattsPromedio: 220 },
+  { tipo: 'Secadora de ropa', wattsPromedio: 3000 },
+  { tipo: 'Calentador de agua', wattsPromedio: 1500 },
+  { tipo: 'Ventilador', wattsPromedio: 55 },
+  { tipo: 'Bomba de agua', wattsPromedio: 750 },
+  { tipo: 'Router', wattsPromedio: 10 },
+  { tipo: 'Cafetera', wattsPromedio: 800 },
+  { tipo: 'Aspiradora', wattsPromedio: 1200 },
+  { tipo: 'Horno eléctrico', wattsPromedio: 1500 },
+  { tipo: 'Tostador', wattsPromedio: 800 },
+  { tipo: 'Licuadora', wattsPromedio: 400 },
+  { tipo: 'Lavavajillas', wattsPromedio: 1200 },
+  { tipo: 'Hervidor eléctrico', wattsPromedio: 1500 },
+  { tipo: 'Olla arrocera', wattsPromedio: 600 },
+  { tipo: 'Estufa eléctrica', wattsPromedio: 1800 },
+  { tipo: 'Plancha', wattsPromedio: 1200 },
+  { tipo: 'Secadora de pelo', wattsPromedio: 1800 },
+  { tipo: 'Calefactor', wattsPromedio: 1500 },
+  { tipo: 'Deshumidificador', wattsPromedio: 300 },
+  { tipo: 'Bocina o estéreo', wattsPromedio: 40 },
+  { tipo: 'Proyector', wattsPromedio: 250 },
+  { tipo: 'Tablet (carga)', wattsPromedio: 15 },
+  { tipo: 'Bicicleta eléctrica', wattsPromedio: 250 },
+  { tipo: 'Coche eléctrico', wattsPromedio: 3300 },
+  { tipo: 'Ventilador de techo', wattsPromedio: 75 },
   { tipo: 'Otro', wattsPromedio: 50 },
 ];
 
@@ -108,4 +145,10 @@ export interface SnifferEstado {
   usuario_id: string;
   ultimo_sondeo: string;
   dispositivos_detectados: number;
+  // Control desde la web (columnas de la migración 20261103_sniffer_control):
+  // si faltan, el sniffer se comporta como siempre encendido.
+  encendido?: boolean;
+  escaneando?: boolean;
+  escanear_ahora?: string | null;
+  bitacora?: Array<{ t: string; m: string }>;
 }

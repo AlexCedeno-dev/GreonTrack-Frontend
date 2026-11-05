@@ -136,7 +136,7 @@ function AccordionItem({
 }
 
 export function Guide() {
-  const [pasoAbierto, setPasoAbierto] = useState<number | null>(0);
+  const [pasoAbierto, setPasoAbierto] = useState<number | null>(null);
   const [faqAbierta, setFaqAbierta] = useState<number | null>(null);
 
   return (

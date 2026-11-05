@@ -49,40 +49,29 @@ function ultimosNDias(n: number): string[] {
 }
 
 export async function fetchConsumptionData(userId: string): Promise<ConsumptionData> {
-  const { data: dispositivosData, error: dispositivosError } = await supabase
-    .from('dispositivos')
-    .select('*')
-    .eq('usuario_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (dispositivosError) throw new Error(dispositivosError.message);
-  const dispositivos = (dispositivosData ?? []) as Dispositivo[];
-
-  const { data: configData, error: configError } = await supabase
-    .from('configuracion')
-    .select('*')
-    .single();
-
-  if (configError) throw new Error(configError.message);
-  const configuracion = configData as Configuracion | null;
-
   const dias = ultimosNDias(DIAS_HISTORIAL);
   const fechaInicio = dias[0];
 
-  let registros: RegistroUso[] = [];
-  if (dispositivos.length > 0) {
-    const { data: registrosData, error: registrosError } = await supabase
+  // Las tres consultas salen al mismo tiempo (antes iban una tras otra y cada
+  // una pagaba su propio viaje al servidor). Los registros se piden por la
+  // relación con dispositivos para no depender de la lista de ids.
+  const [dispositivosRes, configRes, registrosRes] = await Promise.all([
+    supabase.from('dispositivos').select('*').eq('usuario_id', userId).order('created_at', { ascending: false }),
+    supabase.from('configuracion').select('*').single(),
+    supabase
       .from('registros_uso')
-      .select('*')
-      .gte('fecha_uso', fechaInicio)
-      .in(
-        'dispositivo_id',
-        dispositivos.map((d) => d.id)
-      );
+      .select('*, dispositivos!inner(usuario_id)')
+      .eq('dispositivos.usuario_id', userId)
+      .gte('fecha_uso', fechaInicio),
+  ]);
 
-    if (registrosError) throw new Error(registrosError.message);
-    registros = (registrosData ?? []) as RegistroUso[];
-  }
+  if (dispositivosRes.error) throw new Error(dispositivosRes.error.message);
+  if (configRes.error) throw new Error(configRes.error.message);
+  if (registrosRes.error) throw new Error(registrosRes.error.message);
+
+  const dispositivos = (dispositivosRes.data ?? []) as Dispositivo[];
+  const configuracion = configRes.data as Configuracion | null;
+  const registros = (registrosRes.data ?? []) as unknown as RegistroUso[];
 
   const dispositivoPorId = new Map(dispositivos.map((d) => [d.id, d]));
   const tarifa = configuracion?.tarifa_kwh ?? 0;

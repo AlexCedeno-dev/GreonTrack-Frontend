@@ -32,8 +32,8 @@ jobs:
           # Clave "publishable" de Supabase: está pensada para ir en el
           # cliente (la seguridad real la da Row Level Security en la base
           # de datos), así que es seguro tenerla aquí.
-          VITE_SUPABASE_URL: https://agvtjbhxugxndkmikhsv.supabase.co
-          VITE_SUPABASE_ANON_KEY: sb_publishable_ZqsfoW0-aAjaCmmbmbyQxg_iz4drlSP
+          VITE_SUPABASE_URL: https://pbbuwqqymeernejqzkgj.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_Vs7amXe9a_TDCUtYjYm5EA_EzD59eKE
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

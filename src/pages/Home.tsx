@@ -8,6 +8,7 @@ import mascota from '../assets/mascota-greon-sm.png';
 import {
   MonitorIcon,
   PlugIcon,
+  CasaIcon,
   ClockIcon,
   SparkChartIcon,
   LightbulbIcon,
@@ -24,6 +25,12 @@ function saludoPorHora(): string {
 }
 
 const ACCESOS_RAPIDOS = [
+  {
+    to: '/mi-casa',
+    icon: CasaIcon,
+    titulo: 'Mi casa',
+    descripcion: 'Prende aparatos en una casa interactiva y mira cómo se arma tu recibo.',
+  },
   {
     to: '/dispositivos',
     icon: PlugIcon,

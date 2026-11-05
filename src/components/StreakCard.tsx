@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FireIcon } from './icons';
-import { HITOS_RACHA, hitoAlcanzado, siguienteHito } from '../lib/streak';
+import { HITOS_RACHA, hitoAlcanzado, siguienteHito, progresoEnHitos } from '../lib/streak';
 
 interface StreakCardProps {
   dias: number;
@@ -11,6 +11,7 @@ export function StreakCard({ dias, activaHoy }: StreakCardProps) {
   const sinRacha = dias === 0 && !activaHoy;
   const hito = hitoAlcanzado(dias);
   const siguiente = siguienteHito(dias);
+  const progresoPct = progresoEnHitos(dias);
 
   return (
     <div className="streak-card">
@@ -27,7 +28,7 @@ export function StreakCard({ dias, activaHoy }: StreakCardProps) {
           ) : (
             <>
               <strong>
-                Racha de {dias} día{dias === 1 ? '' : 's'}
+                <span className="streak-card-dias">{dias}</span> día{dias === 1 ? '' : 's'} de racha
                 {hito && (
                   <span className="streak-badge">
                     {hito.emoji} {hito.titulo}
@@ -52,22 +53,29 @@ export function StreakCard({ dias, activaHoy }: StreakCardProps) {
       </div>
 
       <div className="streak-milestones">
-        {HITOS_RACHA.map((h, i) => {
-          const alcanzado = dias >= h.dias;
-          const esActual = hito?.dias === h.dias;
-          return (
-            <div
-              key={h.dias}
-              className={`streak-milestone${alcanzado ? ' reached' : ''}${esActual ? ' current' : ''}`}
-            >
-              {i > 0 && <span className={`streak-milestone-line${alcanzado ? ' reached' : ''}`} />}
-              <span className="streak-milestone-dot" title={`${h.titulo} (${h.dias} días)`}>
-                {h.emoji}
-              </span>
-              <span className="streak-milestone-label">{h.dias}d</span>
-            </div>
-          );
-        })}
+        <div className="streak-milestones-track">
+          <div className="streak-milestones-fill" style={{ width: `${progresoPct}%` }} />
+        </div>
+        <div className="streak-milestones-row">
+          {HITOS_RACHA.map((h) => {
+            const alcanzado = dias >= h.dias;
+            const esActual = hito?.dias === h.dias;
+            const esProximo = siguiente?.dias === h.dias;
+            return (
+              <div
+                key={h.dias}
+                className={`streak-milestone${alcanzado ? ' reached' : ''}${esActual ? ' current' : ''}${
+                  esProximo ? ' proximo' : ''
+                }`}
+              >
+                <span className="streak-milestone-dot" title={`${h.titulo} (${h.dias} días)`}>
+                  {h.emoji}
+                </span>
+                <span className="streak-milestone-label">{h.dias}d</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

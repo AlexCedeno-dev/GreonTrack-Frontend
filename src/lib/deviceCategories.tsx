@@ -14,43 +14,184 @@ import {
   IotIcon,
   PrinterIcon,
   PlugIcon,
+  FanIcon,
+  WaterHeaterIcon,
+  CoffeeMakerIcon,
+  VacuumIcon,
+  CarIcon,
+  IronIcon,
+  HairDryerIcon,
+  KettleIcon,
+  BlenderIcon,
+  ToasterIcon,
+  OvenIcon,
+  DishwasherIcon,
+  StoveIcon,
+  PotIcon,
+  HeaterIcon,
+  DehumidifierIcon,
+  SpeakerIcon,
+  ProjectorIcon,
+  TabletIcon,
+  BikeIcon,
+  PumpIcon,
+  ChefIcon,
+  WaveIcon,
+  ScissorsIcon,
+  WifiIcon,
 } from '../components/icons';
 
-export const CATEGORIAS = ['Todos', 'Cómputo', 'Móviles', 'Entretenimiento', 'Hogar', 'Otro'] as const;
-export type Categoria = (typeof CATEGORIAS)[number];
+type Icono = ComponentType<{ className?: string }>;
 
-const CATEGORIA_POR_TIPO: Record<string, Categoria> = {
-  Laptop: 'Cómputo',
-  'Computadora de escritorio': 'Cómputo',
-  'Celular (carga)': 'Móviles',
-  'Televisión (LED)': 'Entretenimiento',
-  'Consola de videojuegos': 'Entretenimiento',
-  Refrigerador: 'Hogar',
-  'Aire acondicionado': 'Hogar',
-  Lavadora: 'Hogar',
-  Microondas: 'Hogar',
-  'Foco / iluminación': 'Hogar',
-  'Dispositivo IoT': 'Hogar',
-  Impresora: 'Cómputo',
-};
-
-export function categoriaDe(tipo: string): Categoria {
-  return CATEGORIA_POR_TIPO[tipo] ?? 'Otro';
+// Las secciones agrupan los aparatos por lo que hacen en la casa. Se usan igual
+// en Dispositivos, en el formulario y en el menú de Mi casa.
+export interface Seccion {
+  id: string;
+  nombre: string;
+  icono: Icono;
+  tipos: string[];
 }
 
-const ICONO_POR_TIPO: Record<string, ComponentType<{ className?: string }>> = {
+export const SECCIONES: Seccion[] = [
+  {
+    id: 'cocina',
+    nombre: 'Cocina',
+    icono: ChefIcon,
+    tipos: [
+      'Refrigerador',
+      'Congelador',
+      'Microondas',
+      'Horno eléctrico',
+      'Estufa eléctrica',
+      'Tostador',
+      'Licuadora',
+      'Hervidor eléctrico',
+      'Olla arrocera',
+      'Cafetera',
+      'Lavavajillas',
+    ],
+  },
+  {
+    id: 'lavanderia',
+    nombre: 'Lavandería y limpieza',
+    icono: WashingMachineIcon,
+    tipos: ['Lavadora', 'Secadora de ropa', 'Plancha', 'Aspiradora'],
+  },
+  {
+    id: 'clima',
+    nombre: 'Clima y agua',
+    icono: WaveIcon,
+    tipos: [
+      'Aire acondicionado',
+      'Ventilador',
+      'Ventilador de techo',
+      'Calefactor',
+      'Deshumidificador',
+      'Calentador de agua',
+      'Bomba de agua',
+    ],
+  },
+  {
+    id: 'entretenimiento',
+    nombre: 'Entretenimiento',
+    icono: TvIcon,
+    tipos: ['Televisión (LED)', 'Consola de videojuegos', 'Bocina o estéreo', 'Proyector'],
+  },
+  {
+    id: 'computo',
+    nombre: 'Cómputo y oficina',
+    icono: LaptopIcon,
+    tipos: ['Laptop', 'Computadora de escritorio', 'Impresora', 'Router'],
+  },
+  {
+    id: 'luz',
+    nombre: 'Luz y hogar inteligente',
+    icono: LightbulbIcon,
+    tipos: ['Iluminación', 'Dispositivo IoT'],
+  },
+  {
+    id: 'cuidado',
+    nombre: 'Cuidado personal',
+    icono: ScissorsIcon,
+    tipos: ['Secadora de pelo'],
+  },
+  {
+    id: 'moviles',
+    nombre: 'Móviles',
+    icono: PhoneIcon,
+    tipos: ['Celular (carga)', 'Tablet (carga)'],
+  },
+  {
+    id: 'movilidad',
+    nombre: 'Movilidad eléctrica',
+    icono: CarIcon,
+    tipos: ['Coche eléctrico', 'Bicicleta eléctrica'],
+  },
+  {
+    id: 'otros',
+    nombre: 'Otros',
+    icono: PlugIcon,
+    tipos: ['Otro'],
+  },
+];
+
+export const CATEGORIAS = ['Todos', ...SECCIONES.map((s) => s.nombre)] as const;
+export type Categoria = (typeof CATEGORIAS)[number];
+
+const SECCION_POR_TIPO: Record<string, Seccion> = Object.fromEntries(
+  SECCIONES.flatMap((s) => s.tipos.map((t) => [t, s] as const))
+);
+
+export function seccionDeTipo(tipo: string): Seccion {
+  return SECCION_POR_TIPO[tipo] ?? SECCIONES[SECCIONES.length - 1];
+}
+
+export function categoriaDe(tipo: string): Categoria {
+  return seccionDeTipo(tipo).nombre as Categoria;
+}
+
+export function iconoDeCategoria(cat: Categoria): Icono {
+  return SECCIONES.find((s) => s.nombre === cat)?.icono ?? PlugIcon;
+}
+
+const ICONO_POR_TIPO: Record<string, Icono> = {
   Laptop: LaptopIcon,
   'Computadora de escritorio': MonitorIcon,
   'Celular (carga)': PhoneIcon,
+  'Tablet (carga)': TabletIcon,
   'Televisión (LED)': TvIcon,
   'Consola de videojuegos': GameConsoleIcon,
+  'Bocina o estéreo': SpeakerIcon,
+  Proyector: ProjectorIcon,
   Refrigerador: FridgeIcon,
-  'Aire acondicionado': AcIcon,
-  Lavadora: WashingMachineIcon,
+  Congelador: FridgeIcon,
   Microondas: MicrowaveIcon,
-  'Foco / iluminación': LightbulbIcon,
-  'Dispositivo IoT': IotIcon,
+  'Horno eléctrico': OvenIcon,
+  'Estufa eléctrica': StoveIcon,
+  Tostador: ToasterIcon,
+  Licuadora: BlenderIcon,
+  'Hervidor eléctrico': KettleIcon,
+  'Olla arrocera': PotIcon,
+  Cafetera: CoffeeMakerIcon,
+  Lavavajillas: DishwasherIcon,
+  Lavadora: WashingMachineIcon,
+  'Secadora de ropa': WashingMachineIcon,
+  Plancha: IronIcon,
+  Aspiradora: VacuumIcon,
+  'Aire acondicionado': AcIcon,
+  Ventilador: FanIcon,
+  'Ventilador de techo': FanIcon,
+  Calefactor: HeaterIcon,
+  Deshumidificador: DehumidifierIcon,
+  'Calentador de agua': WaterHeaterIcon,
+  'Bomba de agua': PumpIcon,
   Impresora: PrinterIcon,
+  Router: WifiIcon,
+  'Iluminación': LightbulbIcon,
+  'Dispositivo IoT': IotIcon,
+  'Secadora de pelo': HairDryerIcon,
+  'Coche eléctrico': CarIcon,
+  'Bicicleta eléctrica': BikeIcon,
 };
 
 export function iconoDeTipo(tipo: string): ComponentType<{ className?: string }> {

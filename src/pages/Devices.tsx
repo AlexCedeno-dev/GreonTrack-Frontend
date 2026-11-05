@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { useAuth } from '../context/AuthContext';
+import { useAppData } from '../context/AppDataContext';
 import { supabase } from '../lib/supabase';
 import type { Dispositivo } from '../types/database';
 import {
@@ -12,8 +13,12 @@ import {
   PlusIcon,
   CopyIcon,
   MonitorIcon,
+  CasaIcon,
 } from '../components/icons';
-import { CATEGORIAS, categoriaDe, iconoDeTipo, Categoria } from '../lib/deviceCategories';
+import { CATEGORIAS, SECCIONES, categoriaDe, iconoDeCategoria, seccionDeTipo, Categoria } from '../lib/deviceCategories';
+import { DibujoTipo } from '../components/casa/Sprites';
+import { EquipoActual } from '../components/EquipoActual';
+import { useSnifferEstado } from '../lib/useSnifferEstado';
 import mascota from '../assets/mascota-greon-sm.png';
 
 // Techo de referencia (W) usado solo para escalar la barra de consumo relativo;
@@ -104,7 +109,7 @@ function DeviceInfoModal({ device, onClose }: DeviceInfoModalProps) {
             </>
           ) : (
             <>
-              Datos del equipo usado para registrar <strong>{device.nombre}</strong>.
+              Lo que capturaste al dar de alta <strong>{device.nombre}</strong>.
             </>
           )}
         </p>
@@ -135,58 +140,86 @@ function DeviceInfoModal({ device, onClose }: DeviceInfoModalProps) {
             </li>
           </ul>
         ) : (
-          <ul className="modal-instructions">
-            <li className="modal-instruction-step">
-              <span>
-                <strong>IP pública del registro:</strong> {info.ipPublicaRegistro ?? 'No disponible'}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Sistema operativo:</strong> {info.sistemaOperativo}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Navegador:</strong> {info.navegador}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Núcleos de CPU:</strong> {info.nucleosCpu ?? 'No disponible'}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Memoria aproximada:</strong>{' '}
-                {info.memoriaAproxGB != null ? `${info.memoriaAproxGB} GB` : 'No disponible'}
-              </span>
-            </li>
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Resolución de pantalla:</strong> {info.resolucionPantalla}
-              </span>
-            </li>
-            {info.ipDispositivo && (
+          <>
+            <p className="modal-info-section-title">Datos de {device.nombre}</p>
+            <ul className="modal-instructions">
+              {info.vendor && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>Marca:</strong> {info.vendor}
+                  </span>
+                </li>
+              )}
+              {info.anioDispositivo && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>Año:</strong> {info.anioDispositivo}
+                  </span>
+                </li>
+              )}
+              {info.atributoCategoria && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>{info.atributoCategoria.etiqueta}:</strong> {info.atributoCategoria.valor}
+                  </span>
+                </li>
+              )}
+              {info.ipDispositivo && (
+                <li className="modal-instruction-step">
+                  <span>
+                    <strong>IP del dispositivo:</strong> {info.ipDispositivo}
+                  </span>
+                </li>
+              )}
+              {!info.vendor && !info.anioDispositivo && !info.atributoCategoria && !info.ipDispositivo && (
+                <li className="modal-instruction-step">
+                  <span className="muted">No se capturó ningún dato específico de este equipo al darlo de alta.</span>
+                </li>
+              )}
               <li className="modal-instruction-step">
                 <span>
-                  <strong>IP del dispositivo:</strong> {info.ipDispositivo}
+                  <strong>Fecha de registro:</strong> {fecha}
                 </span>
               </li>
-            )}
-            {info.vendor && (
+            </ul>
+
+            <p className="modal-info-section-title modal-info-section-title-muted">
+              Registrado desde este equipo
+            </p>
+            <ul className="modal-instructions modal-instructions-muted">
               <li className="modal-instruction-step">
                 <span>
-                  <strong>Marca:</strong> {info.vendor}
+                  <strong>Sistema operativo:</strong> {info.sistemaOperativo}
                 </span>
               </li>
-            )}
-            <li className="modal-instruction-step">
-              <span>
-                <strong>Fecha de registro:</strong> {fecha}
-              </span>
-            </li>
-          </ul>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Navegador:</strong> {info.navegador}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Núcleos de CPU:</strong> {info.nucleosCpu ?? 'No disponible'}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Memoria aproximada:</strong>{' '}
+                  {info.memoriaAproxGB != null ? `${info.memoriaAproxGB} GB` : 'No disponible'}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>Resolución de pantalla:</strong> {info.resolucionPantalla}
+                </span>
+              </li>
+              <li className="modal-instruction-step">
+                <span>
+                  <strong>IP pública del registro:</strong> {info.ipPublicaRegistro ?? 'No disponible'}
+                </span>
+              </li>
+            </ul>
+          </>
         )}
 
         <button className="modal-close-btn" onClick={onClose}>
@@ -199,9 +232,13 @@ function DeviceInfoModal({ device, onClose }: DeviceInfoModalProps) {
 
 export function Devices() {
   const { user } = useAuth();
+  const { datos } = useAppData();
+  const { activo: monitorRedActivo, cargado: monitorRedCargado } = useSnifferEstado(user?.id, 15_000);
   const navigate = useNavigate();
-  const [devices, setDevices] = useState<Dispositivo[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Si la app ya tiene tus dispositivos en memoria, se pintan al instante y se
+  // actualizan por detrás; solo la primera vez se ve "Cargando".
+  const [devices, setDevices] = useState<Dispositivo[]>(() => datos?.dispositivos ?? []);
+  const [loading, setLoading] = useState(() => datos === null);
   const [error, setError] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -213,7 +250,7 @@ export function Devices() {
 
   const loadDevices = async () => {
     if (!user) return;
-    setLoading(true);
+    if (devices.length === 0) setLoading(true);
     setError(null);
 
     const { data, error } = await supabase
@@ -302,6 +339,20 @@ export function Devices() {
       <div className="devices-toolbar">
         <p className="muted">Alta, edición y borrado de tus equipos electrónicos.</p>
         <div className="devices-toolbar-actions">
+          {monitorRedCargado && (
+            <button
+              type="button"
+              className={`monitor-red-chip ${monitorRedActivo ? 'activo' : 'inactivo'}`}
+              onClick={() => navigate('/dispositivos/sniffer')}
+              title="Estado del monitor que escanea tu red"
+            >
+              <span className="sniffer-status-dot" />
+              Monitor de red: {monitorRedActivo ? 'encendido' : 'apagado'}
+            </button>
+          )}
+          <button className="btn-add" onClick={() => navigate('/dispositivos/rapido')}>
+            <CasaIcon /> Armar mi casa
+          </button>
           <button className="btn-add btn-add-outline" onClick={() => navigate('/dispositivos/sniffer')}>
             <WifiIcon /> Detectar en mi red
           </button>
@@ -320,17 +371,25 @@ export function Devices() {
         </div>
       )}
 
+      {user && <EquipoActual userId={user.id} onAgregado={loadDevices} />}
+
       {!loading && devices.length > 0 && (
         <div className="category-filter">
-          {CATEGORIAS.map((cat) => (
-            <button
-              key={cat}
-              className={`category-chip${categoriaActiva === cat ? ' active' : ''}`}
-              onClick={() => setCategoriaActiva(cat)}
-            >
-              {cat}
-            </button>
-          ))}
+          {CATEGORIAS.filter((cat) => cat === 'Todos' || devices.some((d) => categoriaDe(d.tipo) === cat)).map((cat) => {
+            const IconoCat = cat === 'Todos' ? PlugIcon : iconoDeCategoria(cat);
+            const cuantos = cat === 'Todos' ? devices.length : devices.filter((d) => categoriaDe(d.tipo) === cat).length;
+            return (
+              <button
+                key={cat}
+                className={`category-chip${categoriaActiva === cat ? ' active' : ''}`}
+                onClick={() => setCategoriaActiva(cat)}
+              >
+                <IconoCat />
+                {cat}
+                <span className="category-chip-count">{cuantos}</span>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -342,6 +401,9 @@ export function Devices() {
           <div>
             <p className="device-empty-title">Aún no tienes dispositivos</p>
             <p className="muted">Cuando agregues uno, aparecerá aquí con su consumo y origen.</p>
+            <button className="btn-add" onClick={() => navigate('/dispositivos/rapido')}>
+              <CasaIcon /> Armar mi casa en un minuto
+            </button>
           </div>
         </div>
       ) : devicesFiltrados.length === 0 ? (
@@ -355,8 +417,25 @@ export function Devices() {
           </div>
         </div>
       ) : (
-        <div className="device-grid">
-          {devicesFiltrados.map((device) => {
+        <div className="device-secciones">
+          {SECCIONES.map((seccion) => {
+            const items = devicesFiltrados.filter((d) => seccionDeTipo(d.tipo).id === seccion.id);
+            if (items.length === 0) return null;
+            const IconoSeccion = seccion.icono;
+            const watts = items.reduce((suma, d) => suma + d.consumo_watts_promedio, 0);
+            return (
+              <section key={seccion.id} className="device-seccion">
+                <header className="device-seccion-cab">
+                  <span className="device-seccion-icono">
+                    <IconoSeccion />
+                  </span>
+                  <h2>{seccion.nombre}</h2>
+                  <span className="device-seccion-dato">
+                    {items.length} {items.length === 1 ? 'aparato' : 'aparatos'} · {watts.toLocaleString('es-MX')} W
+                  </span>
+                </header>
+                <div className="device-grid">
+                  {items.map((device) => {
             const nivel = nivelPotencia(device.consumo_watts_promedio);
             const pct = Math.min(100, (device.consumo_watts_promedio / REFERENCIA_WATTS) * 100);
             const fecha = new Date(device.created_at).toLocaleDateString('es-MX', {
@@ -367,14 +446,13 @@ export function Devices() {
             const isAgente = device.origen === 'agente';
             const puedeVincularAgente =
               device.tipo === TIPO_LAPTOP && device.origen === 'manual' && !device.device_token;
-            const IconoDispositivo = iconoDeTipo(device.tipo);
 
             return (
               <article key={device.id} className="card device-card">
                 <div className="device-card-top">
                   <div className="device-card-identity">
-                    <span className="device-card-icon">
-                      <IconoDispositivo />
+                    <span className="device-card-icon con-dibujo">
+                      <DibujoTipo tipo={device.tipo} />
                     </span>
                     <div className="device-card-text">
                       <p className="device-card-name">{device.nombre}</p>
@@ -426,17 +504,19 @@ export function Devices() {
                 )}
 
                 <div className="device-card-actions">
-                  {device.info_registro && (
-                    <button className="device-action-btn" onClick={() => setInfoModalDevice(device)}>
-                      <MonitorIcon /> Info técnica
+                  <div className="device-card-actions-row">
+                    {device.info_registro && (
+                      <button className="device-action-btn" onClick={() => setInfoModalDevice(device)}>
+                        <MonitorIcon /> Info técnica
+                      </button>
+                    )}
+                    <button
+                      className="device-action-btn"
+                      onClick={() => navigate(`/dispositivos/${device.id}/editar`)}
+                    >
+                      <PencilIcon /> Editar
                     </button>
-                  )}
-                  <button
-                    className="device-action-btn"
-                    onClick={() => navigate(`/dispositivos/${device.id}/editar`)}
-                  >
-                    <PencilIcon /> Editar
-                  </button>
+                  </div>
 
                   {confirmId === device.id ? (
                     <div className="device-confirm">
@@ -461,6 +541,10 @@ export function Devices() {
                   )}
                 </div>
               </article>
+            );
+                  })}
+                </div>
+              </section>
             );
           })}
         </div>

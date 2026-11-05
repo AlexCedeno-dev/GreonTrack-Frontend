@@ -1,0 +1,36 @@
+name: Latido diario de Supabase
+
+# El plan gratis de Supabase pausa los proyectos sin actividad en ~7 días.
+# Este workflow hace una escritura mínima en la base de datos cada día
+# (función public.keepalive(), ver supabase/keepalive.sql) para que no pase.
+#
+# Ojo: GitHub desactiva los workflows programados si el repositorio pasa 60
+# días sin ningún commit; en ese caso basta con volver a activarlo desde la
+# pestaña Actions (o hacer cualquier commit).
+
+on:
+  schedule:
+    - cron: '17 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  latido:
+    runs-on: ubuntu-latest
+    env:
+      # Clave "publishable" de Supabase: pensada para ir en el cliente, la
+      # seguridad real la da Row Level Security (igual que en deploy-pages.yml).
+      SUPABASE_URL: https://pbbuwqqymeernejqzkgj.supabase.co
+      SUPABASE_ANON_KEY: sb_publishable_Vs7amXe9a_TDCUtYjYm5EA_EzD59eKE
+    steps:
+      - name: Despertar la base de datos
+        run: |
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 10 \
+            -X POST "$SUPABASE_URL/rest/v1/rpc/keepalive" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+          echo

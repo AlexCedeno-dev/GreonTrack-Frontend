@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import type { Perfil } from '../types/database';
+import { borrarCache, guardarCache, leerCache } from '../lib/cacheLocal';
 
 interface AuthContextValue {
   session: Session | null;
@@ -15,6 +16,8 @@ interface AuthContextValue {
   reenviarCodigo: (email: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshPerfil: () => Promise<void>;
+  aceptarAvisoPrivacidad: (firmaDataUrl: string) => Promise<{ error: string | null }>;
+  eliminarCuenta: (password: string) => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -25,8 +28,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadPerfil = async (userId: string) => {
+    // Con la copia de la última vez no hay que esperar al servidor para dejar
+    // pasar a la app; luego se actualiza. La firma del aviso (imagen grande y
+    // personal) nunca se copia.
+    const copia = leerCache<Perfil>(`perfil-${userId}`);
+    if (copia) setPerfil((actual) => actual ?? copia);
     const { data } = await supabase.from('perfiles').select('*').eq('id', userId).single();
     setPerfil(data as Perfil | null);
+    if (data) guardarCache(`perfil-${userId}`, { ...(data as Perfil), aviso_privacidad_firma: null });
   };
 
   useEffect(() => {
@@ -79,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // con contraseña — la sesión se crea directo al volver del redirect.
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: window.location.origin + import.meta.env.BASE_URL },
     });
     return { error: error?.message ?? null };
   };
@@ -98,11 +107,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // Al cerrar sesión se borra también la copia local de los datos.
+    borrarCache();
     await supabase.auth.signOut();
   };
 
   const refreshPerfil = async () => {
     if (session?.user) await loadPerfil(session.user.id);
+  };
+
+  const aceptarAvisoPrivacidad = async (firmaDataUrl: string) => {
+    if (!session?.user) return { error: 'No hay una sesión activa.' };
+
+    const { error } = await supabase
+      .from('perfiles')
+      .update({
+        aviso_privacidad_aceptado_en: new Date().toISOString(),
+        aviso_privacidad_firma: firmaDataUrl,
+      })
+      .eq('id', session.user.id);
+
+    if (error) return { error: error.message };
+
+    await loadPerfil(session.user.id);
+    return { error: null };
+  };
+
+  // Borra la cuenta por completo (datos + acceso) — pide la contraseña
+  // actual para confirmar identidad; la Service Role key que hace el borrado
+  // real vive solo en la función de Supabase, nunca en el navegador.
+  const eliminarCuenta = async (password: string) => {
+    const { data, error } = await supabase.functions.invoke('delete-account', {
+      body: { password },
+    });
+
+    if (error) return { error: 'No pude eliminar tu cuenta. Intenta de nuevo.' };
+    if (data?.error) return { error: data.error };
+
+    borrarCache();
+    await supabase.auth.signOut();
+    return { error: null };
   };
 
   return (
@@ -119,6 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         reenviarCodigo,
         signOut,
         refreshPerfil,
+        aceptarAvisoPrivacidad,
+        eliminarCuenta,
       }}
     >
       {children}

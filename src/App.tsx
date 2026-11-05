@@ -1,34 +1,86 @@
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppDataProvider } from './context/AppDataContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
+import { ToastProvider } from './context/ToastContext';
 import { AccessibilityWidget } from './components/AccessibilityWidget';
 import { MascotWidget } from './components/MascotWidget';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-import { Home } from './pages/Home';
-import { Devices } from './pages/Devices';
-import { DeviceForm } from './pages/DeviceForm';
-import { DeviceSniffer } from './pages/DeviceSniffer';
-import { Usage } from './pages/Usage';
-import { Dashboard } from './pages/Dashboard';
-import { CarbonFootprint } from './pages/CarbonFootprint';
-import { Recommendations } from './pages/Recommendations';
-import { Reports } from './pages/Reports';
-import { Settings } from './pages/Settings';
-import { Guide } from './pages/Guide';
-import { GreonSpace } from './pages/GreonSpace';
+
+
+// Cada pantalla se baja solo cuando hace falta (la primera carga es mucho más
+// ligera) y, al quedar libre el navegador, el resto se precarga para que
+// cambiar de pestaña sea instantáneo.
+const cargarHome = () => import('./pages/Home');
+const cargarMiCasa = () => import('./pages/MiCasa');
+const cargarDevices = () => import('./pages/Devices');
+const cargarDeviceForm = () => import('./pages/DeviceForm');
+const cargarArmaCasa = () => import('./pages/ArmaCasa');
+const cargarDeviceSniffer = () => import('./pages/DeviceSniffer');
+const cargarUsage = () => import('./pages/Usage');
+const cargarDashboard = () => import('./pages/Dashboard');
+const cargarCarbonFootprint = () => import('./pages/CarbonFootprint');
+const cargarRecommendations = () => import('./pages/Recommendations');
+const cargarReports = () => import('./pages/Reports');
+const cargarSettings = () => import('./pages/Settings');
+const cargarGuide = () => import('./pages/Guide');
+const cargarAvisoPrivacidad = () => import('./pages/AvisoPrivacidad');
+
+const Home = lazy(() => cargarHome().then((m) => ({ default: m.Home })));
+const MiCasa = lazy(() => cargarMiCasa().then((m) => ({ default: m.MiCasa })));
+const Devices = lazy(() => cargarDevices().then((m) => ({ default: m.Devices })));
+const DeviceForm = lazy(() => cargarDeviceForm().then((m) => ({ default: m.DeviceForm })));
+const ArmaCasa = lazy(() => cargarArmaCasa().then((m) => ({ default: m.ArmaCasa })));
+const DeviceSniffer = lazy(() => cargarDeviceSniffer().then((m) => ({ default: m.DeviceSniffer })));
+const Usage = lazy(() => cargarUsage().then((m) => ({ default: m.Usage })));
+const Dashboard = lazy(() => cargarDashboard().then((m) => ({ default: m.Dashboard })));
+const CarbonFootprint = lazy(() => cargarCarbonFootprint().then((m) => ({ default: m.CarbonFootprint })));
+const Recommendations = lazy(() => cargarRecommendations().then((m) => ({ default: m.Recommendations })));
+const Reports = lazy(() => cargarReports().then((m) => ({ default: m.Reports })));
+const Settings = lazy(() => cargarSettings().then((m) => ({ default: m.Settings })));
+const Guide = lazy(() => cargarGuide().then((m) => ({ default: m.Guide })));
+const AvisoPrivacidad = lazy(() => cargarAvisoPrivacidad().then((m) => ({ default: m.AvisoPrivacidad })));
+
+function precargarPantallas() {
+  const cargar = () => [cargarHome, cargarArmaCasa, cargarMiCasa, cargarDevices, cargarDeviceForm, cargarDeviceSniffer, cargarUsage, cargarDashboard, cargarCarbonFootprint, cargarRecommendations, cargarReports, cargarSettings, cargarGuide, cargarAvisoPrivacidad].forEach((f) => f().catch(() => undefined));
+  const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+  if (idle) idle(cargar);
+  else window.setTimeout(cargar, 1500);
+}
+
+// Solo en la versión publicada y ya con sesión iniciada: así el login y el
+// servidor de desarrollo no pelean con la descarga de las demás pantallas.
+function PrecargaPantallas() {
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!import.meta.env.PROD || !user) return;
+    const t = window.setTimeout(precargarPantallas, 3000);
+    return () => window.clearTimeout(t);
+  }, [user]);
+  return null;
+}
+
+function CargandoPantalla() {
+  return <div className="pantalla-cargando" role="status" aria-label="Cargando" />;
+}
 
 export default function App() {
+
   return (
+    <ToastProvider>
     <AccessibilityProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <AuthProvider>
           <AppDataProvider>
+            <PrecargaPantallas />
+            <Suspense fallback={<CargandoPantalla />}>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/registro" element={<Register />} />
+              <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
               <Route
                 path="/"
                 element={
@@ -38,10 +90,10 @@ export default function App() {
                 }
               />
               <Route
-                path="/greon"
+                path="/mi-casa"
                 element={
                   <ProtectedRoute>
-                    <GreonSpace />
+                    <MiCasa />
                   </ProtectedRoute>
                 }
               />
@@ -58,6 +110,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <DeviceSniffer />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dispositivos/rapido"
+                element={
+                  <ProtectedRoute>
+                    <ArmaCasa />
                   </ProtectedRoute>
                 }
               />
@@ -135,11 +195,13 @@ export default function App() {
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            </Suspense>
             <MascotWidget />
           </AppDataProvider>
         </AuthProvider>
       </BrowserRouter>
       <AccessibilityWidget />
     </AccessibilityProvider>
+    </ToastProvider>
   );
 }

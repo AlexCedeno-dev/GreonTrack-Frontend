@@ -6,6 +6,8 @@
     <title>GreenTrack</title>
     <link rel="icon" type="image/png" href="%BASE_URL%favicon.png" />
     <link rel="apple-touch-icon" href="%BASE_URL%favicon.png" />
+    <!-- Abre la conexión con Supabase mientras todavía se baja el JS (ahorra el saludo TCP/TLS, ~1 s). -->
+    <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

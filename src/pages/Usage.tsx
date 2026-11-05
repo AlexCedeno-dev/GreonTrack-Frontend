@@ -36,9 +36,15 @@ export function Usage() {
       setLoading(true);
       setError(null);
 
-      const [dispositivosRes, configRes] = await Promise.all([
+      // Las tres consultas salen juntas (un solo viaje al servidor).
+      const [dispositivosRes, configRes, registrosRes] = await Promise.all([
         supabase.from('dispositivos').select('*').eq('usuario_id', user.id).order('created_at', { ascending: false }),
         supabase.from('configuracion').select('*').single(),
+        supabase
+          .from('registros_uso')
+          .select('*, dispositivos!inner(usuario_id)')
+          .eq('dispositivos.usuario_id', user.id)
+          .eq('fecha_uso', fechaHoyISO()),
       ]);
 
       if (dispositivosRes.error) {
@@ -65,14 +71,8 @@ export function Usage() {
       const registroIds: Record<string, string> = {};
 
       if (listaDispositivos.length > 0) {
-        const { data: registros, error: registrosError } = await supabase
-          .from('registros_uso')
-          .select('*')
-          .eq('fecha_uso', fechaHoyISO())
-          .in(
-            'dispositivo_id',
-            listaDispositivos.map((d) => d.id)
-          );
+        const registros = registrosRes.data;
+        const registrosError = registrosRes.error;
 
         if (registrosError) {
           setError(registrosError.message);
@@ -80,7 +80,7 @@ export function Usage() {
           return;
         }
 
-        (registros as RegistroUso[] | null)?.forEach((r) => {
+        (registros as unknown as RegistroUso[] | null)?.forEach((r) => {
           if (r.fuente === 'agente') {
             // El Agente reporta cada ~60s en incrementos pequeños, así que
             // puede haber muchas filas del mismo dispositivo hoy: se suman todas.
