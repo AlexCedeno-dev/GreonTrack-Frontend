@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
-import { EquipoActual } from '../components/EquipoActual';
 import { useAuth } from '../context/AuthContext';
 import type { DispositivoSugerido } from '../types/database';
 import { CheckIcon, TrashIcon, ArrowLeftIcon, RefreshIcon, CopyIcon } from '../components/icons';

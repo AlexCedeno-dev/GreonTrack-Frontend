@@ -9,7 +9,7 @@ function escaparCampoCSV(valor: string): string {
 
 function descargarCSV(nombre: string, filas: string[][]) {
   const contenido = filas.map((fila) => fila.map(escaparCampoCSV).join(',')).join('\r\n');
-  // El BOM (﻿) evita que Excel muestre mal los acentos y símbolos (kWh, CO₂, $).
+  // El BOM (U+FEFF) evita que Excel muestre mal los acentos y símbolos (kWh, CO₂, $).
   const blob = new Blob(['﻿' + contenido], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const enlace = document.createElement('a');

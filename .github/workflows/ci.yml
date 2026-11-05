@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Calidad (tipos)
+    runs-on: ubuntu-latest
+    env:
+      # Variables públicas (Settings > Secrets and variables > Actions > Variables).
+      # La clave publishable de Supabase está pensada para el cliente.
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npx tsc -b
+
+      - name: Lint
+        run: npm run lint
+
+  security:
+    name: Seguridad (audit + Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Gate real: falla si hay vulnerabilidades high/critical.
+      - name: npm audit
+        run: npm audit --audit-level=high
+
+      # GATE PENDIENTE: Trivy reportará las mismas vulnerabilidades. Al
+      # resolverlas, cambiar exit-code a '1' para que bloquee.
+      - name: Trivy fs (modo reporte)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '0' # gate pendiente: cambiar a '1'
