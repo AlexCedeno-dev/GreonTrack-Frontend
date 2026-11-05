@@ -69,6 +69,55 @@ $$;
 ALTER FUNCTION public.handle_new_user() OWNER TO postgres;
 
 --
+-- Name: is_admin(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.is_admin() RETURNS boolean
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+  select exists (
+    select 1 from public.perfiles
+    where id = auth.uid() and role = 'admin'
+  );
+$$;
+
+
+ALTER FUNCTION public.is_admin() OWNER TO postgres;
+
+--
+-- Name: proteger_rol_perfil(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+-- Impide que un usuario se suba de rol a sí mismo: solo un admin puede
+-- cambiar perfiles.role. Sin sesión (SQL Editor, service_role, triggers
+-- internos como handle_new_user) se permite.
+--
+
+CREATE FUNCTION public.proteger_rol_perfil() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'public'
+    AS $$
+begin
+  if auth.uid() is null then
+    return new;
+  end if;
+
+  if tg_op = 'INSERT' then
+    if new.role <> 'general' and not public.is_admin() then
+      new.role := 'general';
+    end if;
+  elsif new.role is distinct from old.role and not public.is_admin() then
+    raise exception 'Solo un administrador puede cambiar roles' using errcode = '42501';
+  end if;
+
+  return new;
+end;
+$$;
+
+
+ALTER FUNCTION public.proteger_rol_perfil() OWNER TO postgres;
+
+--
 -- Name: calculos; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -402,6 +451,13 @@ CREATE TRIGGER on_registro_uso_insert AFTER INSERT ON public.registros_uso FOR E
 
 
 --
+-- Name: perfiles trg_proteger_rol; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_proteger_rol BEFORE INSERT OR UPDATE ON public.perfiles FOR EACH ROW EXECUTE FUNCTION public.proteger_rol_perfil();
+
+
+--
 -- Name: calculos calculos_dispositivo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -589,7 +645,7 @@ CREATE POLICY "usuarios ven su estado" ON public.sniffer_estado FOR SELECT USING
 -- Name: perfiles usuarios ven su perfil; Type: POLICY; Schema: public; Owner: postgres
 --
 
-CREATE POLICY "usuarios ven su perfil" ON public.perfiles USING ((auth.uid() = id));
+CREATE POLICY "usuarios ven su perfil" ON public.perfiles USING ((auth.uid() = id)) WITH CHECK ((auth.uid() = id));
 
 
 --
