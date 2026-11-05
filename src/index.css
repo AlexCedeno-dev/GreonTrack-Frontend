@@ -9102,3 +9102,179 @@ h3 {
 .sniffer-pasos li {
   padding-left: 4px;
 }
+
+/* Paquetes armados dentro de la bandeja de Mi casa */
+
+.casa-paquetes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  gap: 8px;
+}
+
+.casa-paquete {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 11px 13px;
+  border: 1.5px solid rgba(15, 61, 46, 0.14);
+  border-radius: 14px;
+  background: var(--superficie);
+  color: var(--texto);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  animation: casa-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.casa-paquete:hover {
+  transform: translateY(-3px);
+  border-color: var(--verde-medio);
+  background: var(--verde-muy-claro);
+}
+
+.casa-paquete strong {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  color: var(--texto-titulo);
+}
+
+.casa-paquete span {
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+}
+
+.casa-paquete small {
+  margin-top: 3px;
+  font-weight: 800;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--verde);
+}
+
+/* Tipo de lugar: casa, departamento, oficina, tienda */
+
+.casa-lugares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.casa-lugar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(15, 61, 46, 0.16);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto);
+  font: 700 0.86rem var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.casa-lugar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.casa-lugar:hover {
+  border-color: var(--verde-medio);
+  background: var(--verde-muy-claro);
+}
+
+.casa-lugar.activo {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: #fff;
+}
+
+.casa-lugar:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+}
+
+/* Qué significa la tarifa y cuánto se paga al día / mes / recibo */
+
+.casa-tarifa-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 61, 46, 0.12);
+  border-radius: 16px;
+  background: var(--verde-muy-claro);
+}
+
+.casa-tarifa-info p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.casa-tarifa-titulo {
+  font-family: var(--font-display);
+  font-size: 1.05rem !important;
+  color: var(--texto-titulo);
+}
+
+.casa-tarifa-cifras {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.casa-tarifa-cifras li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--superficie);
+}
+
+.casa-tarifa-cifras small {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.casa-tarifa-cifras strong {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-titulo);
+}
+
+.casa-tarifa-ayuda summary {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: var(--verde);
+}
+
+.casa-tarifa-ayuda p,
+.casa-tarifa-ayuda ul {
+  margin: 8px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.casa-tarifa-ayuda ul {
+  padding-left: 18px;
+}
+
+@media (max-width: 560px) {
+  .casa-tarifa-cifras {
+    grid-template-columns: 1fr;
+  }
+}

@@ -5,6 +5,9 @@ import { IconoAparato } from '../components/casa/Sprites';
 import {
   BoltIcon,
   CasaIcon,
+  EdificioIcon,
+  MaletinIcon,
+  TiendaIcon,
   CloseIcon,
   GeneratorIcon,
   MinusIcon,
@@ -38,6 +41,7 @@ import {
   TECHOS,
   ESCENA,
   casaDesdeDispositivos,
+  casaDesdePaquete,
   colorDePared,
   leerDiseno,
   nombreDeCuarto,
@@ -55,9 +59,12 @@ import {
 } from '../lib/casa';
 import { esDeNoche, formatoHora, intensidadSol } from '../lib/cielo';
 import { SECCIONES, seccionDeTipo } from '../lib/deviceCategories';
+import { LUGARES, PAQUETES, type LugarCasa } from '../lib/paquetesCasa';
 import { sonidos } from '../lib/sonidos';
 import {
   DIAS_POR_BIMESTRE,
+  INFO_TARIFAS,
+  MESES_POR_RECIBO,
   PRECIOS_CFE,
   TARIFAS,
   calcularRecibo,
@@ -74,6 +81,7 @@ interface Guardado {
   paneles: number;
   generador?: { activo: boolean; horas: number };
   diseno?: Diseno;
+  lugar?: LugarCasa['id'];
 }
 
 const CLAVE_SONIDO = 'greontrack-casa-sonido';
@@ -142,6 +150,7 @@ export function MiCasa() {
   const [paneles, setPaneles] = useState(guardado?.paneles ?? 0);
   const [generador, setGenerador] = useState(guardado?.generador ?? { activo: false, horas: 3 });
   const [diseno, setDiseno] = useState<Diseno>(() => leerDiseno(guardado?.diseno));
+  const [lugar, setLugar] = useState<LugarCasa['id']>(() => LUGARES.find((l) => l.id === guardado?.lugar)?.id ?? 'casa');
   const [personalizando, setPersonalizando] = useState(false);
   const [cuartoEditando, setCuartoEditando] = useState<CuartoId>('principal');
   const [obra, setObra] = useState(false);
@@ -172,11 +181,11 @@ export function MiCasa() {
   useEffect(() => {
     if (!user?.id) return;
     try {
-      localStorage.setItem(CLAVE + user.id, JSON.stringify({ aparatos, tarifa, paneles, generador, diseno } satisfies Guardado));
+      localStorage.setItem(CLAVE + user.id, JSON.stringify({ aparatos, tarifa, paneles, generador, diseno, lugar } satisfies Guardado));
     } catch {
       // Es solo una comodidad: si el navegador no deja guardar, la casa sigue funcionando.
     }
-  }, [aparatos, tarifa, paneles, generador, diseno, user?.id]);
+  }, [aparatos, tarifa, paneles, generador, diseno, lugar, user?.id]);
 
   useEffect(() => {
     if (!aviso) return;
@@ -343,6 +352,31 @@ export function MiCasa() {
     if (delta > 0) tocar('panel');
   };
 
+  const elegirLugar = (id: LugarCasa['id']) => {
+    const elegido = LUGARES.find((l) => l.id === id);
+    const paquete = PAQUETES.find((p) => p.id === elegido?.paquete);
+    if (!elegido || !paquete || id === lugar) return;
+    if (aparatos.length > 0 && !window.confirm(`Esto cambia tu maqueta a ${elegido.tu} y reemplaza los aparatos que tienes ahora. ¿Seguimos?`)) return;
+    setLugar(id);
+    setDiseno(elegido.diseno);
+    setAparatos(casaDesdePaquete(paquete.items).map((a) => ({ ...a, encendido: true })));
+    setSeleccionadoUid(null);
+    setBandeja(false);
+    tocar('agregar');
+    setAviso(`Listo: tu ${elegido.tu} ya tiene sus cuartos y aparatos de arranque.`);
+  };
+
+  const usarPaquete = (id: string) => {
+    const paquete = PAQUETES.find((p) => p.id === id);
+    if (!paquete) return;
+    const lista = casaDesdePaquete(paquete.items).map((a) => ({ ...a, encendido: true }));
+    setAparatos(lista);
+    setSeleccionadoUid(null);
+    setBandeja(false);
+    tocar('agregar');
+    setAviso(`Armé "${paquete.nombre}" con ${lista.length} aparatos. Quita o agrega lo que quieras.`);
+  };
+
   const usarMisDispositivos = () => {
     if (!datos || datos.porDispositivo.length === 0) {
       setAviso('Todavía no tienes dispositivos registrados.');
@@ -411,8 +445,24 @@ export function MiCasa() {
       <section className="casa-hero card">
         <div className="casa-hero-cab">
           <TituloSeccion icono={<CasaIcon />} etiqueta="Maqueta en vivo">
-            Tu casa, <em>en acción.</em>
+            Tu {LUGARES.find((l) => l.id === lugar)?.tu ?? 'casa'}, <em>en acción.</em>
           </TituloSeccion>
+        </div>
+        <div className="casa-lugares" role="group" aria-label="Tipo de lugar">
+          {LUGARES.map((l) => {
+            const Icono = { casa: CasaIcon, depa: EdificioIcon, oficina: MaletinIcon, tienda: TiendaIcon }[l.id];
+            return (
+              <button
+                key={l.id}
+                type="button"
+                className={`casa-lugar${lugar === l.id ? ' activo' : ''}`}
+                onClick={() => elegirLugar(l.id)}
+                aria-pressed={lugar === l.id}
+              >
+                <Icono /> {l.nombre}
+              </button>
+            );
+          })}
         </div>
         <div className="casa-escena" data-noche={noche ? '1' : '0'}>
           {obra && (
@@ -643,6 +693,20 @@ export function MiCasa() {
 
           {bandeja && (
             <div className="casa-bandeja" role="dialog" aria-label="Agregar aparato">
+              <section className="casa-bandeja-seccion">
+                <h3>
+                  <CasaIcon /> Paquetes armados
+                </h3>
+                <div className="casa-paquetes">
+                  {PAQUETES.map((p) => (
+                    <button key={p.id} type="button" className="casa-paquete" onClick={() => usarPaquete(p.id)}>
+                      <strong>{p.nombre}</strong>
+                      <span>{p.detalle}</span>
+                      <small>{Object.values(p.items).reduce((s, n) => s + n, 0)} aparatos · reemplaza tu casa</small>
+                    </button>
+                  ))}
+                </div>
+              </section>
               {SECCIONES.map((seccion) => {
                 const items = CATALOGO.map((c, indice) => ({ c, indice })).filter(
                   ({ c }) => seccionDeTipo(c.tipoDb).id === seccion.id
@@ -835,6 +899,54 @@ export function MiCasa() {
               </div>
             </label>
           </header>
+
+          <div className="casa-tarifa-info">
+            <p className="casa-tarifa-titulo">
+              <strong>Tarifa {tarifa}</strong> · clima {INFO_TARIFAS[tarifa].clima.toLowerCase()}
+            </p>
+            <p className="muted">
+              {INFO_TARIFAS[tarifa].detalle} Con ella, CFE te cobra ${PRECIOS_CFE.basico} por kWh los primeros{' '}
+              {lim.basico} kWh de cada recibo, ${PRECIOS_CFE.intermedio} los siguientes {lim.intermedio} y{' '}
+              ${PRECIOS_CFE.excedente} el resto.
+            </p>
+            <ul className="casa-tarifa-cifras" aria-label="Cuánto pagarías con tu casa tal como está">
+              <li>
+                <small>Al día</small>
+                <strong>{formatoPesos(recibo.total / DIAS_POR_BIMESTRE)}</strong>
+              </li>
+              <li>
+                <small>Al mes</small>
+                <strong>{formatoPesos(recibo.total / MESES_POR_RECIBO)}</strong>
+              </li>
+              <li>
+                <small>Cada recibo (2 meses)</small>
+                <strong>{formatoPesos(recibo.total)}</strong>
+              </li>
+            </ul>
+            <p className="muted">
+              Ojo: la luz doméstica se paga <strong>cada 2 meses</strong> (recibo bimestral, unos {DIAS_POR_BIMESTRE} días), no
+              cada 3. Las cifras de arriba salen de los aparatos prendidos en tu maqueta, con IVA.
+            </p>
+            <details className="casa-tarifa-ayuda">
+              <summary>¿Cuál es mi tarifa?</summary>
+              <p>
+                Está impresa en tu recibo de CFE, junto a la palabra “Tarifa”. Depende del clima de tu municipio, no de cuánto
+                consumes. Si tu recibo dice solo “1”, elige 1. Si no tienes tu recibo a la mano, entra a cfe.mx y busca “Tarifas
+                de casa”. Si dudas, deja la 1: sirve para comparar aparatos entre sí.
+              </p>
+              <ul>
+                {TARIFAS.map((t) => (
+                  <li key={t}>
+                    <strong>{t}</strong> · {INFO_TARIFAS[t].clima}: {INFO_TARIFAS[t].detalle}
+                  </li>
+                ))}
+              </ul>
+              <p className="muted">
+                Los precios son de referencia fuera de verano y sin alumbrado público; en verano los topes baratos son más
+                grandes. Si pasas del límite de alto consumo de tu tarifa, CFE te pasa a la DAC, que sale mucho más cara.
+              </p>
+            </details>
+          </div>
 
           <h3 className="casa-sub-titulo">Tus escalones de CFE</h3>
           <div className="casa-escalones" aria-label="Cómo se reparte tu consumo en los escalones de CFE">

@@ -230,6 +230,26 @@ export function casaDesdeDispositivos(consumos: ConsumoDispositivo[]): AparatoCa
   return lista;
 }
 
+// Arma la casa a partir de un paquete (tipo de dispositivo -> cantidad).
+export function casaDesdePaquete(items: Record<string, number>): AparatoCasa[] {
+  const lista: AparatoCasa[] = [];
+  for (const [tipo, cantidad] of Object.entries(items)) {
+    const base =
+      CATALOGO.find((c) => c.tipoDb === tipo) ??
+      (tipo === 'Celular (carga)'
+        ? { ...(CATALOGO.find((c) => c.visual === 'tablet') as AparatoCatalogo), nombre: 'Celular cargando', watts: 8, cuarto: 'principal' as CuartoId }
+        : null);
+    if (!base) continue;
+    for (let i = 0; i < cantidad; i++) {
+      const nuevo = crearAparato(lista, base);
+      if (!nuevo) return lista; // la casa ya no tiene más lugar
+      if (cantidad > 1) nuevo.nombre = `${base.nombre} ${i + 1}`;
+      lista.push(nuevo);
+    }
+  }
+  return lista;
+}
+
 export const CASA_DE_EJEMPLO: AparatoCasa[] = (() => {
   const base = ['refri', 'tv', 'foco', 'router', 'laptop', 'ventilador'];
   const lista: AparatoCasa[] = [];

@@ -978,3 +978,34 @@ export function TrofeoIcon({ className }: IconProps) {
     </Trazo>
   );
 }
+
+export function EdificioIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5" y="3.5" width="14" height="17" rx="1.4" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 8h2M13 8h2M9 12h2M13 12h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M10.2 20.5v-3.4h3.6v3.4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function MaletinIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3.5" y="7.5" width="17" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M3.5 12.5h17" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+export function TiendaIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 9.5 5.6 4.5h12.8L20 9.5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M4 9.5a2.67 2.67 0 0 0 5.33 0 2.67 2.67 0 0 0 5.34 0 2.67 2.67 0 0 0 5.33 0" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M5.5 12.5v7h13v-7" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M10 19.5v-4h4v4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}

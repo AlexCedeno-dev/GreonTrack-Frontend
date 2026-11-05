@@ -7,58 +7,9 @@ import { useAppData } from '../context/AppDataContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SECCIONES } from '../lib/deviceCategories';
+import { PAQUETES } from '../lib/paquetesCasa';
 import { supabase } from '../lib/supabase';
 import { TIPOS_DISPOSITIVO } from '../types/database';
-
-// Paquetes: lo típico de cada tipo de hogar, para no ir aparato por aparato.
-const PAQUETES: Array<{ id: string; nombre: string; detalle: string; items: Record<string, number> }> = [
-  {
-    id: 'depa',
-    nombre: 'Depa de estudiante',
-    detalle: 'Laptop, celular, internet y lo básico',
-    items: {
-      Laptop: 1, 'Celular (carga)': 1, Router: 1, Iluminación: 3, Ventilador: 1, Microondas: 1, Refrigerador: 1,
-      Cafetera: 1,
-    },
-  },
-  {
-    id: 'familia',
-    nombre: 'Casa familiar',
-    detalle: 'Cocina, lavandería, clima y pantallas',
-    items: {
-      Refrigerador: 1, 'Televisión (LED)': 2, Lavadora: 1, Microondas: 1, Iluminación: 8, Ventilador: 3,
-      Router: 1, Laptop: 2, 'Celular (carga)': 3, Licuadora: 1, Plancha: 1, 'Calentador de agua': 1,
-      'Aire acondicionado': 1,
-    },
-  },
-  {
-    id: 'oficina',
-    nombre: 'Oficina en casa',
-    detalle: 'Compu, impresora e internet',
-    items: {
-      'Computadora de escritorio': 1, Laptop: 1, Impresora: 1, Router: 1, Iluminación: 2, Ventilador: 1,
-      'Aire acondicionado': 1, Cafetera: 1,
-    },
-  },
-  {
-    id: 'cocina',
-    nombre: 'Cocina completa',
-    detalle: 'Todo lo que se prende para cocinar',
-    items: {
-      Refrigerador: 1, Microondas: 1, 'Horno eléctrico': 1, 'Estufa eléctrica': 1, Licuadora: 1, Tostador: 1,
-      Cafetera: 1, 'Hervidor eléctrico': 1, Lavavajillas: 1, 'Olla arrocera': 1,
-    },
-  },
-  {
-    id: 'gamer',
-    nombre: 'Cuarto gamer',
-    detalle: 'Consola, compu, pantalla y sonido',
-    items: {
-      'Consola de videojuegos': 1, 'Computadora de escritorio': 1, 'Televisión (LED)': 1, Router: 1,
-      'Bocina o estéreo': 1, Iluminación: 2, Ventilador: 1,
-    },
-  },
-];
 
 const wattsDe = (tipo: string) => TIPOS_DISPOSITIVO.find((t) => t.tipo === tipo)?.wattsPromedio ?? 100;
 

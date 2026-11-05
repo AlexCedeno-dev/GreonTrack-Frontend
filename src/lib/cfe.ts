@@ -32,6 +32,18 @@ const LIMITES_MENSUALES: Record<TarifaCfe, { basico: number; intermedio: number;
   '1F': { basico: 300, intermedio: 1200, dac: 2500 },
 };
 
+// La tarifa depende del clima de tu municipio (no de cuánto gastas): entre más
+// calor hace en verano, más kWh baratos te da CFE.
+export const INFO_TARIFAS: Record<TarifaCfe, { clima: string; detalle: string }> = {
+  '1': { clima: 'Templado', detalle: 'Zonas donde en verano la temperatura media mínima es menor a 25 °C (clima fresco o templado).' },
+  '1A': { clima: 'Cálido ligero', detalle: 'Temperatura media mínima en verano de 25 °C.' },
+  '1B': { clima: 'Cálido', detalle: 'Temperatura media mínima en verano de 28 °C.' },
+  '1C': { clima: 'Muy cálido', detalle: 'Temperatura media mínima en verano de 30 °C.' },
+  '1D': { clima: 'Extremo', detalle: 'Temperatura media mínima en verano de 31 °C.' },
+  '1E': { clima: 'Muy extremo', detalle: 'Temperatura media mínima en verano de 32 °C.' },
+  '1F': { clima: 'Calor máximo', detalle: 'Temperatura media mínima en verano de 33 °C o más (por ejemplo, Mexicali o Hermosillo).' },
+};
+
 // CFE cobra cada dos meses, por eso los escalones se duplican.
 export const MESES_POR_RECIBO = 2;
 export const DIAS_POR_BIMESTRE = 61;
