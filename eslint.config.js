@@ -14,6 +14,7 @@ export default tseslint.config(
     },
     plugins: { 'react-hooks': reactHooks },
     rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
     },
