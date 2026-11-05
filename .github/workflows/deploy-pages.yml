@@ -36,7 +36,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: sb_publishable_Vs7amXe9a_TDCUtYjYm5EA_EzD59eKE
         run: npm run build
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
