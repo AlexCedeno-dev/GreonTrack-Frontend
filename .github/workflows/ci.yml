@@ -35,6 +35,9 @@ jobs:
       - name: Type-check
         run: npx tsc -b
 
+      - name: Lint
+        run: npm run lint
+
   security:
     name: Seguridad (audit + Trivy)
     runs-on: ubuntu-latest
@@ -48,13 +51,9 @@ jobs:
 
       - run: npm ci
 
-      # GATE PENDIENTE: hoy `npm audit --audit-level=high` falla (1 crítica en
-      # dompurify, 2 altas en vite y source-map-js). Se deja en modo reporte
-      # para no esconder el hallazgo. Al resolver con `npm audit fix`, quitar
-      # `continue-on-error` para convertirlo en gate real.
-      - name: npm audit (modo reporte)
+      # Gate real: falla si hay vulnerabilidades high/critical.
+      - name: npm audit
         run: npm audit --audit-level=high
-        continue-on-error: true # gate pendiente
 
       # GATE PENDIENTE: Trivy reportará las mismas vulnerabilidades. Al
       # resolverlas, cambiar exit-code a '1' para que bloquee.
