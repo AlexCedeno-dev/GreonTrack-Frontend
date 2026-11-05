@@ -4,6 +4,7 @@ import { CasaInteractiva } from '../components/casa/CasaInteractiva';
 import { IconoAparato } from '../components/casa/Sprites';
 import {
   BoltIcon,
+  CamionIcon,
   CasaIcon,
   EdificioIcon,
   MaletinIcon,
@@ -28,11 +29,13 @@ import {
   VolumeOffIcon,
 } from '../components/icons';
 import { useAppData } from '../context/AppDataContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import { useAuth } from '../context/AuthContext';
 import {
   CASA_DE_EJEMPLO,
   CATALOGO,
   CUARTOS,
+  CUARTOS_ORDEN,
   DISENO_BASE,
   ESTILOS_CASA,
   FACHADAS,
@@ -42,6 +45,10 @@ import {
   ESCENA,
   casaDesdeDispositivos,
   casaDesdePaquete,
+  ENTREGA,
+  PARED_BASE,
+  planEntrega,
+  type Entrega,
   colorDePared,
   leerDiseno,
   nombreDeCuarto,
@@ -97,6 +104,81 @@ const ETAPAS_OBRA = [
   { desde: 5.2, nombre: 'Techo' },
   { desde: 6.3, nombre: 'Instalación eléctrica' },
 ];
+
+const ICONO_LUGAR = { casa: CasaIcon, depa: EdificioIcon, oficina: MaletinIcon, tienda: TiendaIcon };
+
+// Confirmación al cambiar el tipo de lugar: avisa qué se reemplaza y qué va a llegar.
+function DialogoLugar({
+  lugar,
+  aparatosActuales,
+  onCancelar,
+  onConfirmar,
+}: {
+  lugar: LugarCasa;
+  aparatosActuales: number;
+  onCancelar: () => void;
+  onConfirmar: () => void;
+}) {
+  const Icono = ICONO_LUGAR[lugar.id];
+  const paquete = PAQUETES.find((p) => p.id === lugar.paquete);
+  const total = paquete ? Object.values(paquete.items).reduce((s, n) => s + n, 0) : 0;
+  const botonConfirmar = useRef<HTMLButtonElement>(null);
+  const cancelarRef = useRef(onCancelar);
+  cancelarRef.current = onCancelar;
+
+  useEffect(() => {
+    botonConfirmar.current?.focus();
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') cancelarRef.current();
+    };
+    window.addEventListener('keydown', alTeclear);
+    return () => window.removeEventListener('keydown', alTeclear);
+  }, []);
+
+  return (
+    <div className="casa-dialogo-fondo" onClick={onCancelar}>
+      <div
+        className="casa-dialogo"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="casa-dialogo-titulo"
+        aria-describedby="casa-dialogo-texto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className="casa-dialogo-icono" style={{ '--t': lugar.diseno.techo, '--f': lugar.diseno.fachada } as CSSProperties}>
+          <Icono />
+        </span>
+        <h3 id="casa-dialogo-titulo">
+          ¿Armamos tu <em>{lugar.tu}</em>?
+        </h3>
+        <p id="casa-dialogo-texto">
+          Vamos a cambiar los cuartos y colores, y a reemplazar los {aparatosActuales}{' '}
+          {aparatosActuales === 1 ? 'aparato' : 'aparatos'} de tu maqueta por el paquete <strong>{paquete?.nombre}</strong> (
+          {total} aparatos). Tus dispositivos reales no se tocan.
+        </p>
+        <ul className="casa-dialogo-cuartos" aria-label="Así se llamarán tus cuartos">
+          {CUARTOS_ORDEN.map((id) => (
+            <li key={id}>
+              <i style={{ background: lugar.diseno.paredes[id] ?? PARED_BASE[id] }} />
+              {lugar.diseno.nombres[id] ?? CUARTOS.find((c) => c.id === id)?.nombre}
+            </li>
+          ))}
+        </ul>
+        <p className="casa-dialogo-nota">
+          <CamionIcon /> Llegará una camioneta con tu pedido y lo instalarán frente a ti.
+        </p>
+        <div className="casa-dialogo-acciones">
+          <button type="button" className="casa-btn casa-btn-suave" onClick={onCancelar}>
+            Mejor no
+          </button>
+          <button type="button" className="casa-btn casa-btn-principal" onClick={onConfirmar} ref={botonConfirmar}>
+            Sí, armar mi {lugar.tu}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Título de sección: etiqueta con icono, título grande y una palabra resaltada.
 function TituloSeccion({
@@ -155,6 +237,10 @@ export function MiCasa() {
   const [cuartoEditando, setCuartoEditando] = useState<CuartoId>('principal');
   const [obra, setObra] = useState(false);
   const [etapaObra, setEtapaObra] = useState(0);
+  const [entrega, setEntrega] = useState<Entrega | null>(null);
+  const [lugarPendiente, setLugarPendiente] = useState<LugarCasa | null>(null);
+  const [etapaEntrega, setEtapaEntrega] = useState(0);
+  const { reducedMotion } = useAccessibility();
   const [hora, setHora] = useState(14);
   const [reloj, setReloj] = useState(false);
   const [velocidad, setVelocidad] = useState(1);
@@ -224,6 +310,29 @@ export function MiCasa() {
       }, DURACION_OBRA * 1000)
     );
   };
+
+  // Entrega: llega la camioneta, el repartidor deja las cajas y alguien las instala.
+  const temporizadoresEntrega = useRef<number[]>([]);
+  const terminarEntrega = () => {
+    temporizadoresEntrega.current.forEach((t) => window.clearTimeout(t));
+    temporizadoresEntrega.current = [];
+    setEntrega(null);
+  };
+  const iniciarEntrega = (uids: string[]) => {
+    terminarEntrega();
+    const sinMovimiento = reducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (uids.length === 0 || sinMovimiento) return;
+    const plan = planEntrega(uids.length);
+    setEntrega({ id: Date.now(), uids });
+    setEtapaEntrega(0);
+    const etapas = [0, ENTREGA.van, plan.puerta + ENTREGA.entrega, plan.listo(uids.length - 1)];
+    etapas.forEach((desde, i) => {
+      if (i === 0) return;
+      temporizadoresEntrega.current.push(window.setTimeout(() => setEtapaEntrega(i), desde * 1000));
+    });
+    temporizadoresEntrega.current.push(window.setTimeout(() => setEntrega(null), plan.total * 1000));
+  };
+  useEffect(() => () => temporizadoresEntrega.current.forEach((t) => window.clearTimeout(t)), []);
 
   // La primera vez que entra, la casa se construye sola.
   useEffect(() => {
@@ -316,6 +425,7 @@ export function MiCasa() {
     }
     nuevo.encendido = true;
     setAparatos((lista) => [...lista, nuevo]);
+    iniciarEntrega([nuevo.uid]);
     tocar('agregar');
     setBandeja(false);
     setSeleccionadoUid(nuevo.uid);
@@ -356,10 +466,22 @@ export function MiCasa() {
     const elegido = LUGARES.find((l) => l.id === id);
     const paquete = PAQUETES.find((p) => p.id === elegido?.paquete);
     if (!elegido || !paquete || id === lugar) return;
-    if (aparatos.length > 0 && !window.confirm(`Esto cambia tu maqueta a ${elegido.tu} y reemplaza los aparatos que tienes ahora. ¿Seguimos?`)) return;
-    setLugar(id);
+    if (aparatos.length > 0) {
+      setLugarPendiente(elegido);
+      return;
+    }
+    aplicarLugar(elegido);
+  };
+
+  const aplicarLugar = (elegido: LugarCasa) => {
+    const paquete = PAQUETES.find((p) => p.id === elegido.paquete);
+    if (!paquete) return;
+    setLugarPendiente(null);
+    setLugar(elegido.id);
     setDiseno(elegido.diseno);
-    setAparatos(casaDesdePaquete(paquete.items).map((a) => ({ ...a, encendido: true })));
+    const nuevosAparatos = casaDesdePaquete(paquete.items).map((a) => ({ ...a, encendido: true }));
+    setAparatos(nuevosAparatos);
+    iniciarEntrega(nuevosAparatos.map((a) => a.uid));
     setSeleccionadoUid(null);
     setBandeja(false);
     tocar('agregar');
@@ -371,6 +493,7 @@ export function MiCasa() {
     if (!paquete) return;
     const lista = casaDesdePaquete(paquete.items).map((a) => ({ ...a, encendido: true }));
     setAparatos(lista);
+    iniciarEntrega(lista.map((a) => a.uid));
     setSeleccionadoUid(null);
     setBandeja(false);
     tocar('agregar');
@@ -450,7 +573,7 @@ export function MiCasa() {
         </div>
         <div className="casa-lugares" role="group" aria-label="Tipo de lugar">
           {LUGARES.map((l) => {
-            const Icono = { casa: CasaIcon, depa: EdificioIcon, oficina: MaletinIcon, tienda: TiendaIcon }[l.id];
+            const Icono = ICONO_LUGAR[l.id];
             return (
               <button
                 key={l.id}
@@ -482,8 +605,29 @@ export function MiCasa() {
               </button>
             </div>
           )}
+          {entrega && !obra && (
+            <div className="casa-obra" role="status" aria-live="polite">
+              <span className="casa-obra-icono casa-entrega-icono">
+                <CamionIcon />
+              </span>
+              <div className="casa-obra-texto">
+                <strong>Tu pedido va en camino</strong>
+                <span key={etapaEntrega}>
+                  {['Llegó la camioneta de GreonTrack', 'El repartidor baja las cajas', 'Instalando y conectando', '¡Todo instalado!'][etapaEntrega]}
+                </span>
+                <span className="casa-obra-barra">
+                  <i style={{ animationDuration: `${planEntrega(entrega.uids.length).total}s` }} />
+                </span>
+              </div>
+              <button type="button" className="casa-btn casa-btn-suave casa-btn-chico" onClick={terminarEntrega}>
+                Saltar
+              </button>
+            </div>
+          )}
           <CasaInteractiva
             aparatos={aparatos}
+            entrega={entrega}
+            lugar={lugar}
             seleccionadoUid={seleccionadoUid}
             onSeleccionar={setSeleccionadoUid}
             hora={hora}
@@ -1124,6 +1268,14 @@ export function MiCasa() {
           </p>
         </article>
       </section>
+      {lugarPendiente && (
+        <DialogoLugar
+          lugar={lugarPendiente}
+          aparatosActuales={aparatos.length}
+          onCancelar={() => setLugarPendiente(null)}
+          onConfirmar={() => aplicarLugar(lugarPendiente)}
+        />
+      )}
     </AppShell>
   );
 }

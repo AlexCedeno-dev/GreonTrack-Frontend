@@ -574,6 +574,262 @@ export function Generador({ on }: SpriteProps) {
   );
 }
 
+function Freidora({ on }: SpriteProps) {
+  return (
+    <g className={on ? 'sp-vibra' : undefined}>
+      <rect className="sp-negro" x={-16} y={-36} width={32} height={36} rx={9} />
+      <rect className="sp-gris" x={-11} y={-31} width={22} height={9} rx={3} />
+      <circle className={`sp-led${on ? ' on rojo' : ''}`} cx={8} cy={-26.5} r={1.6} />
+      <rect className="sp-gris" x={-9} y={-15} width={18} height={4} rx={2} />
+      {on && <path className="sp-vapor" d="M-5 -40 q-3 -5 0 -9 M4 -40 q3 -5 0 -9" />}
+    </g>
+  );
+}
+
+function Sandwichera({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-negro" x={-20} y={-10} width={40} height={10} rx={3} />
+      <path className="sp-acero" d="M-20 -10 q0 -14 20 -14 q20 0 20 14 Z" />
+      <rect className="sp-gris" x={14} y={-14} width={10} height={4} rx={2} />
+      <circle className={`sp-led${on ? ' on rojo' : ''}`} cx={-12} cy={-5} r={1.4} />
+      {on && <path className="sp-vapor" d="M-6 -28 q-3 -5 0 -9 M4 -28 q3 -5 0 -9" />}
+    </g>
+  );
+}
+
+function Batidora({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-gris" x={-18} y={-6} width={36} height={6} rx={3} />
+      <rect className="sp-gris" x={4} y={-42} width={10} height={38} rx={4} />
+      <rect className="sp-gris" x={-16} y={-48} width={30} height={10} rx={5} />
+      <g className={on ? 'sp-vibra-fuerte' : undefined}>
+        <path className="sp-vaso" d="M-15 -24 q0 14 11 14 h9 q11 0 11 -14 Z" />
+        {on && <path className="sp-remolino" d="M-9 -20 a7 2.8 0 0 1 14 0" />}
+      </g>
+    </g>
+  );
+}
+
+function Dispensador({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-blanco" x={-13} y={-44} width={26} height={44} rx={4} />
+      <path className="sp-agua-tanque" d="M-9 -44 q-3 -4 -1 -12 q2 -10 11 -10 q9 0 11 10 q2 8 -1 12 Z" />
+      <rect className="sp-negro" x={-8} y={-32} width={16} height={7} rx={2} />
+      <circle className={`sp-led${on ? ' on azul' : ''}`} cx={-5} cy={-38} r={1.4} />
+      <circle className={`sp-led${on ? ' on rojo' : ''}`} cx={5} cy={-38} r={1.4} />
+      {on && (
+        <g className="sp-gotas">
+          <path d="M0 -22 q-2 3.5 0 5 q2 -1.5 0 -5 Z" />
+        </g>
+      )}
+    </g>
+  );
+}
+
+function Purificador({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-blanco" x={-11} y={-58} width={22} height={58} rx={8} />
+      <path className="sp-negro-linea" d="M-6 -50 h12 M-6 -45 h12 M-6 -40 h12" strokeWidth={1.4} strokeLinecap="round" />
+      <circle className={`sp-led${on ? ' on azul' : ''}`} cx={0} cy={-26} r={1.8} />
+      {on && <path className="sp-viento" d="M15 -48 h10 M15 -41 h14 M15 -34 h10" />}
+    </g>
+  );
+}
+
+function Humidificador({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-blanco" x={-11} y={-26} width={22} height={26} rx={6} />
+      <rect className="sp-agua-tanque" x={-8} y={-22} width={16} height={12} rx={3} />
+      <rect className="sp-negro" x={-4} y={-30} width={8} height={4} rx={1.5} />
+      <circle className={`sp-led${on ? ' on azul' : ''}`} cx={7} cy={-6} r={1.3} />
+      {on && <path className="sp-vapor" d="M0 -33 q-5 -6 0 -12 q5 -6 0 -12 M-6 -33 q-4 -5 0 -9" />}
+    </g>
+  );
+}
+
+function Barra({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-madera" x={-26} y={-6} width={52} height={6} rx={1.5} />
+      <rect className="sp-negro" x={-32} y={-17} width={64} height={11} rx={5} />
+      <circle className="sp-cono-bocina" cx={-22} cy={-11.5} r={3.4} />
+      <circle className="sp-cono-bocina" cx={22} cy={-11.5} r={3.4} />
+      <circle className={`sp-led${on ? ' on azul' : ''}`} cx={0} cy={-11.5} r={1.2} />
+      {on && (
+        <g className="sp-notas">
+          <path d="M34 -26 v-9 l6 -2 v9" />
+          <circle cx={32.5} cy={-25} r={2} />
+          <circle cx={38.5} cy={-27} r={2} />
+        </g>
+      )}
+    </g>
+  );
+}
+
+function Streaming({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-negro" x={-16} y={-10} width={32} height={10} rx={3} />
+      <rect className="sp-gris" x={-11} y={-6} width={14} height={2} rx={1} />
+      <circle className={`sp-led${on ? ' on' : ''}`} cx={11} cy={-5} r={1.5} />
+      {on && <path className="sp-wifi" d="M-8 -16 q8 -8 16 0 M-5 -20 q5 -5 10 0" />}
+    </g>
+  );
+}
+
+function Monitor({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-gris" x={-12} y={-3} width={24} height={3} rx={1.5} />
+      <rect className="sp-gris" x={-2.5} y={-14} width={5} height={12} />
+      <rect className="sp-negro" x={-24} y={-44} width={48} height={31} rx={2.5} />
+      <rect className={`sp-pantalla${on ? ' on' : ''}`} x={-21.5} y={-41.5} width={43} height={25} rx={1} />
+      <circle className={`sp-led${on ? ' on' : ''}`} cx={20} cy={-15} r={1} />
+    </g>
+  );
+}
+
+function Nas({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-negro" x={-14} y={-38} width={28} height={38} rx={3} />
+      {[-32, -24, -16].map((y) => (
+        <rect key={y} className="sp-gris" x={-10} y={y} width={20} height={5.5} rx={1.5} />
+      ))}
+      {[-29.5, -21.5, -13.5].map((y, i) => (
+        <circle key={y} className={`sp-led${on ? (i === 1 ? ' on azul' : ' on') : ''}`} cx={7} cy={y} r={1.1} />
+      ))}
+      <rect className="sp-gris" x={-8} y={-7} width={16} height={2} rx={1} />
+    </g>
+  );
+}
+
+function Camara({ on }: SpriteProps) {
+  return (
+    <g>
+      <path className="sp-gris" d="M0 -12 L-10 0 M0 -12 L10 0 M0 -12 V0" strokeWidth={2} strokeLinecap="round" />
+      <rect className="sp-blanco" x={-14} y={-30} width={28} height={17} rx={5} />
+      <circle className="sp-negro" cx={-3} cy={-21.5} r={6.5} />
+      <circle className={`sp-lente${on ? ' on' : ''}`} cx={-3} cy={-21.5} r={3.4} />
+      <circle className={`sp-led${on ? ' on rojo' : ''}`} cx={9} cy={-26} r={1.3} />
+    </g>
+  );
+}
+
+function PlanchaPelo({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-madera" x={-24} y={-5} width={48} height={5} rx={1.5} />
+      <g transform="rotate(-8 0 -5)">
+        <rect className="sp-negro" x={-22} y={-22} width={26} height={7} rx={3} />
+        <rect className={`sp-plancha${on ? ' on' : ''}`} x={-22} y={-14} width={26} height={5} rx={2} />
+        <rect className="sp-negro" x={2} y={-22} width={22} height={7} rx={3} />
+        <rect className={`sp-plancha${on ? ' on' : ''}`} x={2} y={-14} width={22} height={5} rx={2} />
+      </g>
+      {on && <path className="sp-vapor" d="M-12 -28 q-3 -5 0 -9 M0 -28 q-3 -5 0 -9 M12 -28 q-3 -5 0 -9" />}
+    </g>
+  );
+}
+
+function Patin({ on }: SpriteProps) {
+  return (
+    <g>
+      <circle className="sp-llanta-linea" cx={-22} cy={-8} r={7} />
+      <circle className="sp-llanta-linea" cx={22} cy={-8} r={7} />
+      <rect className="sp-bici-cuadro" x={-22} y={-14} width={44} height={5} rx={2.5} stroke="none" />
+      <path className="sp-bici-cuadro" d="M20 -12 L16 -44 M10 -44 H24" />
+      <rect className="sp-bateria-marco" x={-12} y={-20} width={18} height={6} rx={1.5} />
+      <rect className={`sp-bateria-nivel${on ? ' carga' : ''}`} x={-11} y={-19} width={16} height={4} rx={1} />
+      {on && <path className="sp-rayo" d="M-3 -34 l-5 8 h4 l-2.5 7 l7.5 -9.5 h-4 Z" />}
+    </g>
+  );
+}
+
+function BombaAlberca({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-gris" x={-22} y={-5} width={44} height={5} rx={2} />
+      <g className={on ? 'sp-vibra-fuerte' : undefined}>
+        <rect className="sp-bomba-motor" x={-20} y={-30} width={26} height={24} rx={8} />
+        <rect className="sp-bomba-cuerpo" x={6} y={-26} width={16} height={20} rx={5} />
+        <circle className="sp-gris" cx={14} cy={-34} r={5} />
+      </g>
+      <path className="sp-tubo" d="M14 -39 V-48 H32 M22 -16 H34" />
+      {on && (
+        <g className="sp-burbujas">
+          <circle cx={30} cy={-12} r={1.8} />
+          <circle cx={36} cy={-18} r={1.4} />
+        </g>
+      )}
+    </g>
+  );
+}
+
+function Porton({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-gris" x={-18} y={-6} width={36} height={6} rx={2} />
+      <rect className="sp-negro" x={-14} y={-22} width={28} height={16} rx={3} />
+      <rect className="sp-acero" x={-30} y={-27} width={60} height={4} rx={1.5} />
+      <circle className={`sp-led${on ? ' on rojo' : ''}`} cx={9} cy={-14} r={1.5} />
+      {on && <path className="sp-rayo" d="M0 -40 l-4 7 h3.5 l-2 6 l6 -8 h-3.5 Z" />}
+    </g>
+  );
+}
+
+function Cortadora({ on }: SpriteProps) {
+  return (
+    <g>
+      <circle className="sp-llanta-linea" cx={-14} cy={-6} r={5.5} />
+      <circle className="sp-llanta-linea" cx={14} cy={-6} r={5.5} />
+      <path className="sp-coche" d="M-20 -8 q0 -14 20 -14 h14 q6 0 6 14 Z" />
+      <path className="sp-gris" d="M16 -20 L28 -44 M22 -44 H34" fill="none" strokeWidth={2.4} strokeLinecap="round" />
+      {on && (
+        <g className="sp-polvo">
+          <circle cx={-24} cy={-6} r={2} />
+          <circle cx={-28} cy={-12} r={1.6} />
+          <circle cx={-22} cy={-16} r={1.4} />
+        </g>
+      )}
+    </g>
+  );
+}
+
+function Costura({ on }: SpriteProps) {
+  return (
+    <g>
+      <rect className="sp-madera" x={-26} y={-8} width={52} height={8} rx={2} />
+      <path className="sp-blanco" d="M-22 -8 V-30 q0 -8 8 -8 H12 q8 0 8 8 V-26 H8 V-8 Z" />
+      <path className="sp-gris" d="M-14 -38 V-46 H0" fill="none" strokeWidth={2.4} strokeLinecap="round" />
+      <rect className="sp-negro" x={-3} y={-30} width={2.4} height={12} />
+      <circle className={`sp-led${on ? ' on' : ''}`} cx={14} cy={-20} r={1.4} />
+      {on && <path className="sp-vapor" d="M-16 -22 h8" strokeDasharray="2 2" />}
+    </g>
+  );
+}
+
+function Hidrolavadora({ on }: SpriteProps) {
+  return (
+    <g>
+      <circle className="sp-llanta-linea" cx={-16} cy={-6} r={5.5} />
+      <path className="sp-coche" d="M-22 -8 V-30 q0 -8 8 -8 H4 q8 0 8 8 V-8 Z" />
+      <rect className="sp-negro" x={-16} y={-32} width={16} height={9} rx={2} />
+      <path className="sp-tubo" d="M12 -20 q18 0 18 -14 V-40 M30 -40 H40" />
+      {on && (
+        <g className="sp-gotas">
+          <circle cx={44} cy={-38} r={1.7} />
+          <circle cx={49} cy={-35} r={1.4} />
+        </g>
+      )}
+    </g>
+  );
+}
+
 const SPRITES: Record<Visual, (p: SpriteProps) => ReactNode> = {
   tv: Tv,
   minisplit: Minisplit,
@@ -611,6 +867,24 @@ const SPRITES: Record<Visual, (p: SpriteProps) => ReactNode> = {
   tablet: Tablet,
   impresora: Impresora,
   bomba: Bomba,
+  freidora: Freidora,
+  sandwichera: Sandwichera,
+  batidora: Batidora,
+  dispensador: Dispensador,
+  purificador: Purificador,
+  humidificador: Humidificador,
+  barra: Barra,
+  streaming: Streaming,
+  monitor: Monitor,
+  nas: Nas,
+  camara: Camara,
+  planchaPelo: PlanchaPelo,
+  patin: Patin,
+  bombaAlberca: BombaAlberca,
+  porton: Porton,
+  cortadora: Cortadora,
+  costura: Costura,
+  hidrolavadora: Hidrolavadora,
 };
 
 export function Sprite({ visual, on }: { visual: Visual; on: boolean }) {
@@ -627,6 +901,9 @@ export const ALTO_APARATO: Record<Visual, number> = {
   congelador: 30, ventiTecho: 160, secadoraRopa: 46, bici: 46, horno: 38, estufa: 32, tostador: 52,
   licuadora: 66, lavavajillas: 44, hervidor: 58, olla: 50, calefactor: 36, deshumidificador: 54,
   bocina: 52, proyector: 36, tablet: 42, impresora: 50, bomba: 36,
+  freidora: 40, sandwichera: 30, batidora: 50, dispensador: 68, purificador: 60, humidificador: 36,
+  barra: 20, streaming: 24, monitor: 46, nas: 40, camara: 32, planchaPelo: 32, patin: 46,
+  bombaAlberca: 50, porton: 30, cortadora: 46, costura: 48, hidrolavadora: 40,
 };
 
 export function IconoAparato({ visual }: { visual: Visual }) {

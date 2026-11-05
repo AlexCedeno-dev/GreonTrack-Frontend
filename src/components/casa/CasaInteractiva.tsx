@@ -16,10 +16,15 @@ import {
   nombreDeCuarto,
   oscurecer,
   pisoY,
+  planEntrega,
   posicionAparato,
   type AparatoCasa,
   type Diseno,
+  type Entrega,
 } from '../../lib/casa';
+import type { LugarCasa } from '../../lib/paquetesCasa';
+import { Reparto } from './Reparto';
+import { FondoLugar, FrenteLugar } from './Siluetas';
 import { ALTO_APARATO, Generador, Sprite } from './Sprites';
 
 interface Props {
@@ -37,6 +42,10 @@ interface Props {
   diseno: Diseno;
   // true mientras se reproduce la animación de construcción.
   obra: boolean;
+  // Tipo de lugar: casa, departamento, oficina o tienda (cambia la silueta).
+  lugar?: LugarCasa['id'];
+  // Entrega en curso: los aparatos nuevos aparecen cuando el instalador termina.
+  entrega?: Entrega | null;
   onMonoHabla?: () => void;
 }
 
@@ -187,6 +196,8 @@ export function CasaInteractiva({
   generador,
   diseno,
   obra,
+  entrega,
+  lugar = 'casa',
   onMonoHabla,
 }: Props) {
   const aparatosRef = useRef(aparatos);
@@ -199,6 +210,15 @@ export function CasaInteractiva({
     [reducedMotion]
   );
   const monos = useMonitos(aparatosRef, !reducirMovimiento, velocidad);
+
+  // uid -> segundo en que el instalador termina y el aparato aparece.
+  const llegadaReparto = useMemo(() => {
+    const mapa = new Map<string, number>();
+    if (!entrega) return mapa;
+    const plan = planEntrega(entrega.uids.length);
+    entrega.uids.forEach((uid, i) => mapa.set(uid, plan.listo(i)));
+    return mapa;
+  }, [entrega]);
 
   const noche = esDeNoche(hora);
   const cielo = colorCielo(hora);
@@ -360,6 +380,8 @@ export function CasaInteractiva({
       )}
       <path className="casa-colina" d="M0 400 Q120 340 260 380 T520 370 T800 380 T960 360 V470 H0 Z" />
 
+      <FondoLugar lugar={lugar} noche={noche} />
+
       {/* Suelo */}
       <rect className="casa-pasto" x={0} y={ESCENA.sueloY} width={ESCENA.w} height={46} />
       <rect className="casa-banqueta" x={0} y={ESCENA.sueloY + 46} width={ESCENA.w} height={14} />
@@ -513,6 +535,7 @@ export function CasaInteractiva({
         <rect className="casa-techo" x={CASA.x - 20} y={112} width={CASA.w + 40} height={20} rx={4} />
         <rect className="casa-techo-borde" x={CASA.x - 20} y={128} width={CASA.w + 40} height={4} />
       </g>
+      <FrenteLugar lugar={lugar} paneles={paneles} noche={noche} />
       {paneles > 0 && (
         <g className="casa-solar c-interior">
           <path className="solar-cable" d="M128 108 H106 V406 H102" />
@@ -554,7 +577,8 @@ export function CasaInteractiva({
         {aparatos.map((a) => (
           <path
             key={`c-${a.uid}`}
-            className={`cable${!vistos.current.has(a.uid) ? ' dibuja' : ''}`}
+            className={`cable${!vistos.current.has(a.uid) || llegadaReparto.has(a.uid) ? ' dibuja' : ''}${llegadaReparto.has(a.uid) ? ' en-reparto' : ''}`}
+            style={llegadaReparto.has(a.uid) ? ({ '--t': `${llegadaReparto.get(a.uid)}s` } as CSSProperties) : undefined}
             d={ruta(a)}
             pathLength={1}
           />
@@ -564,9 +588,14 @@ export function CasaInteractiva({
           .map((a) => (
             <path
               key={`f-${a.uid}`}
-              className="cable-flujo"
+              className={`cable-flujo${llegadaReparto.has(a.uid) ? ' reparto-oculto' : ''}`}
               d={ruta(a)}
-              style={{ animationDuration: `${Math.max(0.5, 2.4 - a.watts / 1800)}s` }}
+              style={
+                {
+                  animationDuration: `${Math.max(0.5, 2.4 - a.watts / 1800)}s`,
+                  '--t': `${llegadaReparto.get(a.uid) ?? 0}s`,
+                } as CSSProperties
+              }
               filter="url(#casa-brillo)"
             />
           ))}
@@ -575,13 +604,20 @@ export function CasaInteractiva({
       {/* Aparatos */}
       {aparatos.map((a) => {
         const { x, y, enchufeY } = posicionAparato(a);
-        const nuevo = !vistos.current.has(a.uid);
+        const enReparto = llegadaReparto.has(a.uid);
+        const nuevo = !vistos.current.has(a.uid) || enReparto;
         const seleccionado = a.uid === seleccionadoUid;
         const caja = cajaClic(a);
         return (
-          <g key={a.uid} transform={`translate(${x} ${y})`}>
+          <g
+            key={a.uid}
+            transform={`translate(${x} ${y})`}
+            className={enReparto ? 'reparto-oculto' : undefined}
+            style={enReparto ? ({ '--t': `${llegadaReparto.get(a.uid)}s` } as CSSProperties) : undefined}
+          >
             <g
-              className={`aparato${a.encendido ? ' on' : ' off'}${nuevo ? ' entra' : ''}${seleccionado ? ' sel' : ''}`}
+              className={`aparato${a.encendido ? ' on' : ' off'}${nuevo ? ' entra' : ''}${enReparto ? ' en-reparto' : ''}${seleccionado ? ' sel' : ''}`}
+              style={enReparto ? ({ '--t': `${llegadaReparto.get(a.uid)}s` } as CSSProperties) : undefined}
               onClick={(e) => {
                 e.stopPropagation();
                 onSeleccionar(a.uid);
@@ -603,8 +639,8 @@ export function CasaInteractiva({
                 <ellipse className="aparato-anillo" cx={0} cy={1} rx={a.visual === 'coche' ? 82 : 30} ry={6.5} />
               )}
             </g>
-            {nuevo && <circle className="onda-nueva" cx={0} cy={enchufeY - y} r={8} />}
-            {nuevo && (
+            {nuevo && !enReparto && <circle className="onda-nueva" cx={0} cy={enchufeY - y} r={8} />}
+            {nuevo && !enReparto && (
               <g className="chispas" transform={`translate(0 ${enchufeY - y})`}>
                 {Array.from({ length: 10 }).map((_, i) => {
                   const ang = (i / 10) * Math.PI * 2;
@@ -684,6 +720,7 @@ export function CasaInteractiva({
         </g>
       )}
       </g>
+      {entrega && <Reparto key={entrega.id} aparatos={aparatos} entrega={entrega} />}
     </svg>
   );
 }

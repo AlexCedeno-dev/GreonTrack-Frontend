@@ -19,6 +19,7 @@ import { CATEGORIAS, SECCIONES, categoriaDe, iconoDeCategoria, seccionDeTipo, Ca
 import { DibujoTipo } from '../components/casa/Sprites';
 import { EquipoActual } from '../components/EquipoActual';
 import { useSnifferEstado } from '../lib/useSnifferEstado';
+import { leerRecienInstalados, limpiarRecienInstalados } from '../lib/recienInstalados';
 import mascota from '../assets/mascota-greon-sm.png';
 
 // Techo de referencia (W) usado solo para escalar la barra de consumo relativo;
@@ -240,6 +241,16 @@ export function Devices() {
   const [devices, setDevices] = useState<Dispositivo[]>(() => datos?.dispositivos ?? []);
   const [loading, setLoading] = useState(() => datos === null);
   const [error, setError] = useState<string | null>(null);
+  // Los que se acaban de agregar se marcan como "recién instalados" unos segundos.
+  const [recientes, setRecientes] = useState<string[]>(() => leerRecienInstalados());
+  useEffect(() => {
+    if (recientes.length === 0) return;
+    const t = window.setTimeout(() => {
+      setRecientes([]);
+      limpiarRecienInstalados();
+    }, 9000);
+    return () => window.clearTimeout(t);
+  }, [recientes]);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [linkingId, setLinkingId] = useState<string | null>(null);
@@ -448,7 +459,8 @@ export function Devices() {
               device.tipo === TIPO_LAPTOP && device.origen === 'manual' && !device.device_token;
 
             return (
-              <article key={device.id} className="card device-card">
+              <article key={device.id} className={`card device-card${recientes.includes(device.id) ? ' recien' : ''}`}>
+                {recientes.includes(device.id) && <span className="device-recien-chip">Recién instalado</span>}
                 <div className="device-card-top">
                   <div className="device-card-identity">
                     <span className="device-card-icon con-dibujo">

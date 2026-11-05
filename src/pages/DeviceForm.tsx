@@ -1,8 +1,10 @@
 import { FormEvent, RefObject, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
+import { EntregaOverlay } from '../components/EntregaOverlay';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { marcarRecienInstalados } from '../lib/recienInstalados';
 import { supabase } from '../lib/supabase';
 import { TIPOS_DISPOSITIVO } from '../types/database';
 import { capturarInfoDispositivo } from '../lib/deviceInfo';
@@ -40,6 +42,7 @@ export function DeviceForm() {
   const { user } = useAuth();
   const { mostrarExito, mostrarError } = useToast();
 
+  const [entregando, setEntregando] = useState<string[] | null>(null);
   const [nombre, setNombre] = useState('');
   const [tipo, setTipo] = useState(TIPOS_DISPOSITIVO[0].tipo);
   const [watts, setWatts] = useState(String(TIPOS_DISPOSITIVO[0].wattsPromedio));
@@ -188,7 +191,7 @@ export function DeviceForm() {
       consumo_watts_promedio: wattsNumber,
     };
 
-    const { error } =
+    const respuesta =
       isEdit && id
         ? await supabase.from('dispositivos').update(payload).eq('id', id)
         : await supabase.from('dispositivos').insert({
@@ -209,8 +212,9 @@ export function DeviceForm() {
                     }
                   : undefined,
             }),
-          });
+          }).select('id');
 
+    const { error } = respuesta;
     setSaving(false);
 
     if (error) {
@@ -220,7 +224,14 @@ export function DeviceForm() {
     }
 
     setSuccess(isEdit ? 'Dispositivo actualizado.' : 'Dispositivo agregado.');
-    mostrarExito(isEdit ? 'Dispositivo actualizado.' : '¡Dispositivo agregado! Actualizando tu lista…');
+    if (!isEdit) {
+      const nuevoId = Array.isArray(respuesta.data) ? (respuesta.data[0] as { id?: string } | undefined)?.id : undefined;
+      if (nuevoId) marcarRecienInstalados([nuevoId]);
+      mostrarExito('¡Dispositivo agregado!');
+      setEntregando([tipo]);
+      return;
+    }
+    mostrarExito('Dispositivo actualizado.');
     redirectTimeout.current = setTimeout(() => navigate('/dispositivos'), 800);
   };
 
@@ -229,6 +240,7 @@ export function DeviceForm() {
       title={isEdit ? 'Editar dispositivo' : 'Nuevo dispositivo'}
       subtitle={isEdit ? 'Actualiza los datos de este equipo.' : 'Registra un nuevo equipo para monitorear.'}
     >
+      {entregando && <EntregaOverlay tipos={entregando} onTermina={() => navigate('/dispositivos')} />}
       <button
         type="button"
         className="icon-btn device-form-back"

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
+import { EntregaOverlay } from '../components/EntregaOverlay';
 import { DibujoTipo } from '../components/casa/Sprites';
 import { ArrowLeftIcon, CasaIcon, CheckIcon, MinusIcon, PlusIcon } from '../components/icons';
 import { useAppData } from '../context/AppDataContext';
@@ -8,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SECCIONES } from '../lib/deviceCategories';
 import { PAQUETES } from '../lib/paquetesCasa';
+import { marcarRecienInstalados } from '../lib/recienInstalados';
 import { supabase } from '../lib/supabase';
 import { TIPOS_DISPOSITIVO } from '../types/database';
 
@@ -21,6 +23,7 @@ export function ArmaCasa() {
   const [cantidades, setCantidades] = useState<Record<string, number>>({});
   const [paqueteActivo, setPaqueteActivo] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [entregando, setEntregando] = useState<string[] | null>(null);
 
   const yaTiene = useMemo(() => {
     const conteo: Record<string, number> = {};
@@ -71,19 +74,27 @@ export function ArmaCasa() {
         };
       })
     );
-    const { error } = await supabase.from('dispositivos').insert(filas);
+    const { data: creados, error } = await supabase.from('dispositivos').insert(filas).select('id');
     setGuardando(false);
     if (error) {
       mostrarError(error.message);
       return;
     }
     refrescar();
-    mostrarExito(`Agregué ${filas.length} ${filas.length === 1 ? 'dispositivo' : 'dispositivos'} a tu casa.`);
+    marcarRecienInstalados((creados ?? []).map((d) => d.id as string));
+    setEntregando(filas.map((f) => f.tipo));
+  };
+
+  const terminarEntrega = () => {
+    const cantidad = entregando?.length ?? 0;
+    setEntregando(null);
+    mostrarExito(`Agregué ${cantidad} ${cantidad === 1 ? 'dispositivo' : 'dispositivos'} a tu casa.`);
     navigate('/dispositivos');
   };
 
   return (
     <AppShell title="Arma tu casa" subtitle="Toca lo que tienes y agrégalo todo de una vez.">
+      {entregando && <EntregaOverlay tipos={entregando} onTermina={terminarEntrega} />}
       <div className="devices-toolbar">
         <button type="button" className="icon-btn" onClick={() => navigate('/dispositivos')} aria-label="Volver" title="Volver">
           <ArrowLeftIcon />

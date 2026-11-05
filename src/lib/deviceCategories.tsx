@@ -39,6 +39,7 @@ import {
   WaveIcon,
   ScissorsIcon,
   WifiIcon,
+  TreeIcon,
 } from '../components/icons';
 
 type Icono = ComponentType<{ className?: string }>;
@@ -69,13 +70,17 @@ export const SECCIONES: Seccion[] = [
       'Olla arrocera',
       'Cafetera',
       'Lavavajillas',
+      'Freidora de aire',
+      'Sandwichera',
+      'Batidora',
+      'Dispensador de agua',
     ],
   },
   {
     id: 'lavanderia',
     nombre: 'Lavandería y limpieza',
     icono: WashingMachineIcon,
-    tipos: ['Lavadora', 'Secadora de ropa', 'Plancha', 'Aspiradora'],
+    tipos: ['Lavadora', 'Secadora de ropa', 'Plancha', 'Aspiradora', 'Máquina de coser'],
   },
   {
     id: 'clima',
@@ -89,31 +94,33 @@ export const SECCIONES: Seccion[] = [
       'Deshumidificador',
       'Calentador de agua',
       'Bomba de agua',
+      'Purificador de aire',
+      'Humidificador',
     ],
   },
   {
     id: 'entretenimiento',
     nombre: 'Entretenimiento',
     icono: TvIcon,
-    tipos: ['Televisión (LED)', 'Consola de videojuegos', 'Bocina o estéreo', 'Proyector'],
+    tipos: ['Televisión (LED)', 'Consola de videojuegos', 'Bocina o estéreo', 'Barra de sonido', 'Decodificador o streaming', 'Proyector'],
   },
   {
     id: 'computo',
     nombre: 'Cómputo y oficina',
     icono: LaptopIcon,
-    tipos: ['Laptop', 'Computadora de escritorio', 'Impresora', 'Router'],
+    tipos: ['Laptop', 'Computadora de escritorio', 'Monitor', 'Impresora', 'Router', 'Servidor o NAS'],
   },
   {
     id: 'luz',
     nombre: 'Luz y hogar inteligente',
     icono: LightbulbIcon,
-    tipos: ['Iluminación', 'Dispositivo IoT'],
+    tipos: ['Iluminación', 'Dispositivo IoT', 'Cámara de seguridad'],
   },
   {
     id: 'cuidado',
     nombre: 'Cuidado personal',
     icono: ScissorsIcon,
-    tipos: ['Secadora de pelo'],
+    tipos: ['Secadora de pelo', 'Plancha de cabello'],
   },
   {
     id: 'moviles',
@@ -125,7 +132,13 @@ export const SECCIONES: Seccion[] = [
     id: 'movilidad',
     nombre: 'Movilidad eléctrica',
     icono: CarIcon,
-    tipos: ['Coche eléctrico', 'Bicicleta eléctrica'],
+    tipos: ['Coche eléctrico', 'Bicicleta eléctrica', 'Patín eléctrico'],
+  },
+  {
+    id: 'jardin',
+    nombre: 'Jardín y exterior',
+    icono: TreeIcon,
+    tipos: ['Bomba de alberca', 'Portón eléctrico', 'Cortadora de pasto', 'Hidrolavadora'],
   },
   {
     id: 'otros',

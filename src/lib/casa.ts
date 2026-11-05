@@ -57,7 +57,9 @@ export type Visual =
   | 'consola' | 'plancha' | 'secadora' | 'micro' | 'lavadora' | 'secadoraRopa' | 'boiler' | 'router'
   | 'cafetera' | 'aspiradora' | 'coche' | 'bici' | 'horno' | 'estufa' | 'tostador' | 'licuadora'
   | 'lavavajillas' | 'hervidor' | 'olla' | 'calefactor' | 'deshumidificador' | 'bocina' | 'proyector'
-  | 'tablet' | 'impresora' | 'bomba' | 'generico';
+  | 'tablet' | 'impresora' | 'bomba' | 'freidora' | 'sandwichera' | 'batidora' | 'dispensador' | 'purificador'
+  | 'humidificador' | 'barra' | 'streaming' | 'monitor' | 'nas' | 'camara' | 'planchaPelo' | 'patin'
+  | 'bombaAlberca' | 'porton' | 'cortadora' | 'costura' | 'hidrolavadora' | 'generico';
 
 // Algunos aparatos van colgados del techo o la pared: no ocupan lugar en el piso.
 export function capaDe(visual: Visual): 'piso' | 'alto' {
@@ -110,6 +112,24 @@ export const CATALOGO: AparatoCatalogo[] = [
   { visual: 'secadora', nombre: 'Secadora de pelo', tipoDb: 'Secadora de pelo', watts: 1800, horas: 0.3, cuarto: 'principal' },
   { visual: 'coche', nombre: 'Coche eléctrico', tipoDb: 'Coche eléctrico', watts: 3300, horas: 3, cuarto: 'garage' },
   { visual: 'bici', nombre: 'Bicicleta eléctrica', tipoDb: 'Bicicleta eléctrica', watts: 250, horas: 2, cuarto: 'garage' },
+  { visual: 'freidora', nombre: 'Freidora de aire', tipoDb: 'Freidora de aire', watts: 1500, horas: 0.5, cuarto: 'cocina' },
+  { visual: 'sandwichera', nombre: 'Sandwichera', tipoDb: 'Sandwichera', watts: 750, horas: 0.2, cuarto: 'cocina' },
+  { visual: 'batidora', nombre: 'Batidora', tipoDb: 'Batidora', watts: 300, horas: 0.2, cuarto: 'cocina' },
+  { visual: 'dispensador', nombre: 'Dispensador de agua', tipoDb: 'Dispensador de agua', watts: 500, horas: 3, cuarto: 'cocina' },
+  { visual: 'purificador', nombre: 'Purificador de aire', tipoDb: 'Purificador de aire', watts: 45, horas: 10, cuarto: 'sala' },
+  { visual: 'humidificador', nombre: 'Humidificador', tipoDb: 'Humidificador', watts: 30, horas: 8, cuarto: 'principal' },
+  { visual: 'barra', nombre: 'Barra de sonido', tipoDb: 'Barra de sonido', watts: 40, horas: 4, cuarto: 'sala' },
+  { visual: 'streaming', nombre: 'Decodificador o streaming', tipoDb: 'Decodificador o streaming', watts: 8, horas: 6, cuarto: 'sala' },
+  { visual: 'monitor', nombre: 'Monitor', tipoDb: 'Monitor', watts: 30, horas: 6, cuarto: 'oficina' },
+  { visual: 'nas', nombre: 'Servidor o NAS', tipoDb: 'Servidor o NAS', watts: 40, horas: 24, cuarto: 'oficina' },
+  { visual: 'camara', nombre: 'Cámara de seguridad', tipoDb: 'Cámara de seguridad', watts: 6, horas: 24, cuarto: 'sala' },
+  { visual: 'planchaPelo', nombre: 'Plancha de cabello', tipoDb: 'Plancha de cabello', watts: 60, horas: 0.3, cuarto: 'principal' },
+  { visual: 'patin', nombre: 'Patín eléctrico', tipoDb: 'Patín eléctrico', watts: 250, horas: 2, cuarto: 'garage' },
+  { visual: 'bombaAlberca', nombre: 'Bomba de alberca', tipoDb: 'Bomba de alberca', watts: 1100, horas: 6, cuarto: 'garage' },
+  { visual: 'porton', nombre: 'Portón eléctrico', tipoDb: 'Portón eléctrico', watts: 250, horas: 0.2, cuarto: 'garage' },
+  { visual: 'cortadora', nombre: 'Cortadora de pasto', tipoDb: 'Cortadora de pasto', watts: 1200, horas: 0.5, cuarto: 'garage' },
+  { visual: 'costura', nombre: 'Máquina de coser', tipoDb: 'Máquina de coser', watts: 100, horas: 1, cuarto: 'oficina' },
+  { visual: 'hidrolavadora', nombre: 'Hidrolavadora', tipoDb: 'Hidrolavadora', watts: 1500, horas: 0.3, cuarto: 'garage' },
 ];
 
 export interface AparatoCasa {
@@ -142,6 +162,9 @@ export const ALTURA_ENCHUFE: Record<Visual, number> = {
   router: 14, cafetera: 14, aspiradora: 8, coche: 22, bici: 10, horno: 14, estufa: 14, tostador: 14,
   licuadora: 14, lavavajillas: 14, hervidor: 14, olla: 14, calefactor: 10, deshumidificador: 10, bocina: 10,
   proyector: 14, tablet: 10, impresora: 14, bomba: 10, generico: 10,
+  freidora: 14, sandwichera: 12, batidora: 12, dispensador: 14, purificador: 14, humidificador: 10, barra: 10,
+  streaming: 6, monitor: 14, nas: 14, camara: 10, planchaPelo: 6, patin: 10, bombaAlberca: 10, porton: 14,
+  cortadora: 10, costura: 10, hidrolavadora: 10,
 };
 
 // Punto de la maqueta donde está un aparato (sobre el piso) y donde se enchufa.
@@ -437,5 +460,38 @@ export function leerDiseno(crudo: unknown): Diseno {
     paredes: { ...(d.paredes ?? {}) },
     techo: typeof d.techo === 'string' ? d.techo : DISENO_BASE.techo,
     fachada: typeof d.fachada === 'string' ? d.fachada : DISENO_BASE.fachada,
+  };
+}
+
+// ── Entrega e instalación ──────────────────────────────────────────────────
+// Cuando se agrega algo a la casa llega una camioneta: el repartidor deja las
+// cajas en la puerta y un instalador las lleva al cuarto, las abre y las
+// conecta. Estos tiempos (en segundos) mandan la animación completa.
+
+export interface Entrega {
+  id: number;
+  uids: string[];
+}
+
+export const ENTREGA = { van: 1.3, camina: 0.9, entrega: 0.5, instalaCamina: 1.4, instala: 1.3, maxOperarios: 10 };
+
+export function planEntrega(n: number) {
+  const total = Math.max(1, n);
+  const paso = total <= 1 ? 0 : Math.min(0.45, 3.2 / total);
+  const puerta = ENTREGA.van + ENTREGA.camina;
+  const inicio = (i: number) => puerta + ENTREGA.entrega + i * paso;
+  const llega = (i: number) => inicio(i) + ENTREGA.instalaCamina;
+  const listo = (i: number) => llega(i) + ENTREGA.instala;
+  const regresa = inicio(total - 1) + 0.3;
+  const vanSale = regresa + ENTREGA.camina;
+  return {
+    paso,
+    puerta,
+    inicio,
+    llega,
+    listo,
+    regresa,
+    vanSale,
+    total: Math.max(listo(total - 1) + 0.8, vanSale + 1.5),
   };
 }

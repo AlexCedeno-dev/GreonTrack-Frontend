@@ -1009,3 +1009,14 @@ export function TiendaIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function CamionIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.5 6.5h11v9.5h-11z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M13.5 9.5h4l3 3.2V16h-7z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="7" cy="17.5" r="1.9" fill="var(--superficie, #fff)" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="17" cy="17.5" r="1.9" fill="var(--superficie, #fff)" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
